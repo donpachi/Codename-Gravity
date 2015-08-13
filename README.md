@@ -1,7 +1,7 @@
 # Codename-Gravity
 
 Collaborators:
-Arthur Lee
-Rajan Saini
-Yosuke Saito
-Aaron Kim
+<br>Arthur Lee
+<br>Rajan Saini
+<br>Yosuke Saito
+<br>Aaron Kim
