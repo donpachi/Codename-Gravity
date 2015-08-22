@@ -7,6 +7,7 @@ public class ControllerScript: MonoBehaviour {
 	[HideInInspector] public bool facingRight = true;
 	public float moveForce = 365f;
 	public float maxSpeed = 5f;
+	public float speed = 0.1F;
 	public Transform groundCheck;
 
 	private Dictionary<int, Vector3> gravityList = new Dictionary<int, Vector3>();
@@ -68,6 +69,23 @@ public class ControllerScript: MonoBehaviour {
 			CycleGravity();
 			SetGravity ();
 		}
+
+		if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved) {
+			// Get movement of the finger since last frame
+			Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
+			// Move object across XY plane
+			transform.Translate(-touchDeltaPosition.x * speed, -touchDeltaPosition.y * speed, 0);
+		}
+
+		/*if (Input.touchCount == 1 && Input.GetTouch(0).position.x <= Screen.currentResolution.width/2) {
+			this.gameObject.transform.position.Set(Input.GetTouch(0).position.x, this.gameObject.transform.position.y, this.gameObject.transform.position.z);
+			rb2d.AddForce (Vector2.left * h * moveForce);
+		}
+		else if (Input.touchCount == 1 && Input.GetTouch(0).position.x > Screen.currentResolution.width/2) {
+			this.gameObject.transform.position.x = Input.GetTouch(0).position.x;
+			rb2d.AddForce (Vector2.right * h * moveForce);
+		}*/
+
 	}
 
 	void CycleGravity()
