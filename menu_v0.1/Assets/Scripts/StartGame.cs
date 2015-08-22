@@ -2,14 +2,12 @@
 using System.Collections;
 
 public class StartGame : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
 	
-	}
+	public GameObject loadingImage;
 	
-	// Update is called once per frame
-	void Update () {
-	
+	public void LoadScene(int level)
+	{
+		loadingImage.SetActive(true);
+		Application.LoadLevel(level);
 	}
 }
