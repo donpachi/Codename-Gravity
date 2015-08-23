@@ -43,7 +43,6 @@ public class Controls : MonoBehaviour {
 
 	Vector3 LowPassFilterAccelerometer(float filter){ 
 		float xfilter = Mathf.Lerp (lowPassValue.x, Input.acceleration.x, filter);
-		//xfilter *= -1f;
 		float yfilter = Mathf.Lerp (lowPassValue.y, Input.acceleration.y, filter);
 		lowPassValue = new Vector3(xfilter, yfilter, 0f);
 		return lowPassValue;
