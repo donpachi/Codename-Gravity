@@ -24,14 +24,6 @@ public class Controls : MonoBehaviour {
 			Vector3 left = new Vector3(-1, 0, 0);
 			rb.AddForce(left * THRUST, ForceMode.Impulse);
 		}
-
-		Vector3 vel = rb.velocity;
-		Vector3 negVel = vel * FRICTIONMODIFIER;
-		float speed = vel.magnitude;
-		if (Input.touchCount == 0 && speed != 0) {//while no movement input is detected, slow down movement. Need to detect surface to simulate friction
-			rb.AddForce (negVel, ForceMode.Force);
-		}
-		//will need to change the vector coordinates later in perpendicular relation to the player's gravitational orientation
 		
 		//rb.AddForce(Input.gyro.gravity, ForceMode.Acceleration); not working as of yet
 	}
