@@ -17,14 +17,21 @@ public class Controls : MonoBehaviour {
 		// If right side of screen is touched
 		if ((Input.touchCount == 1 && Input.GetTouch (0).position.x >= Screen.currentResolution.width / 2) || Input.GetKey("d")) {
 			Vector3 right = new Vector3(1, 0, 0);
-			rb.AddForce(right * THRUST, ForceMode.Impulse);
+			addForce(right, ForceMode.Impulse);
 		}
 		// If left side of screen is touched
 		if ((Input.touchCount == 1 && Input.GetTouch (0).position.x < Screen.currentResolution.width / 2) || Input.GetKey("a")) {
 			Vector3 left = new Vector3(-1, 0, 0);
-			rb.AddForce(left * THRUST, ForceMode.Impulse);
+			addForce(left, ForceMode.Impulse);
 		}
 		
 		//rb.AddForce(Input.gyro.gravity, ForceMode.Acceleration); not working as of yet
 	}
+
+	// Add force to the player
+	void addForce(Vector3 vector,ForceMode forceMode) {
+		if (Mathf.Abs(rb.velocity.x) < 13)
+			rb.AddForce (vector * THRUST, forceMode);
+	}
+
 }
