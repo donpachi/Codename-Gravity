@@ -10,8 +10,8 @@ public class Controls : MonoBehaviour{
 	public float AccelerometerUpdateInterval = 1.0f / 60.0f;
 	public float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
 	private Vector3 lowPassValue = Vector3.zero;
-	private Vector3 rightForce = new Vector3(-1, 0, 0);
-	private Vector3 leftForce = new Vector3(1, 0, 0);
+	private Vector3 rightForce = new Vector3(1, 0, 0);
+	private Vector3 leftForce = new Vector3(-1, 0, 0);
 	private bool topRight = false;
 	private bool topLeft = false;
 	private bool bottomRight = false;
@@ -87,7 +87,9 @@ public class Controls : MonoBehaviour{
 
 	// Add force to the player
 	void addForce(Vector3 vector,ForceMode forceMode) {
-		if (Mathf.Abs(rb.velocity.x) < 13)
+		if (Mathf.Abs (rb.velocity.x + THRUST) > 13 && rb.velocity.x / rb.velocity.x == 1) {
+		}
+		else 
 			rb.AddForce (vector * THRUST, forceMode);
 	}
 
