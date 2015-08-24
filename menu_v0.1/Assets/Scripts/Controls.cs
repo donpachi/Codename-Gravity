@@ -87,7 +87,7 @@ public class Controls : MonoBehaviour{
 
 	// Add force to the player
 	void addForce(Vector3 vector,ForceMode forceMode) {
-		if (Mathf.Abs (rb.velocity.x + THRUST) > 13 && rb.velocity.x / rb.velocity.x == 1) {
+		if (Mathf.Abs (rb.velocity.x + THRUST) > 13 && rb.velocity.x < vector.x * THRUST) {
 		}
 		else 
 			rb.AddForce (vector * THRUST, forceMode);
