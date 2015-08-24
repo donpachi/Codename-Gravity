@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Controls : MonoBehaviour {
+public class Controls : MonoBehaviour{
 
 	public float THRUST = 0.5f;
 	public float FRICTIONMODIFIER = -5f;
@@ -10,7 +10,13 @@ public class Controls : MonoBehaviour {
 	public float AccelerometerUpdateInterval = 1.0f / 60.0f;
 	public float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
 	private Vector3 lowPassValue = Vector3.zero;
-	
+	private Vector3 rightForce = new Vector3(-1, 0, 0);
+	private Vector3 leftForce = new Vector3(1, 0, 0);
+	private bool topRight = false;
+	private bool topLeft = false;
+	private bool bottomRight = false;
+	private bool bottomLeft = false;
+
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
@@ -22,14 +28,12 @@ public class Controls : MonoBehaviour {
 		float LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
 
 		// If right side of screen is touched
-		if ((Input.touchCount == 1 && Input.GetTouch (0).position.x >= Screen.currentResolution.width / 2) || Input.GetKey("d")) {
-			Vector3 right = new Vector3(1, 0, 0);
-			addForce(right, ForceMode.Impulse);
+		if (bottomRight || Input.GetKey("d")) {
+			addForce(rightForce, ForceMode.Impulse);
 		}
 		// If left side of screen is touched
-		if ((Input.touchCount == 1 && Input.GetTouch (0).position.x < Screen.currentResolution.width / 2) || Input.GetKey("a")) {
-			Vector3 left = new Vector3(-1, 0, 0);
-			addForce(left, ForceMode.Impulse);
+		if (bottomLeft || Input.GetKey("a")) {
+			addForce(leftForce, ForceMode.Impulse);
 		}
 
 		/*Vector3 forward = new Vector3(0,0,1); //always face along the z-plane // this can be used to rotate the player entity model KEEP THIS.
@@ -39,6 +43,39 @@ public class Controls : MonoBehaviour {
 
 		Physics.gravity = LowPassFilterAccelerometer (LowPassFilterFactor);
 
+	}
+
+	//Flag Handling for buttons
+	public void TopRightDown(){
+		topRight =! topRight;
+	}
+
+	public void TopRightUp(){
+		topRight =! topRight;
+	}
+
+	public void TopLeftDown(){
+		topLeft =! topLeft;
+	}
+	
+	public void TopLeftUp(){
+		topLeft =! topLeft;
+	}
+
+	public void BottomRightDown(){
+		bottomRight =! bottomRight;
+	}
+	
+	public void BottomRightUp(){
+		bottomRight =! bottomRight;
+	}
+
+	public void BottomLeftDown(){
+		bottomLeft =! bottomLeft;
+	}
+	
+	public void BottomLeftUp(){
+		bottomLeft =! bottomLeft;
 	}
 
 	Vector3 LowPassFilterAccelerometer(float filter){ 
