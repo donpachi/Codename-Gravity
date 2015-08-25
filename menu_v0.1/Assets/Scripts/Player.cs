@@ -4,7 +4,7 @@ using System.Collections;
 public class Player : MonoBehaviour {
 
 	// Use this for initialization
-	private bool alive = true;
+	public event Player OnPlayerDeath;
 
 	void Start () {
 	
@@ -19,17 +19,10 @@ public class Player : MonoBehaviour {
 
 	}
 
-	public bool getStatus() {
-		return alive;
-	}
-
-	public void setStatus(bool status) {
-		alive = status;
-	}
 
 	void OnCollisionEnter(Collision obj) {
 		if (obj.gameObject.tag == "Hazard") {
-			alive = false;
+			OnPlayerDeath();
 		}
 	}
 
