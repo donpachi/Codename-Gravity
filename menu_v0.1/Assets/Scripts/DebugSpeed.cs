@@ -11,6 +11,6 @@ public class DebugSpeed : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		GameObject.Find("/ControlCanvas/SpeedText").GetComponent<Text>().text = "Velocity X: " + GameObject.Find("Player").GetComponent<Rigidbody>().velocity.x;
+		GameObject.Find("/Canvas/SpeedText").GetComponent<Text>().text = "Velocity X: " + GameObject.Find("Player").GetComponent<Rigidbody>().velocity.x;
 	}
 }
