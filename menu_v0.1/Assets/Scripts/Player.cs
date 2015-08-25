@@ -3,10 +3,13 @@ using UnityEngine.Events;
 using System.Collections;
 using System;
 
+public delegate void PlayerDied();
+
 public class Player : MonoBehaviour {
 
 	// Use this for initialization
-	public event Player OnPlayerDeath;
+
+	public event PlayerDied OnPlayerDeath;
 
 	void Start () {
 	
