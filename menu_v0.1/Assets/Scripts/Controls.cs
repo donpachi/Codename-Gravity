@@ -31,8 +31,9 @@ public class Controls : MonoBehaviour{
 		lowPassValue = Input.acceleration;
 		Controller = GameObject.Find("ControlCanvas");
 		PauseScreen = GameObject.Find("PauseCanvas");
+		DeathScreen = GameObject.Find ("DeathCanvas");
 		PauseScreen.GetComponent<Canvas>().enabled = false;
-		GameObject.Find ("DeathCanvas").GetComponent<Canvas>().enabled = false;
+		DeathScreen.GetComponent<Canvas>().enabled = false;
 		//lowPassValue = Input.acceleration;
 	}
 	
@@ -49,7 +50,7 @@ public class Controls : MonoBehaviour{
 			addForce(leftForce, ForceMode.Impulse);
 		}
 
-		if (Input.GetKeyDown(KeyCode.Escape)) {
+		if (Input.GetKeyDown(KeyCode.Escape) && !DeathScreen.GetComponent<Canvas>().enabled) {
 			Time.timeScale = 0;
 			PauseScreen.GetComponent<Canvas>().enabled = true;
 			Controller.GetComponent<Canvas>().enabled = false;

@@ -7,6 +7,7 @@ public class StartGame : MonoBehaviour {
 	
 	public void LoadScene(int level)
 	{
+		Time.timeScale = 1;
 		Application.LoadLevel(level);
 	}
 }

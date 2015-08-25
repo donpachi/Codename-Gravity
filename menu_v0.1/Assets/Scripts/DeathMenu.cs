@@ -28,9 +28,9 @@ public class DeathMenu : MonoBehaviour {
 
 	public void Restart()
 	{
+		Time.timeScale = 1;
 		Death.GetComponent<Canvas>().enabled = false;
 		Controller.GetComponent<Canvas>().enabled = true;
-		Time.timeScale = 1;
 		Application.LoadLevel(Application.loadedLevel);
 	}
 	
