@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
+using System;
 
 public class Player : MonoBehaviour {
 
 	// Use this for initialization
-	public event Player OnPlayerDeath;
+	public delegate void DeathEventHandler(object sender, EventArgs e);
+	public event DeathEventHandler PlayerDied;
 
 	void Start () {
 	
@@ -22,8 +25,13 @@ public class Player : MonoBehaviour {
 
 	void OnCollisionEnter(Collision obj) {
 		if (obj.gameObject.tag == "Hazard") {
-			OnPlayerDeath();
+
 		}
+	}
+
+	protected virtual void OnDeath(EventArgs e) {
+		if (PlayerDied != null)
+			PlayerDied (this, e);
 	}
 
 
