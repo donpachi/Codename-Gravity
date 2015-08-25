@@ -8,13 +8,17 @@ public class Controls : MonoBehaviour{
 	public float FRICTIONMODIFIER = -5f;
 	public Rigidbody rb;
 
-	public float AccelerometerUpdateInterval = 1.0f / 60.0f;
-	public float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
+	//public float AccelerometerUpdateInterval = 1.0f / 60.0f;
+	//public float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
 	private Vector3 lowPassValue = Vector3.zero;
-	private Vector3 rightForce = new Vector3(-1, 0, 0);
-	private Vector3 leftForce = new Vector3(1, 0, 0);
 	private GameObject Controller;
 	private GameObject Pause;
+	private Vector3 rightForce = new Vector3(1, 0, 0);//change these perpendicular relative to gravity
+	private Vector3 leftForce = new Vector3(-1, 0, 0);// ** same as above
+	private Vector3 downGravity = new Vector3(0, -1, 0);
+	private Vector3 upGravity = new Vector3 (0, 1, 0);
+	private Vector3 leftGravity = new Vector3 (-1, 0, 0);
+	private Vector3 rightGravity = new Vector3 (1, 0, 0);
 	private bool topRight = false;
 	private bool topLeft = false;
 	private bool bottomRight = false;
@@ -26,11 +30,12 @@ public class Controls : MonoBehaviour{
 		lowPassValue = Input.acceleration;
 		Controller = GameObject.Find("ControlCanvas");
 		Pause = GameObject.Find("PauseCanvas");
+		//lowPassValue = Input.acceleration;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		float LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
+		//float LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
 
 		// If right side of screen is touched
 		if (bottomRight || Input.GetKey("d")) {
@@ -51,8 +56,20 @@ public class Controls : MonoBehaviour{
 		Vector3 up = LowPassFilterAccelerometer(LowPassFilterFactor) * -1.0f; //get the upwards facing vector opposite of gravity
 		Quaternion rotation = Quaternion.LookRotation (forward, up);
 		transform.rotation = rotation;*/
+		if (Screen.orientation == ScreenOrientation.Portrait) {
+			Physics.gravity = downGravity;
+		}
+		if (Screen.orientation == ScreenOrientation.PortraitUpsideDown) {
+			Physics.gravity = upGravity;
+		}
+		if (Screen.orientation == ScreenOrientation.LandscapeLeft) {
+			Physics.gravity = leftGravity;
+		}
+		if (Screen.orientation == ScreenOrientation.LandscapeRight) {
+			Physics.gravity = rightGravity;
+		}
 
-		Physics.gravity = LowPassFilterAccelerometer (LowPassFilterFactor);
+		//Physics.gravity = LowPassFilterAccelerometer (LowPassFilterFactor);
 
 	}
 
@@ -89,17 +106,15 @@ public class Controls : MonoBehaviour{
 		bottomLeft =! bottomLeft;
 	}
 
-	Vector3 LowPassFilterAccelerometer(float filter){ 
+	/*Vector3 LowPassFilterAccelerometer(float filter){ 
 		float xfilter = Mathf.Lerp (lowPassValue.x, Input.acceleration.x, filter);
 		float yfilter = Mathf.Lerp (lowPassValue.y, Input.acceleration.y, filter);
 		lowPassValue = new Vector3(xfilter, yfilter, 0f);
 		return lowPassValue;
-	}
+	}*/
 
-	// Add force to the player
-	void addForce(Vector3 vector,ForceMode forceMode) {
-		if (Mathf.Abs(rb.velocity.x) < 13)
-			rb.AddForce (vector * THRUST, forceMode);
+	public void addForce(Vector3 vect, ForceMode force){
+		rb.AddForce (vect, force);
 	}
 
 }
