@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Controls : MonoBehaviour{
@@ -12,6 +13,8 @@ public class Controls : MonoBehaviour{
 	private Vector3 lowPassValue = Vector3.zero;
 	private Vector3 rightForce = new Vector3(-1, 0, 0);
 	private Vector3 leftForce = new Vector3(1, 0, 0);
+	private GameObject Controller;
+	private GameObject Pause;
 	private bool topRight = false;
 	private bool topLeft = false;
 	private bool bottomRight = false;
@@ -21,6 +24,8 @@ public class Controls : MonoBehaviour{
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
 		lowPassValue = Input.acceleration;
+		Controller = GameObject.Find("ControlCanvas");
+		Pause = GameObject.Find("PauseCanvas");
 	}
 	
 	// Update is called once per frame
@@ -34,6 +39,12 @@ public class Controls : MonoBehaviour{
 		// If left side of screen is touched
 		if (bottomLeft || Input.GetKey("a")) {
 			addForce(leftForce, ForceMode.Impulse);
+		}
+
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			Time.timeScale = 0;
+			Pause.SetActive(true);
+			Controller.SetActive (false);
 		}
 
 		/*Vector3 forward = new Vector3(0,0,1); //always face along the z-plane // this can be used to rotate the player entity model KEEP THIS.
