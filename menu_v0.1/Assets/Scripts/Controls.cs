@@ -30,6 +30,7 @@ public class Controls : MonoBehaviour{
 		lowPassValue = Input.acceleration;
 		Controller = GameObject.Find("ControlCanvas");
 		Pause = GameObject.Find("PauseCanvas");
+		Pause.GetComponent<Canvas>().enabled = false;
 		//lowPassValue = Input.acceleration;
 	}
 	
@@ -48,8 +49,8 @@ public class Controls : MonoBehaviour{
 
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Time.timeScale = 0;
-			Pause.SetActive(true);
-			Controller.SetActive (false);
+			Pause.GetComponent<Canvas>().enabled = true;
+			Controller.GetComponent<Canvas>().enabled = false;
 		}
 
 		/*Vector3 forward = new Vector3(0,0,1); //always face along the z-plane // this can be used to rotate the player entity model KEEP THIS.

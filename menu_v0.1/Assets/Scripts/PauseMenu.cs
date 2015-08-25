@@ -9,10 +9,10 @@ public class PauseMenu : MonoBehaviour {
 	public void Continue()
 	{
 		Controller = GameObject.Find("ControlCanvas");
-		Pause = GameObject.Find("Pause");
+		Pause = GameObject.Find("PauseCanvas");
 		Time.timeScale = 1;
-		Pause.SetActive(false);
-		Controller.SetActive (true);
+		Pause.GetComponent<Canvas>().enabled = false;
+		Controller.GetComponent<Canvas>().enabled = true;
 	}
 
 	public void LoadMenu()
