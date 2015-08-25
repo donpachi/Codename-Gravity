@@ -11,6 +11,9 @@ public class GravityVortex : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		Vector3 playerPosition = player.GetComponent<Transform>().position;
+		Vector3 vortexPosition = this.GetComponent<Transform> ().position;
+
+		Debug.Log (playerPosition - vortexPosition);
 	}
 }
