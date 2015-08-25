@@ -12,7 +12,8 @@ public class Controls : MonoBehaviour{
 	//public float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
 	private Vector3 lowPassValue = Vector3.zero;
 	private GameObject Controller;
-	private GameObject Pause;
+	private GameObject PauseScreen;
+	private GameObject DeathScreen;
 	private Vector3 rightForce = new Vector3(1, 0, 0);//change these perpendicular relative to gravity
 	private Vector3 leftForce = new Vector3(-1, 0, 0);// ** same as above
 	private Vector3 downGravity = new Vector3(0, -1, 0);
@@ -29,8 +30,9 @@ public class Controls : MonoBehaviour{
 		rb = GetComponent<Rigidbody> ();
 		lowPassValue = Input.acceleration;
 		Controller = GameObject.Find("ControlCanvas");
-		Pause = GameObject.Find("PauseCanvas");
-		Pause.GetComponent<Canvas>().enabled = false;
+		PauseScreen = GameObject.Find("PauseCanvas");
+		PauseScreen.GetComponent<Canvas>().enabled = false;
+		GameObject.Find ("DeathCanvas").GetComponent<Canvas>().enabled = false;
 		//lowPassValue = Input.acceleration;
 	}
 	
@@ -49,7 +51,7 @@ public class Controls : MonoBehaviour{
 
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Time.timeScale = 0;
-			Pause.GetComponent<Canvas>().enabled = true;
+			PauseScreen.GetComponent<Canvas>().enabled = true;
 			Controller.GetComponent<Canvas>().enabled = false;
 		}
 
