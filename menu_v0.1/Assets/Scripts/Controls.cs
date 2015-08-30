@@ -7,6 +7,9 @@ public class Controls : MonoBehaviour{
 	public float THRUST = 0.5f;
 	public float FRICTIONMODIFIER = -5f;
 	public Rigidbody rb;
+	public float GRAVITYCONST = 9.81f;
+	public float perspectiveSpeed = 0.5f;
+	public float pinchSpeed = 0.5f;
 
 	//public float AccelerometerUpdateInterval = 1.0f / 60.0f;
 	//public float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
@@ -24,6 +27,8 @@ public class Controls : MonoBehaviour{
 	private bool topLeft = false;
 	private bool bottomRight = false;
 	private bool bottomLeft = false;
+
+
 
 	// Use this for initialization
 	void Start () {
@@ -61,20 +66,19 @@ public class Controls : MonoBehaviour{
 		Quaternion rotation = Quaternion.LookRotation (forward, up);
 		transform.rotation = rotation;*/
 		if (Screen.orientation == ScreenOrientation.Portrait) {
-			Physics.gravity = downGravity;
+			Physics.gravity = downGravity * GRAVITYCONST;
 		}
 		if (Screen.orientation == ScreenOrientation.PortraitUpsideDown) {
-			Physics.gravity = upGravity;
+			Physics.gravity = upGravity * GRAVITYCONST;
 		}
 		if (Screen.orientation == ScreenOrientation.LandscapeLeft) {
-			Physics.gravity = leftGravity;
+			Physics.gravity = leftGravity * GRAVITYCONST;
 		}
 		if (Screen.orientation == ScreenOrientation.LandscapeRight) {
-			Physics.gravity = rightGravity;
+			Physics.gravity = rightGravity * GRAVITYCONST;
 		}
 
 		//Physics.gravity = LowPassFilterAccelerometer (LowPassFilterFactor);
-
 	}
 
 	//Flag Handling for buttons
