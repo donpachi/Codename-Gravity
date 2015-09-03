@@ -6,7 +6,7 @@ public class Controls : MonoBehaviour{
 	
 	public float THRUST = 0.5f;
 	public float FRICTIONMODIFIER = -5f;
-	public Rigidbody rb;
+	public Rigidbody2D rb;
 	public float GRAVITYCONST = 9.81f;
 	public float perspectiveSpeed = 0.5f;
 	public float pinchSpeed = 0.5f;
@@ -17,10 +17,10 @@ public class Controls : MonoBehaviour{
 	private GameObject Controller;
 	private GameObject PauseScreen;
 	private GameObject DeathScreen;
-	private Vector3 rightForce = new Vector3(1, 0, 0);
-	private Vector3 leftForce = new Vector3(-1, 0, 0);
-	private Vector3 downForce = new Vector3(0, -1, 0);
-	private Vector3 upForce = new Vector3 (0, 1, 0);
+	private Vector3 rightForce = new Vector2(1, 0);
+	private Vector3 leftForce = new Vector2(-1, 0);
+	private Vector3 downForce = new Vector2(0, -1);
+	private Vector3 upForce = new Vector2 (0, 1);
 	private bool topRight = false;
 	private bool topLeft = false;
 	private bool bottomRight = false;
@@ -30,7 +30,7 @@ public class Controls : MonoBehaviour{
 	
 	// Use this for initialization
 	void Start () {
-		rb = GetComponent<Rigidbody> ();
+		rb = GetComponent<Rigidbody2D> ();
 		lowPassValue = Input.acceleration;
 		Controller = GameObject.Find("ControlCanvas");
 		PauseScreen = GameObject.Find("PauseCanvas");
@@ -46,11 +46,11 @@ public class Controls : MonoBehaviour{
 		
 		// If right side of screen is touched
 		if (bottomRight || Input.GetKey("d")) {
-			addForce(rightForce, ForceMode.Impulse);
+			addForce(rightForce, ForceMode2D.Impulse);
 		}
 		// If left side of screen is touched
 		if (bottomLeft || Input.GetKey("a")) {
-			addForce(leftForce, ForceMode.Impulse);
+			addForce(leftForce, ForceMode2D.Impulse);
 		}
 		
 		if (Input.GetKeyDown(KeyCode.Escape) && !DeathScreen.GetComponent<Canvas>().enabled) {
@@ -119,7 +119,7 @@ public class Controls : MonoBehaviour{
 		return lowPassValue;
 	}*/
 	
-	public void addForce(Vector3 vect, ForceMode force){
+	public void addForce(Vector2 vect, ForceMode2D force){
 		rb.AddForce (vect, force);
 	}
 	

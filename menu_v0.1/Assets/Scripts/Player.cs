@@ -25,7 +25,7 @@ public class Player : MonoBehaviour {
 	}
 
 
-	void OnCollisionEnter(Collision obj) {
+	void OnCollisionEnter2D(Collision2D obj) {
 		if (obj.gameObject.tag == "Hazard") {
 			if(OnPlayerDeath != null)
 			{
