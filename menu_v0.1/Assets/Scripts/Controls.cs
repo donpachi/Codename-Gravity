@@ -17,10 +17,10 @@ public class Controls : MonoBehaviour{
 	private GameObject Controller;
 	private GameObject PauseScreen;
 	private GameObject DeathScreen;
-	private Vector3 rightForce = new Vector2(1, 0);
-	private Vector3 leftForce = new Vector2(-1, 0);
-	private Vector3 downForce = new Vector2(0, -1);
-	private Vector3 upForce = new Vector2 (0, 1);
+	private Vector2 rightForce = new Vector2(1, 0);
+	private Vector2 leftForce = new Vector2(-1, 0);
+	private Vector2 downForce = new Vector2(0, -1);
+	private Vector2 upForce = new Vector2 (0, 1);
 	private bool topRight = false;
 	private bool topLeft = false;
 	private bool bottomRight = false;
@@ -64,16 +64,16 @@ public class Controls : MonoBehaviour{
 		Quaternion rotation = Quaternion.LookRotation (forward, up);
 		transform.rotation = rotation;*/
 		if (Input.deviceOrientation == DeviceOrientation.Portrait) {
-			Physics.gravity = downForce * GRAVITYCONST;
+			Physics2D.gravity = downForce * GRAVITYCONST;
 		}
 		if (Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown) {
-			Physics.gravity = upForce * GRAVITYCONST;
+			Physics2D.gravity = upForce * GRAVITYCONST;
 		}
 		if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft) {
-			Physics.gravity = leftForce * GRAVITYCONST;
+			Physics2D.gravity = leftForce * GRAVITYCONST;
 		}
 		if (Input.deviceOrientation == DeviceOrientation.LandscapeRight) {
-			Physics.gravity = rightForce * GRAVITYCONST;
+			Physics2D.gravity = rightForce * GRAVITYCONST;
 		}
 		
 		//Physics.gravity = LowPassFilterAccelerometer (LowPassFilterFactor);
