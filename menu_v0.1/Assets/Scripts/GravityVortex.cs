@@ -4,7 +4,7 @@ using System.Collections;
 public class GravityVortex : MonoBehaviour {
 	private GameObject player;
 	private float VORTEXDISTANCE = 3;
-	private float VORTEXFORCE = 5;
+	private float VORTEXFORCE = 20;
 
 	// Use this for initialization
 	void Start () {
