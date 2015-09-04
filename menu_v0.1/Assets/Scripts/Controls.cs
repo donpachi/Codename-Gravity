@@ -111,7 +111,13 @@ public class Controls : MonoBehaviour{
 	public void BottomLeftUp(){
 		bottomLeft = false;
 	}
-	
+
+	public void resetMovementFlags(){
+		topRight = false;
+		topLeft = false;
+		bottomRight = false;
+		bottomLeft = false;
+	}
 	/*Vector3 LowPassFilterAccelerometer(float filter){ 
 		float xfilter = Mathf.Lerp (lowPassValue.x, Input.acceleration.x, filter);
 		float yfilter = Mathf.Lerp (lowPassValue.y, Input.acceleration.y, filter);
