@@ -43,16 +43,16 @@ public class Controls : MonoBehaviour{
 	// Update is called once per frame
 	void Update () {
 		//float LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
-		
-		// If right side of screen is touched
-		if (bottomRight || Input.GetKey("d")) {
-			addForce(rightForce, ForceMode2D.Impulse);
+		if (Input.touchCount == 1) {
+			// If right side of screen is touched
+			if (bottomRight || Input.GetKey ("d")) {
+				addForce (rightForce, ForceMode2D.Impulse);
+			}
+			// If left side of screen is touched
+			if (bottomLeft || Input.GetKey ("a")) {
+				addForce (leftForce, ForceMode2D.Impulse);
+			}
 		}
-		// If left side of screen is touched
-		if (bottomLeft || Input.GetKey("a")) {
-			addForce(leftForce, ForceMode2D.Impulse);
-		}
-		
 		if (Input.GetKeyDown(KeyCode.Escape) && !DeathScreen.GetComponent<Canvas>().enabled) {
 			Time.timeScale = 0;
 			PauseScreen.GetComponent<Canvas>().enabled = true;
@@ -77,6 +77,9 @@ public class Controls : MonoBehaviour{
 		}
 		
 		//Physics.gravity = LowPassFilterAccelerometer (LowPassFilterFactor);
+		if (Input.touchCount == 0) {
+			resetMovementFlags ();
+		}
 	}
 	
 	//Flag Handling for buttons
