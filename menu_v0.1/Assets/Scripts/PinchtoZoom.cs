@@ -4,15 +4,19 @@ using System.Collections;
 //following code taken from the unity3d tutorial website
 
 
-public class PinchZoom : MonoBehaviour
+public class PinchtoZoom : MonoBehaviour
 {
-	public float perspectiveZoomSpeed = 0.5f;        // The rate of change of the field of view in perspective mode.
-	public float orthoZoomSpeed = 0.5f;        // The rate of change of the orthographic size in orthographic mode.
+	public float orthoZoomSpeed = 0.1f;        // The rate of change of the orthographic size in orthographic mode.
+	public float maxOrthoSize = 15f;
+	private Camera playerCam;
+	private float defaultOrthoSize;
+	private float noTouchZoomSpeed = 0.3f;
 	
 	void Start(){
-
+		playerCam = GetComponent<Camera> ();
+		defaultOrthoSize = playerCam.orthographicSize;
 	}
-
+	
 	void Update()
 	{
 		// If there are two touches on the device...
@@ -33,23 +37,23 @@ public class PinchZoom : MonoBehaviour
 			// Find the difference in the distances between each frame.
 			float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 			
-			// If the camera is orthographic...
-			if (GetComponent<Camera>().orthographic)
-			{
-				// ... change the orthographic size based on the change in distance between the touches.
-				GetComponent<Camera>().orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;
-				
-				// Make sure the orthographic size never drops below zero.
-				GetComponent<Camera>().orthographicSize = Mathf.Max(GetComponent<Camera>().orthographicSize, 0.1f);
-			}
-			else
-			{
-				// Otherwise change the field of view based on the change in distance between the touches.
-				GetComponent<Camera>().fieldOfView += deltaMagnitudeDiff * perspectiveZoomSpeed;
-				
-				// Clamp the field of view to make sure it's between 0 and 180.
-				GetComponent<Camera>().fieldOfView = Mathf.Clamp(GetComponent<Camera>().fieldOfView, 0.1f, 179.9f);
+			
+			// ... change the orthographic size based on the change in distance between the touches.
+			playerCam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;
+			
+			// Make sure the orthographic size never drops below default.
+			playerCam.orthographicSize = Mathf.Max(playerCam.orthographicSize, defaultOrthoSize);
+			// make sure the orthographic size stays within limits.
+			playerCam.orthographicSize = Mathf.Min(playerCam.orthographicSize, maxOrthoSize);
+			
+		}
+		
+		if (Input.touchCount < 2 && playerCam.orthographicSize > defaultOrthoSize) {
+			playerCam.orthographicSize -= noTouchZoomSpeed;
+			if (playerCam.orthographicSize < (defaultOrthoSize + noTouchZoomSpeed)){
+				playerCam.orthographicSize -= (playerCam.orthographicSize - defaultOrthoSize);
 			}
 		}
+		
 	}
 }
