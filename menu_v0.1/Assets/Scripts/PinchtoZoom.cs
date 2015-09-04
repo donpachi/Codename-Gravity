@@ -50,6 +50,9 @@ public class PinchtoZoom : MonoBehaviour
 		
 		if (Input.touchCount < 2 && playerCam.orthographicSize > defaultOrthoSize) {
 			playerCam.orthographicSize -= noTouchZoomSpeed;
+			if (playerCam.orthographicSize < (defaultOrthoSize + noTouchZoomSpeed)){
+				playerCam.orthographicSize -= (playerCam.orthographicSize - defaultOrthoSize);
+			}
 		}
 		
 	}
