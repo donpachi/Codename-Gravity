@@ -2,13 +2,15 @@
 using System.Collections;
 
 public class GravityCannon : MonoBehaviour {
-	
+
+	private GameObject player;
 	private Rigidbody2D playerBody;
 	private bool activated = false;
 	private float LAUNCHFORCE = 5f;
 	
 	// Use this for initialization
 	void Start () {
+		player = GameObject.FindGameObjectWithTag("Player");
 	}
 	
 	// Update is called once per frame
@@ -31,6 +33,7 @@ public class GravityCannon : MonoBehaviour {
 				                               1);
 			playerBody.GetComponent<Transform>().position = (newPosition);
 			playerBody.Sleep();
+			player.GetComponent<Controls>().resetMovementFlags();
 		}
 	}
 }
