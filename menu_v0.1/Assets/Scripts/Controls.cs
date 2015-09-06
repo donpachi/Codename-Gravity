@@ -25,8 +25,7 @@ public class Controls : MonoBehaviour{
 	private bool bottomRight = false;
 	private bool bottomLeft = false;
 	private float MAXSPEED = 10f;
-	private bool 
-	
+	private bool inAir;
 	
 	
 	// Use this for initialization
@@ -64,8 +63,11 @@ public class Controls : MonoBehaviour{
 					addForce (rightForce, ForceMode2D.Impulse);
 				}
 				// If left side of screen is touched
-				if (bottomLeft && rb.velocity.magnitude < MAXSPEED) {
+				else if (bottomLeft && rb.velocity.magnitude < MAXSPEED) {
 					addForce (leftForce, ForceMode2D.Impulse);
+				}
+				else if (rb.velocity.magnitude >= MAXSPEED){
+
 				}
 			}
 		}
@@ -77,7 +79,7 @@ public class Controls : MonoBehaviour{
 					addForce (rightForce, ForceMode2D.Impulse);
 				}
 				// If left side of screen is touched
-				if (topLeft && rb.velocity.magnitude < MAXSPEED) {
+				else if (topLeft && rb.velocity.magnitude < MAXSPEED) {
 					addForce (leftForce, ForceMode2D.Impulse);
 				}
 			}
@@ -90,7 +92,7 @@ public class Controls : MonoBehaviour{
 					addForce (downForce, ForceMode2D.Impulse);
 				}
 				// If left side of screen is touched
-				if (topLeft && rb.velocity.magnitude < MAXSPEED) {
+				else if (topLeft && rb.velocity.magnitude < MAXSPEED) {
 					addForce (upForce, ForceMode2D.Impulse);
 				}
 			}
@@ -103,7 +105,7 @@ public class Controls : MonoBehaviour{
 					addForce (downForce, ForceMode2D.Impulse);
 				}
 				// If left side of screen is touched
-				if (topRight && rb.velocity.magnitude < MAXSPEED) {
+				else if (topRight && rb.velocity.magnitude < MAXSPEED) {
 					addForce (upForce, ForceMode2D.Impulse);
 				}
 			}
