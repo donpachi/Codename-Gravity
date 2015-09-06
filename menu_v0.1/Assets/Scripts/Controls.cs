@@ -4,9 +4,8 @@ using System.Collections;
 
 public class Controls : MonoBehaviour{
 	public float THRUST = 0.5f;
-	public float FRICTIONMODIFIER = -5f;
 	public Rigidbody2D rb;
-	public float GRAVITYCONST = 9.81f;
+	public float gravityModifier = 25f;
 	public float perspectiveSpeed = 0.5f;
 	public float pinchSpeed = 0.5f;
 	public bool launched = false;
@@ -25,6 +24,8 @@ public class Controls : MonoBehaviour{
 	private bool topLeft = false;
 	private bool bottomRight = false;
 	private bool bottomLeft = false;
+	private float MAXSPEED = 10f;
+	private bool 
 	
 	
 	
@@ -43,16 +44,7 @@ public class Controls : MonoBehaviour{
 	// Update is called once per frame
 	void Update () {
 		//float LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
-		if (Input.touchCount == 1) {
-			// If right side of screen is touched
-			if (bottomRight || Input.GetKey ("d")) {
-				addForce (rightForce, ForceMode2D.Impulse);
-			}
-			// If left side of screen is touched
-			if (bottomLeft || Input.GetKey ("a")) {
-				addForce (leftForce, ForceMode2D.Impulse);
-			}
-		}
+
 		if (Input.GetKeyDown(KeyCode.Escape) && !DeathScreen.GetComponent<Canvas>().enabled) {
 			Time.timeScale = 0;
 			PauseScreen.GetComponent<Canvas>().enabled = true;
@@ -63,17 +55,58 @@ public class Controls : MonoBehaviour{
 		Vector3 up = LowPassFilterAccelerometer(LowPassFilterFactor) * -1.0f; //get the upwards facing vector opposite of gravity
 		Quaternion rotation = Quaternion.LookRotation (forward, up);
 		transform.rotation = rotation;*/
+
 		if (Input.deviceOrientation == DeviceOrientation.Portrait) {
-			Physics2D.gravity = downForce * GRAVITYCONST;
+			Physics2D.gravity = downForce * gravityModifier;
+			if (Input.touchCount == 1) {
+				// If right side of screen is touched
+				if (bottomRight && rb.velocity.magnitude < MAXSPEED) {
+					addForce (rightForce, ForceMode2D.Impulse);
+				}
+				// If left side of screen is touched
+				if (bottomLeft && rb.velocity.magnitude < MAXSPEED) {
+					addForce (leftForce, ForceMode2D.Impulse);
+				}
+			}
 		}
 		if (Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown) {
-			Physics2D.gravity = upForce * GRAVITYCONST;
+			Physics2D.gravity = upForce * gravityModifier;
+			if (Input.touchCount == 1) {
+				// If right side of screen is touched
+				if (topRight && rb.velocity.magnitude < MAXSPEED) {
+					addForce (rightForce, ForceMode2D.Impulse);
+				}
+				// If left side of screen is touched
+				if (topLeft && rb.velocity.magnitude < MAXSPEED) {
+					addForce (leftForce, ForceMode2D.Impulse);
+				}
+			}
 		}
 		if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft) {
-			Physics2D.gravity = leftForce * GRAVITYCONST;
+			Physics2D.gravity = leftForce * gravityModifier;
+			if (Input.touchCount == 1) {
+				// If right side of screen is touched
+				if (bottomLeft && rb.velocity.magnitude < MAXSPEED) {
+					addForce (downForce, ForceMode2D.Impulse);
+				}
+				// If left side of screen is touched
+				if (topLeft && rb.velocity.magnitude < MAXSPEED) {
+					addForce (upForce, ForceMode2D.Impulse);
+				}
+			}
 		}
-		if (Input.deviceOrientation == DeviceOrientation.LandscapeRight) {
-			Physics2D.gravity = rightForce * GRAVITYCONST;
+		if (Input.deviceOrientation == DeviceOrientation.LandscapeRight) { 
+			Physics2D.gravity = rightForce * gravityModifier;
+			if (Input.touchCount == 1) {
+				// If right side of screen is touched
+				if (bottomRight && rb.velocity.magnitude < MAXSPEED) {
+					addForce (downForce, ForceMode2D.Impulse);
+				}
+				// If left side of screen is touched
+				if (topRight && rb.velocity.magnitude < MAXSPEED) {
+					addForce (upForce, ForceMode2D.Impulse);
+				}
+			}
 		}
 		
 		//Physics.gravity = LowPassFilterAccelerometer (LowPassFilterFactor);

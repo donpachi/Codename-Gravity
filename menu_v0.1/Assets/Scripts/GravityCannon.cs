@@ -21,7 +21,7 @@ public class GravityCannon : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		print (playerBody.IsSleeping ());
+
 	}
 
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
