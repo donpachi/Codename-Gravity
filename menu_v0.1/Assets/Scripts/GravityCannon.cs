@@ -11,7 +11,7 @@ public class GravityCannon : MonoBehaviour {
 	public GameObject[] buttons;
 
 	private bool activated = false;
-	private float LAUNCHFORCE = 5f;
+	private float LAUNCHFORCE = 5.0f;
 	
 	// Use this for initialization
 	void Start () {
@@ -21,16 +21,16 @@ public class GravityCannon : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+		print (playerBody.IsSleeping ());
 	}
 
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
 		playerBody = collisionInfo.rigidbody;
 		if (collisionInfo.gameObject.tag == "Player") {
-			Vector3 newPosition = new Vector3 (this.transform.position.x + 2.5f,
-			                                   this.transform.position.y + 1.0f,
-				                               1);
-			playerBody.GetComponent<Transform>().position = (newPosition);
+			Vector3 hiddenPosition = new Vector3 (this.transform.position.x + 2.5f,
+			                                      this.transform.position.y + 1.0f,
+			                                      1);
+			playerBody.GetComponent<Transform>().position = (hiddenPosition);
 			player.GetComponent<Controls>().resetMovementFlags();
 			playerBody.gravityScale = 0f;
 			playerBody.Sleep();
@@ -38,27 +38,35 @@ public class GravityCannon : MonoBehaviour {
 			activated = true;
 			anim.SetBool("activated", true);
 
-			for (int i = 0; i < buttons.Length - 1; i++) {
+			for (int i = 0; i < buttons.Length - 1; i++)
 				buttons[i].SetActive(false);
-			}
-			buttons[buttons.Length - 1].SetActive(true);
+
+			Invoke("EnableFireButton", 1.0f);
 		}
 	}
 
+	public void EnableFireButton() {
+		buttons[buttons.Length - 1].SetActive(true);
+	}
+
 	public void FireDown() {
-		Vector3 newPosition = new Vector3 (cannonTip.transform.position.x,
+		Vector2 direction;
+		Vector3 firePosition = new Vector3 (cannonTip.transform.position.x,
 		                                   cannonTip.transform.position.y,
 		                                   -2);
-		playerBody.GetComponent<Transform>().position = (newPosition);
+		playerBody.GetComponent<Transform>().position = (firePosition);
 		playerBody.WakeUp();
-		playerBody.gravityScale = 1f;
+
+		player.GetComponent<Controls>().LaunchStatusOn();
+		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform> ().position).normalized;
+		player.GetComponent<Controls>().addForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
 
 		activated = false;
 		anim.SetBool("activated", false);
 		
-		for (int i = 0; i < buttons.Length - 1; i++) {
+		for (int i = 0; i < buttons.Length - 1; i++)
 			buttons[i].SetActive(true);
-		}
+
 		buttons[buttons.Length - 1].SetActive(false);
 
 	}

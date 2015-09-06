@@ -3,13 +3,13 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class Controls : MonoBehaviour{
-	
 	public float THRUST = 0.5f;
 	public float FRICTIONMODIFIER = -5f;
 	public Rigidbody2D rb;
 	public float GRAVITYCONST = 9.81f;
 	public float perspectiveSpeed = 0.5f;
 	public float pinchSpeed = 0.5f;
+	public bool launched = false;
 	
 	//public float AccelerometerUpdateInterval = 1.0f / 60.0f;
 	//public float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
@@ -120,6 +120,17 @@ public class Controls : MonoBehaviour{
 		topLeft = false;
 		bottomRight = false;
 		bottomLeft = false;
+	}
+
+	public void LaunchStatusOn(){
+		launched = true;
+	}
+
+	void OnCollisionEnter2D(Collision2D collisionInfo) {
+		if (launched == true) {
+			rb.gravityScale = 1.0f;
+			launched = false;
+		}
 	}
 	/*Vector3 LowPassFilterAccelerometer(float filter){ 
 		float xfilter = Mathf.Lerp (lowPassValue.x, Input.acceleration.x, filter);
