@@ -25,10 +25,10 @@ public class GravityCannon : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
-		playerBody = collisionInfo.rigidbody;
 		if (collisionInfo.gameObject.tag == "Player") {
-			Vector3 hiddenPosition = new Vector3 (this.transform.position.x + 2.5f,
-			                                      this.transform.position.y + 1.0f,
+			playerBody = collisionInfo.rigidbody;
+			Vector3 hiddenPosition = new Vector3 (cannonTip.transform.position.x,
+			                                      cannonTip.transform.position.y,
 			                                      1);
 			playerBody.GetComponent<Transform>().position = (hiddenPosition);
 			player.GetComponent<Controls>().resetMovementFlags();
@@ -40,8 +40,6 @@ public class GravityCannon : MonoBehaviour {
 
 			for (int i = 0; i < buttons.Length - 1; i++)
 				buttons[i].SetActive(false);
-
-			Invoke("EnableFireButton", 1.0f);
 		}
 	}
 

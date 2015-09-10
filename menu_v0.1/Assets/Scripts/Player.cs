@@ -33,6 +33,12 @@ public class Player : MonoBehaviour {
 			}
 		}
 	}
-	
 
+	public void TriggerDeath()
+	{
+		if(OnPlayerDeath != null)
+		{
+			OnPlayerDeath();
+		}
+	}
 }
