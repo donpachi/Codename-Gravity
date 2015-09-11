@@ -4,9 +4,9 @@ using System.Collections;
 
 public class GravityCannon : MonoBehaviour {
 
-	private Animator anim;
 	private GameObject player;
 	private Rigidbody2D playerBody;
+	public Animator anim;
 	public GameObject cannonTip;
 	public GameObject[] buttons;
 
@@ -16,7 +16,6 @@ public class GravityCannon : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		player = GameObject.FindGameObjectWithTag("Player");
-		anim = GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame

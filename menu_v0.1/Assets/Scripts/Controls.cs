@@ -5,13 +5,13 @@ using System.Collections;
 public class Controls : MonoBehaviour{
 	public float THRUST = 0.5f;
 	public Rigidbody2D rb;
-	public float gravityValue = 25f;
+	public float gravityModifier = 25f;
 	public float perspectiveSpeed = 0.5f;
 	public float pinchSpeed = 0.5f;
 	public bool launched = false;
-
-	private float AccelerometerUpdateInterval = 1.0f / 60.0f;
-	private float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
+	
+	//public float AccelerometerUpdateInterval = 1.0f / 60.0f;
+	//public float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
 	private Vector3 lowPassValue = Vector3.zero;
 	private GameObject Controller;
 	private GameObject PauseScreen;
@@ -20,15 +20,12 @@ public class Controls : MonoBehaviour{
 	private Vector2 leftForce = new Vector2(-1, 0);
 	private Vector2 downForce = new Vector2(0, -1);
 	private Vector2 upForce = new Vector2 (0, 1);
-    private Vector2 jumpForce;
 	private bool topRight = false;
 	private bool topLeft = false;
 	private bool bottomRight = false;
 	private bool bottomLeft = false;
 	private float MAXSPEED = 10f;
-    private int jumpCount;
 	private bool inAir;
-    private float LowPassFilterFactor;
 	
 	
 	// Use this for initialization
@@ -40,14 +37,12 @@ public class Controls : MonoBehaviour{
 		DeathScreen = GameObject.Find ("DeathCanvas");
 		PauseScreen.GetComponent<Canvas>().enabled = false;
 		DeathScreen.GetComponent<Canvas>().enabled = false;
-        jumpCount = 0;
-		lowPassValue = Input.acceleration;
-        LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
+		//lowPassValue = Input.acceleration;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		//float LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
 
 		if (Input.GetKeyDown(KeyCode.Escape) && !DeathScreen.GetComponent<Canvas>().enabled) {
 			Time.timeScale = 0;
@@ -60,117 +55,63 @@ public class Controls : MonoBehaviour{
 		Quaternion rotation = Quaternion.LookRotation (forward, up);
 		transform.rotation = rotation;*/
 
-        bool left;
-        bool right;
-
 		if (Input.deviceOrientation == DeviceOrientation.Portrait) {
-            left = bottomLeft;
-            right = bottomRight;
-            jumpForce = upForce;
-            if (Input.touchCount == 1)
-            {
-                // If right side of screen is touched
-                if (right && rb.velocity.magnitude < MAXSPEED)
-                {
-                    addForce(rightForce, ForceMode2D.Impulse);
-                }
-                // If left side of screen is touched
-                else if (left && rb.velocity.magnitude < MAXSPEED)
-                {
-                    addForce(leftForce, ForceMode2D.Impulse);
-                }
-            }
+			Physics2D.gravity = downForce * gravityModifier;
+			if (Input.touchCount == 1) {
+				// If right side of screen is touched
+				if (bottomRight && rb.velocity.magnitude < MAXSPEED) {
+					addForce (rightForce, ForceMode2D.Impulse);
+				}
+				// If left side of screen is touched
+				else if (bottomLeft && rb.velocity.magnitude < MAXSPEED) {
+					addForce (leftForce, ForceMode2D.Impulse);
+				}
+				else if (rb.velocity.magnitude >= MAXSPEED){
+
+				}
+			}
 		}
-
-
 		if (Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown) {
-            left = topLeft;
-            right = topRight;
-            jumpForce = downForce;
-            if (Input.touchCount == 1)
-            {
-                // If right side of screen is touched
-                if (right && rb.velocity.magnitude < MAXSPEED)
-                {
-                    addForce(leftForce, ForceMode2D.Impulse);
-                }
-                // If left side of screen is touched
-                else if (left && rb.velocity.magnitude < MAXSPEED)
-                {
-                    addForce(rightForce, ForceMode2D.Impulse);
-                }
-            }
+			Physics2D.gravity = upForce * gravityModifier;
+			if (Input.touchCount == 1) {
+				// If right side of screen is touched
+				if (topRight && rb.velocity.magnitude < MAXSPEED) {
+					addForce (rightForce, ForceMode2D.Impulse);
+				}
+				// If left side of screen is touched
+				else if (topLeft && rb.velocity.magnitude < MAXSPEED) {
+					addForce (leftForce, ForceMode2D.Impulse);
+				}
+			}
 		}
-
-
 		if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft) {
-            left = topLeft;
-            right = bottomLeft;
-            jumpForce = rightForce;
-            if (Input.touchCount == 1)
-            {
-                // If right side of screen is touched
-                if (right && rb.velocity.magnitude < MAXSPEED)
-                {
-                    addForce(downForce, ForceMode2D.Impulse);
-                }
-                // If left side of screen is touched
-                else if (left && rb.velocity.magnitude < MAXSPEED)
-                {
-                    addForce(upForce, ForceMode2D.Impulse);
-                }
-            }
+			Physics2D.gravity = leftForce * gravityModifier;
+			if (Input.touchCount == 1) {
+				// If right side of screen is touched
+				if (bottomLeft && rb.velocity.magnitude < MAXSPEED) {
+					addForce (downForce, ForceMode2D.Impulse);
+				}
+				// If left side of screen is touched
+				else if (topLeft && rb.velocity.magnitude < MAXSPEED) {
+					addForce (upForce, ForceMode2D.Impulse);
+				}
+			}
 		}
-
-
 		if (Input.deviceOrientation == DeviceOrientation.LandscapeRight) { 
-            left = bottomRight;
-            right = topRight;
-            jumpForce = leftForce;
-            if (Input.touchCount == 1)
-            {
-                // If right side of screen is touched
-                if (right && rb.velocity.magnitude < MAXSPEED)
-                {
-                    addForce(upForce, ForceMode2D.Impulse);
-                }
-                // If left side of screen is touched
-                else if (left && rb.velocity.magnitude < MAXSPEED)
-                {
-                    addForce(downForce, ForceMode2D.Impulse);
-                }
-            }
+			Physics2D.gravity = rightForce * gravityModifier;
+			if (Input.touchCount == 1) {
+				// If right side of screen is touched
+				if (bottomRight && rb.velocity.magnitude < MAXSPEED) {
+					addForce (downForce, ForceMode2D.Impulse);
+				}
+				// If left side of screen is touched
+				else if (topRight && rb.velocity.magnitude < MAXSPEED) {
+					addForce (upForce, ForceMode2D.Impulse);
+				}
+			}
 		}
-        
-        Vector2 gravVector = LowPassFilterAccelerometer(LowPassFilterFactor);
-        if (Mathf.Abs(gravVector.x) > Mathf.Abs(gravVector.y))
-        {
-            if (gravVector.x < 0)
-            {
-                gravVector.x = -1;
-                gravVector.y = 0;
-            }
-            else
-            {
-                gravVector.x = 1;
-                gravVector.y = 0;
-            }
-
-        }
-        else if (Mathf.Abs(gravVector.x) <= Mathf.Abs(gravVector.y))
-        {
-            if (gravVector.y < 0)
-            {
-                gravVector.y = -1;
-                gravVector.x = 0;
-            }
-            else
-            {
-                gravVector.y = 1;
-                gravVector.x = 0;
-            }
-        }
-        Physics2D.gravity = gravVector * gravityValue;
+		
+		//Physics.gravity = LowPassFilterAccelerometer (LowPassFilterFactor);
 		if (Input.touchCount == 0) {
 			resetMovementFlags ();
 		}
@@ -226,13 +167,12 @@ public class Controls : MonoBehaviour{
 			launched = false;
 		}
 	}
-
-	Vector2 LowPassFilterAccelerometer(float filter){ 
+	/*Vector3 LowPassFilterAccelerometer(float filter){ 
 		float xfilter = Mathf.Lerp (lowPassValue.x, Input.acceleration.x, filter);
 		float yfilter = Mathf.Lerp (lowPassValue.y, Input.acceleration.y, filter);
-		lowPassValue = new Vector2(xfilter, yfilter);
+		lowPassValue = new Vector3(xfilter, yfilter, 0f);
 		return lowPassValue;
-	}
+	}*/
 	
 	public void addForce(Vector2 vect, ForceMode2D force){
 		rb.AddForce (vect, force);
