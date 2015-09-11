@@ -27,7 +27,7 @@ public class Player : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D collisionEvent) {
     
-        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > 15) {
+        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > 30) {
 			if(OnPlayerDeath != null)
 			{
 				OnPlayerDeath();
