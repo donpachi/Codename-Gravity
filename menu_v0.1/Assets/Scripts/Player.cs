@@ -7,6 +7,7 @@ public delegate void PlayerDied();
 
 public class Player : MonoBehaviour {
 
+
 	// Use this for initialization
 
 	public event PlayerDied OnPlayerDeath;
@@ -17,7 +18,6 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
 	}
 
 	void addForce(Vector3 vector) {
@@ -25,13 +25,16 @@ public class Player : MonoBehaviour {
 	}
 
 
-	void OnCollisionEnter2D(Collision2D obj) {
-		if (obj.gameObject.tag == "Hazard") {
+	void OnCollisionEnter2D(Collision2D collisionEvent) {
+    
+        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > 15) {
 			if(OnPlayerDeath != null)
 			{
 				OnPlayerDeath();
 			}
 		}
+
+        
 	}
 	
 
