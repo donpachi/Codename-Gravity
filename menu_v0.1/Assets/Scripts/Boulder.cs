@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Boulder : MonoBehaviour {
@@ -19,7 +19,6 @@ public class Boulder : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
-		print(boulderSpeed.ToString());
 		if (collisionInfo.gameObject.tag == "Player") {
 			playerBody = collisionInfo.rigidbody;
 			if (boulderSpeed > 6.0f && collisionInfo.relativeVelocity.magnitude > 6.0f) {
