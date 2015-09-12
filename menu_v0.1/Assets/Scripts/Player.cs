@@ -5,12 +5,14 @@ using System;
 
 public delegate void PlayerDied();
 
+
 public class Player : MonoBehaviour {
 
 
 	// Use this for initialization
 
 	public event PlayerDied OnPlayerDeath;
+    public float deathSpeed = 25;
 
 	void Start () {
 	
@@ -26,8 +28,9 @@ public class Player : MonoBehaviour {
 
 
 	void OnCollisionEnter2D(Collision2D collisionEvent) {
-    
-        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > 25) {
+
+        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed)
+        {
 			if(OnPlayerDeath != null)
 			{
 				OnPlayerDeath();
