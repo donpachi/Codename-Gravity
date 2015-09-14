@@ -73,7 +73,7 @@ public class Controls : MonoBehaviour
                     {
                         if (suctionCup)
                             addForce(suctionRight, ForceMode2D.Impulse);
-                        else 
+                        else
                             addForce(rightForce, ForceMode2D.Impulse);
                     }
                     // If left side of screen is touched
