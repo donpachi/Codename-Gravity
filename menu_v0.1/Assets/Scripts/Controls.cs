@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 
+public delegate void OnOrientationChange();
+
 public class Controls : MonoBehaviour
 {
     public float THRUST = 0.5f;
@@ -11,6 +13,7 @@ public class Controls : MonoBehaviour
     public float pinchSpeed = 0.5f;
     public bool launched = false;
     public bool suctionCup = false;
+	public event OnOrientationChange OrientationChange;
 
     private float AccelerometerUpdateInterval = 1.0f / 60.0f;
     private float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
@@ -35,6 +38,9 @@ public class Controls : MonoBehaviour
     private bool doubleJumpEnable;
     private float LowPassFilterFactor;
     private float jumpForce = 5;
+	private DeviceOrientation previousOrientation;
+	private DeviceOrientation currentOrientation;
+
 
 
     // Use this for initialization
@@ -51,14 +57,19 @@ public class Controls : MonoBehaviour
         lowPassValue = Input.acceleration;
         LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
         doubleJumpEnable = true;
+		Physics.gravity = downForce * gravityValue;
+		previousOrientation = Input.deviceOrientation;
     }
 
     void FixedUpdate()
     {
         bool left;
         bool right;
-
-        if (Input.deviceOrientation == DeviceOrientation.Portrait)
+		currentOrientation = Input.deviceOrientation;
+		if (currentOrientation != previousOrientation) {
+			OnOrientationChange();
+		}
+        if (currentOrientation == DeviceOrientation.Portrait)
         {
             left = bottomLeft;
             right = bottomRight;
@@ -104,7 +115,7 @@ public class Controls : MonoBehaviour
         }
 
 
-        if (Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown)
+        if (currentOrientation == DeviceOrientation.PortraitUpsideDown)
         {
             left = topLeft;
             right = topRight;
@@ -147,7 +158,7 @@ public class Controls : MonoBehaviour
         }
 
 
-        if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft)
+        if (currentOrientation == DeviceOrientation.LandscapeLeft)
         {
             left = topLeft;
             right = bottomLeft;
@@ -190,7 +201,7 @@ public class Controls : MonoBehaviour
         }
 
 
-        if (Input.deviceOrientation == DeviceOrientation.LandscapeRight)
+        if (currentOrientation == DeviceOrientation.LandscapeRight)
         {
             left = bottomRight;
             right = topRight;
