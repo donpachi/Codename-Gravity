@@ -10,6 +10,7 @@ public class Controls : MonoBehaviour
     public float perspectiveSpeed = 0.5f;
     public float pinchSpeed = 0.5f;
     public bool launched = false;
+    public bool suctionCup = false;
 
     private float AccelerometerUpdateInterval = 1.0f / 60.0f;
     private float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
@@ -21,6 +22,8 @@ public class Controls : MonoBehaviour
     private Vector2 leftForce = new Vector2(-1, 0);
     private Vector2 downForce = new Vector2(0, -1);
     private Vector2 upForce = new Vector2(0, 1);
+    private Vector2 suctionLeft;
+    private Vector2 suctionRight;
     private Vector2 jumpVect;
     private bool topRight = false;
     private bool topLeft = false;
@@ -68,12 +71,18 @@ public class Controls : MonoBehaviour
                     // If right side of screen is touched
                     if (right && rb.velocity.magnitude < MAXSPEED)
                     {
-                        addForce(rightForce, ForceMode2D.Impulse);
+                        if (suctionCup)
+                            addForce(suctionRight, ForceMode2D.Impulse);
+                        else
+                            addForce(rightForce, ForceMode2D.Impulse);
                     }
                     // If left side of screen is touched
                     else if (left && rb.velocity.magnitude < MAXSPEED)
                     {
-                        addForce(leftForce, ForceMode2D.Impulse);
+                        if (suctionCup)
+                            addForce(suctionLeft, ForceMode2D.Impulse);
+                        else
+                            addForce(leftForce, ForceMode2D.Impulse);
                     }
                 }
                 if (movementTouch.phase == TouchPhase.Moved && doubleJumpEnable)
@@ -106,12 +115,18 @@ public class Controls : MonoBehaviour
                 // If right side of screen is touched
                 if (right && rb.velocity.magnitude < MAXSPEED)
                 {
-                    addForce(rightForce, ForceMode2D.Impulse);
+                    if (suctionCup)
+                        addForce(suctionRight, ForceMode2D.Impulse);
+                    else
+                        addForce(rightForce, ForceMode2D.Impulse);
                 }
                 // If left side of screen is touched
                 else if (left && rb.velocity.magnitude < MAXSPEED)
                 {
-                    addForce(leftForce, ForceMode2D.Impulse);
+                    if (suctionCup)
+                        addForce(suctionLeft, ForceMode2D.Impulse);
+                    else
+                        addForce(leftForce, ForceMode2D.Impulse);
                 }
                 if (movementTouch.phase == TouchPhase.Moved && doubleJumpEnable)
                 {
@@ -143,12 +158,18 @@ public class Controls : MonoBehaviour
                 // If right side of screen is touched
                 if (right && rb.velocity.magnitude < MAXSPEED)
                 {
-                    addForce(downForce, ForceMode2D.Impulse);
+                    if (suctionCup)
+                        addForce(suctionRight, ForceMode2D.Impulse);
+                    else
+                        addForce(downForce, ForceMode2D.Impulse);
                 }
                 // If left side of screen is touched
                 else if (left && rb.velocity.magnitude < MAXSPEED)
                 {
-                    addForce(upForce, ForceMode2D.Impulse);
+                    if (suctionCup)
+                        addForce(suctionLeft, ForceMode2D.Impulse);
+                    else
+                        addForce(upForce, ForceMode2D.Impulse);
                 }
                 if (movementTouch.phase == TouchPhase.Moved && doubleJumpEnable)
                 {
@@ -180,12 +201,18 @@ public class Controls : MonoBehaviour
                 // If right side of screen is touched
                 if (right && rb.velocity.magnitude < MAXSPEED)
                 {
-                    addForce(upForce, ForceMode2D.Impulse);
+                    if (suctionCup)
+                        addForce(suctionRight, ForceMode2D.Impulse);
+                    else
+                        addForce(upForce, ForceMode2D.Impulse);
                 }
                 // If left side of screen is touched
                 else if (left && rb.velocity.magnitude < MAXSPEED)
                 {
-                    addForce(downForce, ForceMode2D.Impulse);
+                    if (suctionCup)
+                        addForce(suctionRight, ForceMode2D.Impulse);
+                    else
+                        addForce(downForce, ForceMode2D.Impulse);
                 }
                 if (movementTouch.phase == TouchPhase.Moved && doubleJumpEnable)
                 {
@@ -243,8 +270,6 @@ public class Controls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-
         if (Input.GetKeyDown(KeyCode.Escape) && !DeathScreen.GetComponent<Canvas>().enabled)
         {
             Time.timeScale = 0;
@@ -311,6 +336,36 @@ public class Controls : MonoBehaviour
     public void LaunchStatusOn()
     {
         launched = true;
+    }
+
+    public void SuctionStatusOn()
+    {
+        suctionCup = true;
+
+        if (Input.deviceOrientation == DeviceOrientation.Portrait || Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown)
+        {
+            suctionRight = rightForce;
+            suctionLeft = leftForce;
+        }
+
+        if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft)
+        {
+            suctionRight = downForce;
+            suctionLeft = upForce;
+        }
+
+        if (Input.deviceOrientation == DeviceOrientation.LandscapeRight)
+        {
+            suctionRight = upForce;
+            suctionLeft = downForce;
+        }
+    }
+
+    public void SuctionStatusEnd()
+    {
+        suctionCup = false;
+        this.GetComponent<ConstantForce2D>().relativeForce = new Vector2(0, 0);
+        rb.gravityScale = 1.0f;
     }
 
     void OnCollisionEnter2D(Collision2D collisionInfo)

@@ -53,6 +53,7 @@ public class GravityCannon : MonoBehaviour {
 		                                   -2);
 		playerBody.GetComponent<Transform>().position = (firePosition);
 		playerBody.WakeUp();
+        playerBody.gravityScale = 1.0f;
 
 		player.GetComponent<Controls>().LaunchStatusOn();
 		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform> ().position).normalized;
