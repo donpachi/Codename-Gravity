@@ -338,7 +338,7 @@ public class Controls : MonoBehaviour
         launched = true;
     }
 
-    public void SuctionCupOn()
+    public void SuctionStatusOn()
     {
         suctionCup = true;
 
@@ -364,6 +364,8 @@ public class Controls : MonoBehaviour
     public void SuctionStatusEnd()
     {
         suctionCup = false;
+        this.GetComponent<ConstantForce2D>().relativeForce = new Vector2(0, 0);
+        rb.gravityScale = 1.0f;
     }
 
     void OnCollisionEnter2D(Collision2D collisionInfo)
