@@ -40,6 +40,17 @@ public class Player : MonoBehaviour {
         
 	}
 
+    void OnTriggerEnter2D(Collider2D colliderEvent)
+    {
+        if (colliderEvent.gameObject.tag == "SpikeTop")
+        {
+            if (OnPlayerDeath != null)
+            {
+                OnPlayerDeath();
+            }
+        }
+    }
+
 	public void TriggerDeath()
 	{
 		if(OnPlayerDeath != null)

@@ -5,6 +5,7 @@ public class Boulder : MonoBehaviour {
 
 	public Rigidbody2D boulderRB2D;
 	public float boulderSpeed;
+    public float BoulderDeathSpeed;
 	private Rigidbody2D playerBody;
 	private GameObject player;
 
@@ -21,7 +22,8 @@ public class Boulder : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
 		if (collisionInfo.gameObject.tag == "Player") {
 			playerBody = collisionInfo.rigidbody;
-			if (boulderSpeed > 6.0f && collisionInfo.relativeVelocity.magnitude > 6.0f) {
+            if (boulderSpeed > BoulderDeathSpeed && collisionInfo.relativeVelocity.magnitude > BoulderDeathSpeed)
+            {
 				player.GetComponent<Player>().TriggerDeath();
 			}
 		}
