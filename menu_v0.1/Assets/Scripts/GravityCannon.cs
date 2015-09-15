@@ -10,7 +10,6 @@ public class GravityCannon : MonoBehaviour {
 	public GameObject cannonTip;
 	public GameObject[] buttons;
 
-	private bool activated = false;
 	private float LAUNCHFORCE = 5.0f;
 	
 	// Use this for initialization
@@ -34,7 +33,6 @@ public class GravityCannon : MonoBehaviour {
 			playerBody.gravityScale = 0f;
 			playerBody.Sleep();
 
-			activated = true;
 			anim.SetBool("activated", true);
 
 			for (int i = 0; i < buttons.Length - 1; i++)
@@ -58,7 +56,6 @@ public class GravityCannon : MonoBehaviour {
 		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform> ().position).normalized;
 		player.GetComponent<Controls>().addForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
 
-		activated = false;
 		anim.SetBool("activated", false);
 		
 		for (int i = 0; i < buttons.Length - 1; i++)
