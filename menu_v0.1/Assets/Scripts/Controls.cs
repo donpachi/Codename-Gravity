@@ -231,7 +231,10 @@ public class Controls : MonoBehaviour
 	{
 		currentOrientation = Input.deviceOrientation;
 		if (currentOrientation != previousOrientation) {
+<<<<<<< HEAD
+=======
 			gravityOnCooldown = false;
+>>>>>>> 737e42866d695734d5955b6e2a767d53960a90e9
 			OrientationChange();
 		}
 		previousOrientation = currentOrientation;
