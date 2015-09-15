@@ -24,8 +24,8 @@ public class PlayerJump : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        //if (!inAir)
-        //{
+        if (!inAir)
+        {
             if (Input.touchCount > 0)
             {
                 Touch touch = Input.GetTouch(0);
@@ -53,7 +53,7 @@ public class PlayerJump : MonoBehaviour {
                     fingerMoved = false;
                 }
             }
-        //}
+        }
 	}
 
     //Ignores invalid directions
