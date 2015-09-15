@@ -17,9 +17,7 @@ public class DynamicParticle : MonoBehaviour {
 	public GameObject currentImage; //The image is for the metaball shader for the effect, it is onle seen by the liquids camera.
 	public GameObject[] particleImages; //We need multiple particle images to reduce drawcalls
 	float GAS_FLOATABILITY=7.0f; //How fast does the gas goes up?
-	float particleLifeTime=3.0f,startTime;//How much time before the particle scalesdown and dies
-    float scale = 1;
-    int frameCount = 0;
+	float particleLifeTime=3.0f,startTime;//How much time before the particle scalesdown and dies	
 
 	void Awake(){ 
 		if (currentState == STATES.NONE)
@@ -58,32 +56,18 @@ public class DynamicParticle : MonoBehaviour {
 	void Update () {
 		switch(currentState){
 			case STATES.WATER: //Water and lava got the same behaviour
-				MovementAnimation();
-                if (frameCount % 6 == 0)
-                {
-                    Vector2 particleScale = Vector2.one;
-                    float random = Random.value;
-                    if (random > 0.5 && scale < 2)
-                        scale = scale + 0.1f;
-                    else if (random <= 0.5 && scale > 0.5)
-                        scale = scale - 0.1f;
-                    particleScale.x = scale;
-                    particleScale.y = scale;
-                    transform.localScale = particleScale;
-                    
-                }
-                frameCount++;
-				//ScaleDown();
+				MovementAnimation(); 
+				ScaleDown();
 			break;
 			case STATES.LAVA:
 				MovementAnimation();
-				//ScaleDown();
+				ScaleDown();
 			break;
 			case STATES.GAS:
 				if(GetComponent<Rigidbody2D>().velocity.y<50){ //Limits the speed in Y to avoid reaching mach 7 in speed
 					GetComponent<Rigidbody2D>().AddForce (new Vector2(0,GAS_FLOATABILITY)); // Gas always goes upwards
 				}
-				//ScaleDown();
+				ScaleDown();
 			break;
 
 		}	
