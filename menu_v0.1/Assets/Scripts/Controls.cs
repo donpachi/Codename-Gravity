@@ -67,7 +67,7 @@ public class Controls : MonoBehaviour
         bool right;
 		currentOrientation = Input.deviceOrientation;
 		if (currentOrientation != previousOrientation) {
-			OnOrientationChange();
+			//OnOrientationChange();
 		}
         if (currentOrientation == DeviceOrientation.Portrait)
         {
