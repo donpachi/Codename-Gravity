@@ -20,8 +20,6 @@ public class Controls : MonoBehaviour
 	private float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
 	private Vector3 lowPassValue = Vector3.zero;
 	private GameObject Controller;
-	private GameObject PauseScreen;
-	private GameObject DeathScreen;
 	private Vector2 rightForce = new Vector2(1, 0);
 	private Vector2 leftForce = new Vector2(-1, 0);
 	private Vector2 downForce = new Vector2(0, -1);
@@ -50,10 +48,6 @@ public class Controls : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 		lowPassValue = Input.acceleration;
 		Controller = GameObject.Find("ControlCanvas");
-		PauseScreen = GameObject.Find("PauseCanvas");
-		DeathScreen = GameObject.Find("DeathCanvas");
-		PauseScreen.GetComponent<Canvas>().enabled = false;
-		DeathScreen.GetComponent<Canvas>().enabled = false;
 		lowPassValue = Input.acceleration;
 		LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
 		Physics.gravity = downForce * gravityValue;
@@ -236,12 +230,6 @@ public class Controls : MonoBehaviour
 		}
 		previousOrientation = currentOrientation;
 		
-		if (Input.GetKeyDown(KeyCode.Escape) && !DeathScreen.GetComponent<Canvas>().enabled)
-		{
-			Time.timeScale = 0;
-			PauseScreen.GetComponent<Canvas>().enabled = true;
-			Controller.GetComponent<Canvas>().enabled = false;
-		}
 		
 		/*Vector3 forward = new Vector3(0,0,1); //always face along the z-plane // this can be used to rotate the player entity model KEEP THIS.
         Vector3 up = LowPassFilterAccelerometer(LowPassFilterFactor) * -1.0f; //get the upwards facing vector opposite of gravity

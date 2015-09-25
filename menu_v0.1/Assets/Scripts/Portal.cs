@@ -5,7 +5,7 @@ public class Portal : MonoBehaviour {
 
     public GameObject linkedPortal;
     public float transitionSpeed;
-    public float distanceThreshold = 3.0f;
+    public float distanceThreshold;
 
     private Rigidbody2D playerBody;
     private Vector3 playerVelocity;
@@ -23,7 +23,7 @@ public class Portal : MonoBehaviour {
         if (inTransition)
         {
             distanceToPortal = (linkedPortalPosition - playerBody.transform.position).magnitude;
-            if (distanceToPortal < distanceThreshold)
+            if (distanceToPortal <= distanceThreshold)
             {
                 playerBody.transform.position = new Vector3(    linkedPortalPosition.x,
                                                                 linkedPortalPosition.y,
@@ -37,7 +37,7 @@ public class Portal : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D collisionInfo)
     {
-        if (collisionInfo.gameObject.tag == "Player")
+        if (collisionInfo.gameObject.tag != "Water")
         {
             playerBody = collisionInfo.rigidbody;
             playerVelocity = collisionInfo.relativeVelocity;

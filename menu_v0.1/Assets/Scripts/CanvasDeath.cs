@@ -1,15 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DeathMenu : MonoBehaviour {
+public class CanvasDeath : MonoBehaviour {
 
 	private GameObject Controller;
-	private GameObject Death;
 
 	void Start()
 	{
 		Player character = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-		Death = GameObject.Find("DeathCanvas");
+        this.GetComponent<Canvas>().enabled = false;
 		Controller = GameObject.Find("ControlCanvas");
 		AddListener (character);
 	}
@@ -22,14 +21,14 @@ public class DeathMenu : MonoBehaviour {
 	private void HandleOnPlayerDeath()
 	{
 		Time.timeScale = 0;
-		Death.GetComponent<Canvas>().enabled = true;
+		this.GetComponent<Canvas>().enabled = true;
 		Controller.GetComponent<Canvas>().enabled = false;
 	}
 
 	public void Restart()
 	{
 		Time.timeScale = 1;
-		Death.GetComponent<Canvas>().enabled = false;
+		this.GetComponent<Canvas>().enabled = false;
 		Controller.GetComponent<Canvas>().enabled = true;
 		Application.LoadLevel(Application.loadedLevel);
 	}
