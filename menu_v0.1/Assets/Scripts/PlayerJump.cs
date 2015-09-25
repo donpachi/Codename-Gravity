@@ -29,8 +29,8 @@ public class PlayerJump : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         playerBody = GetComponent<Rigidbody2D>();
-        doubleJumpMeter = GameObject.Find("JumpBar");
-        doubleJumpMeter.SetActive(false);
+        //doubleJumpMeter = GameObject.Find("JumpBar");
+        //doubleJumpMeter.SetActive(false);
         doubleJumpDecValue = 1.0f / doubleJumpLimit;
         jumpLimit = 1;
         jumpCount = 0;
@@ -78,43 +78,43 @@ public class PlayerJump : MonoBehaviour {
             if (Input.touchCount > 0)
             {
                 Touch touch = Input.GetTouch(0);
-                Debug.Log("Phase: " + touch.phase + "Jump Count" + jumpCount);
                 switch (touch.phase)
                 {
                     case TouchPhase.Began:
                         startPos = touch.position;
-                        Debug.Log("Start Pos: " + startPos);
                         break;
 
                     case TouchPhase.Moved:
-                        //direction = touch.position - startPos;
+                        direction = touch.position - startPos;
                         fingerMoved = true;
                         break;
 
                     case TouchPhase.Ended:
                         direction = touch.position - startPos;
                         fingerLifted = true;
-                        Debug.Log("End Pos: " + touch.position);
-                        Debug.Log("Direction: " + touch.position);
                         break;
                 }
-                Debug.Log("Lifted: " + fingerLifted + "Moved: " + fingerMoved);
-                if (fingerLifted && fingerMoved)
-                {
-                    if (jumpLimit != 1)
-                        doubleJumpCheck();
-                    jump();
-                    fingerLifted = false;
-                    fingerMoved = false;
-                }
+                jumpCheck();
             }
+        }
+    }
+
+    void jumpCheck()
+    {
+        Debug.Log("FingerLifted: " + fingerLifted + " --- FingerMoved: " + fingerMoved);
+        if (fingerLifted && fingerMoved)
+        {
+            if (jumpLimit != 1)
+                doubleJumpCheck();
+            jump();
+            fingerLifted = false;
+            fingerMoved = false;
         }
     }
 
     //Ignores invalid directions
     void jump()
     {
-        Debug.Log("Current Orientation: " + currentOrientation);
         if (Input.deviceOrientation == DeviceOrientation.Portrait || Input.deviceOrientation == DeviceOrientation.LandscapeLeft
             || Input.deviceOrientation == DeviceOrientation.LandscapeRight || Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown)
         {currentOrientation = Input.deviceOrientation;}
@@ -125,7 +125,8 @@ public class PlayerJump : MonoBehaviour {
             if (direction.y > DeadZone)
             {
                 playerBody.AddForce(upVector * jumpForce);
-                //Debug.Log("StartPosition: " + startPos + "/nDirection: " + direction);
+                ++jumpCount;
+                Debug.Log("**JUMPED Portrait**");
             }
         }
         else if (currentOrientation == DeviceOrientation.LandscapeRight)
@@ -134,6 +135,8 @@ public class PlayerJump : MonoBehaviour {
             if (direction.x < -DeadZone)
             {
                 playerBody.AddForce(leftVector * jumpForce);
+                ++jumpCount;
+                Debug.Log("**JUMPED LandscapeRight**");
             }
         }
         else if (currentOrientation == DeviceOrientation.PortraitUpsideDown)
@@ -142,6 +145,8 @@ public class PlayerJump : MonoBehaviour {
             if (direction.y < -DeadZone)
             {
                 playerBody.AddForce(downVector * jumpForce);
+                ++jumpCount;
+                Debug.Log("**JUMPED PortraitUpsideDown**");
             }
         }
         else if (currentOrientation == DeviceOrientation.LandscapeLeft)
@@ -150,9 +155,10 @@ public class PlayerJump : MonoBehaviour {
             if (direction.x > DeadZone)
             {
                 playerBody.AddForce(rightVector * jumpForce);
+                ++jumpCount;
+                Debug.Log("**JUMPED LandscapeLeft**");
             }
         }
-        ++jumpCount;
     }
 
     void doubleJumpInit()

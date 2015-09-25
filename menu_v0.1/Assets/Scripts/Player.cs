@@ -8,18 +8,29 @@ public delegate void PlayerDied();
 
 public class Player : MonoBehaviour {
 
+    private Rigidbody2D playerRigidBody;
+    private LayerMask wallMask;
 
 	// Use this for initialization
 
 	public event PlayerDied OnPlayerDeath;
     public float deathSpeed = 25;
+    public bool inAir;
 
 	void Start () {
-	
+        playerRigidBody = GetComponent<Rigidbody2D>();
+        wallMask = 1 << LayerMask.NameToLayer("Walls");
+        inAir = false;
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	
+	void FixedUpdate () {
+        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, Vector2.down, 1, wallMask);
+
+        if (groundCheckRay.collider != null)
+            inAir = true;
+        else
+            inAir = false;
 	}
 
 	void addForce(Vector3 vector) {
