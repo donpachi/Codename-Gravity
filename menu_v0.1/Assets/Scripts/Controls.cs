@@ -6,357 +6,263 @@ public delegate void OnOrientationChange();
 
 public class Controls : MonoBehaviour
 {
-	public float THRUST = 0.5f;
-	public Rigidbody2D rb;
-	public float gravityValue = 25f;
-	public float perspectiveSpeed = 0.5f;
-	public float pinchSpeed = 0.5f;
-	public bool launched = false;
-	public bool suctionCup = false;
-	public float GRAVITYCOOLDOWN = 5.0f;
-	public event OnOrientationChange OrientationChange;
-	
-	private float AccelerometerUpdateInterval = 1.0f / 60.0f;
-	private float LowPassKernalWidthInSeconds = 0.1f;		//greater the value, the slower the acceleration will converge to the current input sampled *taken from unity docs*
-	private Vector3 lowPassValue = Vector3.zero;
-	private GameObject Controller;
-	private Vector2 rightForce = new Vector2(1, 0);
-	private Vector2 leftForce = new Vector2(-1, 0);
-	private Vector2 downForce = new Vector2(0, -1);
-	private Vector2 upForce = new Vector2(0, 1);
-	private Vector2 suctionLeft;
-	private Vector2 suctionRight;
-	private bool topRight = false;
-	private bool topLeft = false;
-	private bool bottomRight = false;
-	private bool bottomLeft = false;
-	private float MAXSPEED = 10f;
-	private int jumpCount;
-	private bool inAir;
-	private float LowPassFilterFactor;
-	private float jumpForce = 5;
-	private DeviceOrientation previousOrientation;
-	private DeviceOrientation currentOrientation;
-	private bool gravityOnCooldown;
-	private float elapsedTime;
-	
-	
-	
-	// Use this for initialization
-	void Start()
-	{
-		rb = GetComponent<Rigidbody2D>();
-		lowPassValue = Input.acceleration;
-		Controller = GameObject.Find("ControlCanvas");
-		lowPassValue = Input.acceleration;
-		LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds; //modifiable;
-		Physics.gravity = downForce * gravityValue;
-		previousOrientation = Input.deviceOrientation;
-		gravityOnCooldown = true;
-		elapsedTime = 0;
-	}
-	
-	void FixedUpdate()
-	{
-		bool left;
-		bool right;
-		
-		
-		if ((currentOrientation == DeviceOrientation.Portrait && !gravityOnCooldown)
-		    || (previousOrientation == DeviceOrientation.Portrait && gravityOnCooldown))
-		{
-			left = bottomLeft;
-			right = bottomRight;
-			if (Input.touchCount == 1)
-			{
-				Touch movementTouch = Input.GetTouch(0);
-				if (movementTouch.phase == TouchPhase.Stationary)
-				{
-					// If right side of screen is touched
-					if (right && rb.velocity.magnitude < MAXSPEED)
-					{
-						if (suctionCup)
-							addForce(suctionRight, ForceMode2D.Impulse);
-						else
-							addForce(rightForce, ForceMode2D.Impulse);
-					}
-					// If left side of screen is touched
-					else if (left && rb.velocity.magnitude < MAXSPEED)
-					{
-						if (suctionCup)
-							addForce(suctionLeft, ForceMode2D.Impulse);
-						else
-							addForce(leftForce, ForceMode2D.Impulse);
-					}
-				}
-			}
-		}
-		
-		
-		if ((currentOrientation == DeviceOrientation.PortraitUpsideDown && !gravityOnCooldown)
-		    || (previousOrientation == DeviceOrientation.PortraitUpsideDown && gravityOnCooldown))
-		{
-			left = topLeft;
-			right = topRight;
-			if (Input.touchCount == 1)
-			{
-				Touch movementTouch = Input.GetTouch(0);
-				// If right side of screen is touched
-				if (right && rb.velocity.magnitude < MAXSPEED)
-				{
-					if (suctionCup)
-						addForce(suctionRight, ForceMode2D.Impulse);
-					else
-						addForce(rightForce, ForceMode2D.Impulse);
-				}
-				// If left side of screen is touched
-				else if (left && rb.velocity.magnitude < MAXSPEED)
-				{
-					if (suctionCup)
-						addForce(suctionLeft, ForceMode2D.Impulse);
-					else
-						addForce(leftForce, ForceMode2D.Impulse);
-				}
-			}
-		}
-		
-		
-		if ((currentOrientation == DeviceOrientation.LandscapeLeft && !gravityOnCooldown) 
-		    || (previousOrientation == DeviceOrientation.LandscapeLeft && gravityOnCooldown))
-		{
-			left = topLeft;
-			right = bottomLeft;
-			if (Input.touchCount == 1)
-			{
-				Touch movementTouch = Input.GetTouch(0);
-				// If right side of screen is touched
-				if (right && rb.velocity.magnitude < MAXSPEED)
-				{
-					if (suctionCup)
-						addForce(suctionRight, ForceMode2D.Impulse);
-					else
-						addForce(downForce, ForceMode2D.Impulse);
-				}
-				// If left side of screen is touched
-				else if (left && rb.velocity.magnitude < MAXSPEED)
-				{
-					if (suctionCup)
-						addForce(suctionLeft, ForceMode2D.Impulse);
-					else
-						addForce(upForce, ForceMode2D.Impulse);
-				}
-			}
-		}
-		
-		
-		if ((currentOrientation == DeviceOrientation.LandscapeRight && !gravityOnCooldown)
-		    || (previousOrientation == DeviceOrientation.LandscapeRight && gravityOnCooldown))
-		{
-			left = bottomRight;
-			right = topRight;
-			if (Input.touchCount == 1)
-			{
-				Touch movementTouch = Input.GetTouch(0);
-				// If right side of screen is touched
-				if (right && rb.velocity.magnitude < MAXSPEED)
-				{
-					if (suctionCup)
-						addForce(suctionRight, ForceMode2D.Impulse);
-					else
-						addForce(upForce, ForceMode2D.Impulse);
-				}
-				// If left side of screen is touched
-				else if (left && rb.velocity.magnitude < MAXSPEED)
-				{
-					if (suctionCup)
-						addForce(suctionRight, ForceMode2D.Impulse);
-					else
-						addForce(downForce, ForceMode2D.Impulse);
-				}
-			}
-		}
-		
-		if (!gravityOnCooldown) {
-			elapsedTime += Time.deltaTime;
-			if (elapsedTime >= GRAVITYCOOLDOWN){
-				gravityOnCooldown = true;
-				elapsedTime = 0;
-			}
-		}
-		
-		Vector2 gravVector = LowPassFilterAccelerometer(LowPassFilterFactor);
-		if (Mathf.Abs(gravVector.x) > Mathf.Abs(gravVector.y))
-		{
-			if (gravVector.x < 0)
-			{
-				gravVector.x = -1;
-				gravVector.y = 0;
-			}
-			else
-			{
-				gravVector.x = 1;
-				gravVector.y = 0;
-			}
-			
-		}
-		else if (Mathf.Abs(gravVector.x) <= Mathf.Abs(gravVector.y))
-		{
-			if (gravVector.y < 0)
-			{
-				gravVector.y = -1;
-				gravVector.x = 0;
-			}
-			else
-			{
-				gravVector.y = 1;
-				gravVector.x = 0;
-			}
-		}
-		
-		Physics2D.gravity = gravVector * gravityValue;
-		if (Input.touchCount == 0)
-		{
-			resetMovementFlags();
-		}
-	}
-	
-	// Update is called once per frame
-	void Update()
-	{
-		currentOrientation = Input.deviceOrientation;
-		if (currentOrientation != previousOrientation) {
-			gravityOnCooldown = false;
-			//OrientationChange();
-		}
-		previousOrientation = currentOrientation;
-		
-		
-		/*Vector3 forward = new Vector3(0,0,1); //always face along the z-plane // this can be used to rotate the player entity model KEEP THIS.
-        Vector3 up = LowPassFilterAccelerometer(LowPassFilterFactor) * -1.0f; //get the upwards facing vector opposite of gravity
-        Quaternion rotation = Quaternion.LookRotation (forward, up);
-        transform.rotation = rotation;*/
-		
-	}
-	
-	//Flag Handling for buttons
-	public void TopRightDown()
-	{
-		topRight = true;
-	}
-	
-	public void TopRightUp()
-	{
-		topRight = false;
-	}
-	
-	public void TopLeftDown()
-	{
-		topLeft = true;
-	}
-	
-	public void TopLeftUp()
-	{
-		topLeft = false;
-	}
-	
-	public void BottomRightDown()
-	{
-		bottomRight = true;
-	}
-	
-	public void BottomRightUp()
-	{
-		bottomRight = false;
-	}
-	
-	public void BottomLeftDown()
-	{
-		bottomLeft = true;
-	}
-	
-	public void BottomLeftUp()
-	{
-		bottomLeft = false;
-	}
-	
-	public void resetMovementFlags()
-	{
-		topRight = false;
-		topLeft = false;
-		bottomRight = false;
-		bottomLeft = false;
-	}
-	
-	public void LaunchStatusOn()
-	{
-		launched = true;
-	}
-	
-	public void SuctionStatusOn()
-	{
-		suctionCup = true;
-		
-		if (Input.deviceOrientation == DeviceOrientation.Portrait || Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown)
-		{
-			suctionRight = rightForce;
-			suctionLeft = leftForce;
-		}
-		
-		if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft)
-		{
-			suctionRight = downForce;
-			suctionLeft = upForce;
-		}
-		
-		if (Input.deviceOrientation == DeviceOrientation.LandscapeRight)
-		{
-			suctionRight = upForce;
-			suctionLeft = downForce;
-		}
-	}
-	
-	public void SuctionStatusEnd()
-	{
-		suctionCup = false;
-		this.GetComponent<ConstantForce2D>().relativeForce = new Vector2(0, 0);
-		rb.gravityScale = 1.0f;
-	}
-	
-	void OnCollisionEnter2D(Collision2D collisionInfo)
-	{
-		if (launched == true)
-		{
-			rb.gravityScale = 1.0f;
-			launched = false;
-		}
-		if (collisionInfo.gameObject.tag == "Wall")
-		{
-			inAir = false;
-		}
-	}
-	void OnCollisionStay2D(Collision2D collisionInfo)
-	{
-	}
-	
-	void OnCollisionLeave2D(Collision2D collisionInfo)
-	{
-		if (collisionInfo.gameObject.tag == "Wall")
-		{
-			inAir = true;
-		}
-	}
-	
-	Vector2 LowPassFilterAccelerometer(float filter)
-	{
-		float xfilter = Mathf.Lerp(lowPassValue.x, Input.acceleration.x, filter);
-		float yfilter = Mathf.Lerp(lowPassValue.y, Input.acceleration.y, filter);
-		lowPassValue = new Vector2(xfilter, yfilter);
-		return lowPassValue;
-	}
-	
-	public void addForce(Vector2 vect, ForceMode2D force)
-	{
-		rb.AddForce(vect, force);
-	}
-	
+    public float THRUST = 0.5f;
+    public Rigidbody2D playerBody;
+    public float GRAVITYVALUE = 25f;
+    public float GRAVITYCOOLDOWN = 5f;
+    public float MAXSPEED = 10f;
+    public bool launched = false;
+
+    private float AccelerometerUpdateInterval = 1.0f / 60.0f;
+    private float LowPassKernalWidthInSeconds = 0.1f;
+    private Vector3 lowPassValue = Vector3.zero;
+    private Vector2 rightForce = new Vector2(1, 0);
+    private Vector2 leftForce = new Vector2(-1, 0);
+    private Vector2 downForce = new Vector2(0, -1);
+    private Vector2 upForce = new Vector2(0, 1);
+    private Vector2 savedGravityState;
+    private bool topRight, topLeft, bottomRight, bottomLeft = false;
+    private bool inAir, gravityOnCooldown, topSpeedReached;
+    private float LowPassFilterFactor, elapsedTime;
+    /* gravity Orientation states as follows
+    * 0 - Portrait
+    * 1 - Landscape Left
+    * 2 - Landscape Right
+    * 3 - Portrait Upside Down
+    */
+    private char gravityOrientation;
+    private static Vector2 gravVector;
+
+
+    // Use this for initialization
+    void Start()
+    {
+        elapsedTime = 0;
+        playerBody = GetComponent<Rigidbody2D>();
+        lowPassValue = Input.acceleration;
+        LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds;
+        gravityOnCooldown = false;
+        topSpeedReached = false;
+        elapsedTime = 0;
+        gravityOrientation = '0';
+        savedGravityState = downForce;
+        Physics2D.gravity = downForce * GRAVITYVALUE;
+        gravityOnCooldown = true;
+        elapsedTime = 4.0f;
+    }
+
+    private void filterAccelerometerValues(Vector2 filteredVector)
+    {
+        if (Mathf.Abs(filteredVector.x) > Mathf.Abs(filteredVector.y))
+        {
+            if (filteredVector.x < 0)
+            {
+                gravVector.x = -1;
+                gravVector.y = 0;
+            }
+            else
+            {
+                gravVector.x = 1;
+                gravVector.y = 0;
+            }
+        }
+        else if (Mathf.Abs(filteredVector.x) <= Mathf.Abs(filteredVector.y))
+        {
+            if (filteredVector.y < 0)
+            {
+                gravVector.y = -1;
+                gravVector.x = 0;
+            }
+            else
+            {
+                gravVector.y = 1;
+                gravVector.x = 0;
+            }
+        }
+    }
+
+    private void updateGravity()
+    {
+        savedGravityState = gravVector;                     //save the current gravity state right before changing to allow for comparison for when elapsed time > gravity cooldown time
+        Physics2D.gravity = gravVector * GRAVITYVALUE;      //set new gravity values according to the accelerometer values of the phone
+    }
+
+    // called once per physics clock cycle
+    void FixedUpdate()
+    {
+
+        if (gravVector == downForce)
+            gravityOrientation = 'P';           //'P' portrait
+        else if (gravVector == rightForce)
+            gravityOrientation = 'L';           //'L' landscape left
+        else if (gravVector == leftForce)
+            gravityOrientation = 'R';           //'R' landscape right
+        else if (gravVector == upForce)
+            gravityOrientation = 'U';           //'U' portrait upside down
+
+        bool left, right;
+
+        if (playerBody.velocity.magnitude < MAXSPEED)
+            topSpeedReached = false;
+        else
+            topSpeedReached = true;
+
+        Touch myTouch = Input.GetTouch(0);
+        if (Input.touchCount == 1)
+        {
+            switch (gravityOrientation)
+            {
+                case 'P':                       // portrait mode
+                    left = bottomLeft;
+                    right = bottomRight;
+                    if (left && !topSpeedReached)
+                        addForce(leftForce * THRUST, ForceMode2D.Impulse);
+                    else if (right && !topSpeedReached)
+                        addForce(rightForce * THRUST, ForceMode2D.Impulse);
+                    break;
+                case 'L':                       // Landscape left
+                    left = topLeft;
+                    right = bottomLeft;
+                    if (left && !topSpeedReached)
+                        addForce(upForce * THRUST, ForceMode2D.Impulse);
+                    else if (right && !topSpeedReached)
+                        addForce(downForce * THRUST, ForceMode2D.Impulse);
+                    break;
+                case 'R':                       // Landscape Right
+                    left = bottomRight;
+                    right = topRight;
+                    if (left && !topSpeedReached)
+                        addForce(downForce * THRUST, ForceMode2D.Impulse);
+                    else if (right && !topSpeedReached)
+                        addForce(upForce * THRUST, ForceMode2D.Impulse);
+                    break;
+                case 'U':                       // Portrait Ura
+                    left = topRight;
+                    right = topLeft;
+                    if (left && !topSpeedReached)
+                        addForce(rightForce * THRUST, ForceMode2D.Impulse);
+                    else if (right && !topSpeedReached)
+                        addForce(leftForce * THRUST, ForceMode2D.Impulse);
+                    break;
+            }
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.touchCount == 0)
+            resetMovementFlags();
+
+        filterAccelerometerValues(LowPassFilterAccelerometer(LowPassFilterFactor));
+        if (!gravityOnCooldown && savedGravityState != gravVector)
+        {
+            updateGravity();
+            gravityOnCooldown = true;
+            elapsedTime = 0;
+        }
+        if (elapsedTime < GRAVITYCOOLDOWN)
+            elapsedTime += Time.deltaTime;
+        else if (elapsedTime >= GRAVITYCOOLDOWN && gravityOnCooldown)
+        {
+            gravityOnCooldown = false;
+        }
+    }
+
+    void OnCollisionStay2D(Collision2D collisionInfo)
+    {
+        if (collisionInfo.gameObject.tag == "Wall")
+        {
+            inAir = false;
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D collisionInfo)
+    {
+        if (launched)
+        {
+            playerBody.gravityScale = 1.0f;
+            launched = false;
+        }
+    }
+
+    void OnCollisionLeave2D(Collision2D collisionInfo)
+    {
+        if (collisionInfo.gameObject.tag == "Wall")
+        {
+            inAir = true;
+        }
+    }
+
+    //Flag Handling for buttons
+    public void TopRightDown()
+    {
+        topRight = true;
+    }
+
+    public void TopRightUp()
+    {
+        topRight = false;
+    }
+
+    public void TopLeftDown()
+    {
+        topLeft = true;
+    }
+
+    public void TopLeftUp()
+    {
+        topLeft = false;
+    }
+
+    public void BottomRightDown()
+    {
+        bottomRight = true;
+    }
+
+    public void BottomRightUp()
+    {
+        bottomRight = false;
+    }
+
+    public void BottomLeftDown()
+    {
+        bottomLeft = true;
+    }
+
+    public void BottomLeftUp()
+    {
+        bottomLeft = false;
+    }
+
+    Vector2 getGravityDirectionVector()
+    {
+        return gravVector;
+    }
+
+    public void resetMovementFlags()
+    {
+        topRight = false;
+        topLeft = false;
+        bottomRight = false;
+        bottomLeft = false;
+    }
+
+    Vector2 LowPassFilterAccelerometer(float filter)
+    {
+        float xfilter = Mathf.Lerp(lowPassValue.x, Input.acceleration.x, filter);
+        float yfilter = Mathf.Lerp(lowPassValue.y, Input.acceleration.y, filter);
+        lowPassValue = new Vector2(xfilter, yfilter);
+        return lowPassValue;
+    }
+
+    public void addForce(Vector2 vect, ForceMode2D force)
+    {
+        playerBody.AddForce(vect, force);
+    }
+
+    public void launchStatusOn()
+    {
+        launched = true;
+    }
 }
