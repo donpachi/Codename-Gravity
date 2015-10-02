@@ -13,6 +13,21 @@ public class OrientationListener : MonoBehaviour {
     private static Vector2 downVector, rightVector;
     private int orientationInt;
 
+    public static OrientationListener listener;
+
+    void Awake()
+    {
+        if (listener == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            listener = this;
+        }
+        else if (listener != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     // Use this for initialization
     void Start () {
         initializeFilterElements();
