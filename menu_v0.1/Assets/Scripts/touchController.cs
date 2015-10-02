@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;       //FOR DEBUG REMOVE LATER
 
 
 //Will only follow the first two fingers on screen
@@ -9,13 +10,15 @@ using System.Collections;
 
 public class touchController : MonoBehaviour {
 
-    public static touchController controller;
+    public static touchController Instance;
     public float SwipeTime;     //delta time which should determine a swipe motion vs a move
     public float DeadZone;      //DeadZone of movement
 
     //Screen width and height
     private int height;
     private int width;
+    //delta time for update cycle
+    private float updateTime;
     //max touches counted
     private int MAXTOUCHES = 2;
     //Array for touch data
@@ -25,18 +28,19 @@ public class touchController : MonoBehaviour {
     
 
 	void Awake () {
-        if (controller == null)
+        if (Instance == null)
         {
             DontDestroyOnLoad(gameObject);
-            controller = this;
+            Instance = this;
         }
-        else if (controller != this)
+        else if (Instance != this)
         {
             Destroy(gameObject);
         }
         height = Screen.height;
         width = Screen.width;
         touchDataArray = new TouchInstanceData[2];
+        updateTime = 0;
 	}
 	
 	void Update () {
@@ -46,6 +50,7 @@ public class touchController : MonoBehaviour {
             {
                 processATouch(Input.touches[i]);
             }
+
         }
 	}
 
@@ -62,22 +67,42 @@ public class touchController : MonoBehaviour {
                 break;
             //Midpoint of a touch, need to see how far it moved, how fast it moved that distance and react accordingly
             case TouchPhase.Moved:
-                
-
+                TouchInstanceData data = touchDataArray[touch.fingerId];
+                data.totalTime += touch.deltaTime;
+                data.moveTime += touch.deltaTime;
+                data.DeltaFromStart = data.StartPosition - touch.position;
+                checkSwipe(touch, data);
+                data.LastPosition = touch.position;     //update last position after the swipe check happens
                 break;
-            //End of a touch, need
+            //End of a touch
+
+            case TouchPhase.Stationary:
+                touchDataArray[touch.fingerId].moveTime = 0;      //reset the move time
+                print("Movement time reset");
+                GameObject.Find("MovingText").GetComponent<Text>().text = "Movement time reset";
+                break;
             case TouchPhase.Ended:
                 break;
         }
 
     }
+
+    //Checks if the move should be a swipe
+    void checkSwipe(Touch touch, TouchInstanceData data)
+    {
+        print("Time passed form movement: " + data.moveTime);
+        GameObject.Find("MovingText").GetComponent<Text>().text = "Moving/n" + "Time passed form movement: " + data.moveTime;
+    }
+
 }
 
 class TouchInstanceData
 {
     public Vector2 StartPosition;
+    public Vector2 DeltaFromStart;
     public Vector2 LastPosition;    //last known position
     public float totalTime;
+    public float moveTime;
 }
 
 

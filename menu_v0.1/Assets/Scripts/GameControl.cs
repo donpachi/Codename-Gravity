@@ -7,19 +7,19 @@ using System.IO;
 //Singleton Game Control class
 public class GameControl : MonoBehaviour {
 
-    public static GameControl control;
+    public static GameControl Instance;
     
     public bool[] levelUnlocked;
     public int[] levelHighScore;
 
     void Awake()
     {
-        if (control == null)
+        if (Instance == null)
         {
             DontDestroyOnLoad(gameObject);
-            control = this;
+            Instance = this;
         }
-        else if (control != this)
+        else if (Instance != this)
         {
             Destroy(gameObject);
         }
