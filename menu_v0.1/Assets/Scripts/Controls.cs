@@ -107,9 +107,10 @@ public class Controls : MonoBehaviour
         else
             topSpeedReached = true;
 
-        Touch myTouch = Input.GetTouch(0);
+
         if (Input.touchCount == 1)
         {
+            Touch myTouch = Input.GetTouch(0);
             switch (gravityOrientation)
             {
                 case 'P':                       // portrait mode

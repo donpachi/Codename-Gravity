@@ -71,6 +71,12 @@ public class PlayerJump : MonoBehaviour {
     //    }
     //}
 
+    //required conditions for a jump
+    //      finger on screen
+    //      finger moved a certain amount
+    //      finger lifted - maybe not as essential
+    //      move must be fast enough
+    //      
     void Update()
     {
         if (jumpCount < jumpLimit)
@@ -101,7 +107,6 @@ public class PlayerJump : MonoBehaviour {
 
     void jumpCheck()
     {
-        Debug.Log("FingerLifted: " + fingerLifted + " --- FingerMoved: " + fingerMoved);
         if (fingerLifted && fingerMoved)
         {
             if (jumpLimit != 1)
@@ -126,7 +131,6 @@ public class PlayerJump : MonoBehaviour {
             {
                 playerBody.AddForce(upVector * jumpForce);
                 ++jumpCount;
-                Debug.Log("**JUMPED Portrait**");
             }
         }
         else if (currentOrientation == DeviceOrientation.LandscapeRight)
@@ -136,7 +140,6 @@ public class PlayerJump : MonoBehaviour {
             {
                 playerBody.AddForce(leftVector * jumpForce);
                 ++jumpCount;
-                Debug.Log("**JUMPED LandscapeRight**");
             }
         }
         else if (currentOrientation == DeviceOrientation.PortraitUpsideDown)
@@ -146,7 +149,6 @@ public class PlayerJump : MonoBehaviour {
             {
                 playerBody.AddForce(downVector * jumpForce);
                 ++jumpCount;
-                Debug.Log("**JUMPED PortraitUpsideDown**");
             }
         }
         else if (currentOrientation == DeviceOrientation.LandscapeLeft)
@@ -156,7 +158,6 @@ public class PlayerJump : MonoBehaviour {
             {
                 playerBody.AddForce(rightVector * jumpForce);
                 ++jumpCount;
-                Debug.Log("**JUMPED LandscapeLeft**");
             }
         }
     }
