@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿/*using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -84,4 +84,4 @@ public class SuctionCup : MonoBehaviour {
         playerBody.gravityScale = 1.0f;
         player.GetComponent<Controls>().SuctionStatusEnd();
     }
-}
+}*/

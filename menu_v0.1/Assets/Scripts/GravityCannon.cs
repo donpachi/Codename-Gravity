@@ -52,7 +52,7 @@ public class GravityCannon : MonoBehaviour {
 		playerBody.GetComponent<Transform>().position = (firePosition);
 		playerBody.WakeUp();
 
-		player.GetComponent<Controls>().LaunchStatusOn();
+		player.GetComponent<Controls>().launchStatusOn();
 		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform> ().position).normalized;
 		player.GetComponent<Controls>().addForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
 
