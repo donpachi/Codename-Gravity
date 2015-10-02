@@ -2,8 +2,8 @@
 using System.Collections;
 
 public class OrientationListener : MonoBehaviour {
-    public Vector3 DEFAULT_ACCELEROMETER_VECTOR = new Vector3(0, -1, 0);
-    public Vector3 DEFAULT_ACCELEROMETER_PERP_VECTOR = new Vector3(1, 0, 0);
+    public Vector2 DEFAULT_ACCELEROMETER_VECTOR = new Vector2(0, -1);
+    public Vector2 DEFAULT_ACCELEROMETER_PERP_VECTOR = new Vector2(1, 0);
     public enum Orientation { PORTRAIT, LANDSCAPE_LEFT, INVERTED_PORTRAIT, LANDSCAPE_RIGHT }
 
     private float AccelerometerUpdateInterval;
@@ -30,7 +30,6 @@ public class OrientationListener : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        initializeFilterElements();
         initialize();
     }
 	
@@ -94,18 +93,14 @@ public class OrientationListener : MonoBehaviour {
         return lowPassValue;
     }
 
-    void initializeFilterElements()
-    {
-        AccelerometerUpdateInterval = 1.0f / 60.0f;
-        LowPassKernalWidthInSeconds = 0.1f;
-        LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds;
-        lowPassValue = DEFAULT_ACCELEROMETER_VECTOR;
-    }
-
     void initialize()
     {
         downVector = DEFAULT_ACCELEROMETER_VECTOR;
         rightVector = DEFAULT_ACCELEROMETER_PERP_VECTOR;
+        AccelerometerUpdateInterval = 1.0f / 60.0f;
+        LowPassKernalWidthInSeconds = 0.1f;
+        LowPassFilterFactor = AccelerometerUpdateInterval / LowPassKernalWidthInSeconds;
+        lowPassValue = DEFAULT_ACCELEROMETER_VECTOR;
     }
 
     public Vector2 getRelativeDownVector()
