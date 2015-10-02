@@ -13,16 +13,16 @@ public class OrientationListener : MonoBehaviour {
     private static Vector2 downVector, rightVector;
     private int orientationInt;
 
-    public static OrientationListener listener;
+    public static OrientationListener instanceOf;
 
     void Awake()
     {
-        if (listener == null)
+        if (instanceOf == null)
         {
             DontDestroyOnLoad(gameObject);
-            listener = this;
+            instanceOf = this;
         }
-        else if (listener != this)
+        else if (instanceOf != this)
         {
             Destroy(gameObject);
         }
