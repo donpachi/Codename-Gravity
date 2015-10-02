@@ -22,13 +22,13 @@ public class MenuTransition : MonoBehaviour
         {
             contentViewer.offsetMax = new Vector2 (Mathf.Lerp(contentViewer.offsetMax.magnitude,
                                                                closestScreenRect.offsetMax.magnitude, 
-                                                               15.0f * Time.deltaTime), 0f) * -1;
+                                                               30.0f * Time.deltaTime), 0f) * -1;
             contentViewer.offsetMin = new Vector2 (Mathf.Lerp(contentViewer.offsetMin.magnitude,
                                                                closestScreenRect.offsetMax.magnitude, 
-                                                               15.0f * Time.deltaTime), 0f) * -1;
+                                                               30.0f * Time.deltaTime), 0f) * -1;
         }
 
-        if (released && Vector2.Distance(contentViewer.offsetMax, closestScreenRect.offsetMax * -1) < 0.05f)
+        if (released && Vector2.Distance(contentViewer.offsetMax, closestScreenRect.offsetMax * -1) < 0.005f)
         {
             released = false;
             this.GetComponent<RectTransform>().offsetMax = closestScreenRect.offsetMax * -1; //center position: MAY BE REDUNDANT

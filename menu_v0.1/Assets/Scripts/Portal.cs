@@ -1,36 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Portal : MonoBehaviour {
 
     public GameObject linkedPortal;
     public float transitionSpeed;
-    public float distanceThreshold;
 
-    private Rigidbody2D playerBody;
-    private Vector3 playerVelocity;
+    private List<Node> bodies;
+    private float distanceThreshold;
     private Vector3 linkedPortalPosition;
-    private float distanceToPortal;
-    private bool inTransition = false;
 
 	// Use this for initialization
 	void Start () {
         linkedPortalPosition = linkedPortal.transform.position;
+        distanceThreshold = 3.1f;
+        bodies = new List<Node>();
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        if (inTransition)
+	void FixedUpdate () {
+        if (bodies.Count > 0)
         {
-            distanceToPortal = (linkedPortalPosition - playerBody.transform.position).magnitude;
-            if (distanceToPortal <= distanceThreshold)
+            for (int i = 0; i < bodies.Count; i++)
             {
-                playerBody.transform.position = new Vector3(    linkedPortalPosition.x,
-                                                                linkedPortalPosition.y,
-                                                                -2);
-                playerBody.Sleep();
-                inTransition = false;
-                Invoke("LaunchPlayer", 2);
+                bodies[i].body.transform.position = new Vector3(Mathf.Lerp(bodies[i].body.transform.position.x, linkedPortalPosition.x, transitionSpeed * Time.deltaTime),
+                                Mathf.Lerp(bodies[i].body.transform.position.y, linkedPortalPosition.y, transitionSpeed * Time.deltaTime),
+                                1f);
+
+                if ((linkedPortalPosition - bodies[i].body.transform.position).magnitude <= distanceThreshold)
+                {
+                    bodies[i].body.Sleep();
+                    StartCoroutine(LaunchPlayer(bodies[i].body, bodies[i].velocity, 2f));
+                    bodies.RemoveAt(i);
+                    i -= 1;
+                }
             }
         }
 	}
@@ -39,35 +43,45 @@ public class Portal : MonoBehaviour {
     {
         if (collisionInfo.gameObject.tag != "Water")
         {
-            playerBody = collisionInfo.rigidbody;
-            playerVelocity = collisionInfo.relativeVelocity;
+            Rigidbody2D tempBody = collisionInfo.rigidbody;
+            Vector3 hiddenPosition = new Vector3(tempBody.transform.position.x,
+                                        tempBody.transform.position.y,
+                                        1f);
 
-            Vector3 hiddenPosition = new Vector3(playerBody.transform.position.x,
-                                        playerBody.transform.position.y,
-                                        1);
+            tempBody.gravityScale = 0;
+            tempBody.Sleep();
+            tempBody.transform.position = hiddenPosition;
+            tempBody.GetComponent<Collider2D>().enabled = false;
             
-            playerBody.gravityScale = 0;
-            playerBody.Sleep();
-            playerBody.transform.position = hiddenPosition;
-            Transition();
+            bodies.Add(new Node(true, tempBody, collisionInfo.relativeVelocity));
         }
     }
 
-    void Transition()
+    IEnumerator LaunchPlayer(Rigidbody2D body, Vector3 velocity, float delayTime)
     {
-        Vector3 direction = linkedPortalPosition - playerBody.transform.position;
-        
-        inTransition = true;
-        playerBody.GetComponent<Collider2D>().enabled = false;
-        playerBody.AddForce(direction.normalized * direction.magnitude * transitionSpeed);
-    }
+        yield return new WaitForSeconds(delayTime);
 
-    void LaunchPlayer()
-    {
         float launchAngle = linkedPortal.transform.rotation.eulerAngles.z;
-        playerBody.gravityScale = 1;
-        playerBody.GetComponent<Collider2D>().enabled = true;
-        playerVelocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * playerVelocity;
-        playerBody.velocity = playerVelocity;
+        body.transform.position = new Vector3(body.transform.position.x,
+                                           body.transform.position.y,
+                                           -2f);
+        body.gravityScale = 1;
+        body.GetComponent<Collider2D>().enabled = true;
+        velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * velocity;
+        body.velocity = velocity;
+    }
+}
+
+class Node
+{
+    public bool inTransition = false;
+    public Rigidbody2D body;
+    public Vector3 velocity;
+
+    public Node(bool transition, Rigidbody2D rb, Vector3 v)
+    {
+        inTransition = transition;
+        body = rb;
+        velocity = v;
     }
 }
