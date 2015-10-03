@@ -3,7 +3,12 @@ using System.Collections;
 
 public class StartGame : MonoBehaviour {
 	
-	public GameObject loadingImage;
+	public GameObject levelSelectCanvas;
+
+    void Start()
+    {
+        levelSelectCanvas = GameObject.Find("LevelSelect");
+    }
 
 	void Update()
 	{
@@ -16,4 +21,10 @@ public class StartGame : MonoBehaviour {
 		Time.timeScale = 1;
 		Application.LoadLevel(level);
 	}
+
+    public void LevelSelect()
+    {
+        this.GetComponent<Canvas>().enabled = false;
+        levelSelectCanvas.GetComponent<Canvas>().enabled = true; 
+    }
 }
