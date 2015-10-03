@@ -18,14 +18,13 @@ public class TouchController : MonoBehaviour {
     //Screen width and height
     private int height;
     private int width;
-    //delta time for update cycle
-    private float updateTime;
     //max touches counted
     private int MAXTOUCHES = 2;
     //Array for touch data
     private TouchInstanceData[] touchDataArray;
     //Deadzone of swipe move, calculated as a ratio of the screen height
     private float deadZone;
+
 
     //Event Stuff
     public delegate void SwipeEvent(SwipeDirection direction);
@@ -51,11 +50,10 @@ public class TouchController : MonoBehaviour {
         height = Screen.height;
         width = Screen.width;
         touchDataArray = new TouchInstanceData[2];
-        updateTime = 0;
         deadZone = height / DeadZoneMagnitude;
 	}
 	
-	void Update () {
+	void FixedUpdate () {
         if (Input.touchCount > 0 && Input.touchCount <= MAXTOUCHES)
         {
             for (int i = 0; i < Input.touchCount; ++i)        //only loops for the number of max touches
@@ -84,13 +82,15 @@ public class TouchController : MonoBehaviour {
                 data.moveTime += touch.deltaTime;
                 checkSwipe(touch, data);
                 break;
-            //Finger stopped, swipe data resets
+            //Finger stopped or ended, swipe data resets
             case TouchPhase.Stationary:
-                touchDataArray[touch.fingerId].moveTime = 0;      //reset the move time
-                touchDataArray[touch.fingerId].swipeOriginPosition = touch.position;    //reset move origin to finger resting point
-                GameObject.Find("MovingText").GetComponent<Text>().text = "Movement time reset";
+                touchDataArray[touch.fingerId].swipeTriggered = false;
+                resetSwipeData(touch, touchDataArray[touch.fingerId]);
+                //GameObject.Find("MovingText").GetComponent<Text>().text = "Movement time reset";
                 break;
             case TouchPhase.Ended:
+                touchDataArray[touch.fingerId].swipeTriggered = false;
+                resetSwipeData(touch, touchDataArray[touch.fingerId]);
                 break;
         }
 
@@ -99,20 +99,20 @@ public class TouchController : MonoBehaviour {
     //Checks if the move should be a swipe
     void checkSwipe(Touch touch, TouchInstanceData data)
     {
-        if (data.moveTime < SwipeTime)
+        if (!data.swipeTriggered && data.moveTime < SwipeTime)
         {
             data.DeltaFromSwipe = touch.position - data.swipeOriginPosition;
-            GameObject.Find("ScreenText").GetComponent<Text>().text = "DeadZone Magnitude: " + deadZone
-                + "\nSwipe instance vector: " + data.DeltaFromSwipe + "  Magnatude of swipe instance: " + data.DeltaFromSwipe.magnitude;
+            //GameObject.Find("ScreenText").GetComponent<Text>().text = "DeadZone Magnitude: " + deadZone
+            //    + "\nSwipe instance vector: " + data.DeltaFromSwipe + "  Magnatude of swipe instance: " + data.DeltaFromSwipe.magnitude;
             if (data.DeltaFromSwipe.magnitude > deadZone)
             {
                 //movement has been decieded as swipe, fire the corresponding event
                 triggerDirection(data);
+                data.swipeTriggered = true;
                 resetSwipeData(touch, data);
-                
             }
         }
-        GameObject.Find("MovingText").GetComponent<Text>().text = "Total Time passed from movement: " + data.moveTime;
+        //GameObject.Find("MovingText").GetComponent<Text>().text = "Total Time passed from movement: " + data.moveTime;
     }
 
     //Sets the direction of the swipe in relation to device orientation
@@ -213,11 +213,13 @@ class TouchInstanceData
     public Vector2 swipeOriginPosition;    //The point where the swipe starts
     public float totalTime;         //total life of the touch
     public float moveTime;          //how long the swipe has been moving
+    public bool swipeTriggered;    //flag to prevent one swipe firing multiple events
 
     public TouchInstanceData()
     {
         totalTime = 0;
         moveTime = 0;
+        swipeTriggered = false;
     }                                   
 }
 

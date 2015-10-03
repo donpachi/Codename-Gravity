@@ -21,6 +21,9 @@ public class PlayerJump : MonoBehaviour {
     private float doubleJumpState;
     private float doubleJumpDecValue;
     private GameObject doubleJumpBar;
+
+    private bool canJump;
+
     int singlejumpCount = 0;
 
     public float DeadZone = 0;
@@ -35,42 +38,23 @@ public class PlayerJump : MonoBehaviour {
         doubleJumpDecValue = 1.0f / doubleJumpLimit;
         jumpLimit = 1;
         jumpCount = 0;
+        canJump = false;
 	}
 	
 	// Update is called once per frame
-    //void FixedUpdate()
-    //{
-    //    if (jumpCount < 1)
-    //    {
-    //        if (Input.touchCount > 0)
-    //        {
-    //            Touch touch = Input.GetTouch(0);
-
-    //            switch (touch.phase)
-    //            {
-    //                case TouchPhase.Began:
-    //                    startPos = touch.position;
-    //                    break;
-
-    //                case TouchPhase.Moved:
-    //                    direction = touch.position - startPos;
-    //                    fingerMoved = true;
-    //                    break;
-
-    //                case TouchPhase.Ended:
-    //                    fingerLifted = true;
-    //                    break;
-    //            }
-
-    //            if (fingerLifted && fingerMoved)
-    //            {
-    //                jump();
-    //                fingerLifted = false;
-    //                fingerMoved = false;
-    //            }
-    //        }
-    //    }
-    //}
+    void FixedUpdate()
+    {
+        if (canJump)
+        {
+            playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
+            ++singlejumpCount;
+            canJump = false;
+        }
+        if (gameObject.GetComponent<Player>().inAir)
+        {
+            //GameObject.Find("JumpCount").GetComponent<Text>().text = "Jumps Reg: " + singlejumpCount;
+        }
+    }
 
     //required conditions for a jump
     //      finger on screen
@@ -163,12 +147,11 @@ public class PlayerJump : MonoBehaviour {
         }
     }
 
-    void jump(TouchController.SwipeDirection direction)
+    void jumpCheck(TouchController.SwipeDirection direction)
     {
         if(direction == TouchController.SwipeDirection.UP && !gameObject.GetComponent<Player>().inAir)
         {
-            playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
-            ++singlejumpCount;
+            canJump = true;
         }
     }
 
@@ -230,10 +213,10 @@ public class PlayerJump : MonoBehaviour {
     //Event handling for swipe events
     void OnEnable()
     {
-        TouchController.OnSwipe += jump;
+        TouchController.OnSwipe += jumpCheck;
     }
     void OnDisable()
     {
-        TouchController.OnSwipe -= jump;
+        TouchController.OnSwipe -= jumpCheck;
     }
 }
