@@ -8,11 +8,12 @@ using UnityEngine.UI;       //FOR DEBUG REMOVE LATER
 //Manager has a deadzone for movement
 //
 
-public class touchController : MonoBehaviour {
+public class TouchController : MonoBehaviour {
 
-    public static touchController Instance;
-    public float SwipeTime;     //delta time which should determine a swipe motion vs a move
-    public float DeadZone;      //DeadZone of movement
+    public static TouchController Instance;
+    public float SwipeTime = 1.0f;     //Max time for movement check of a swipe.
+    public float DeadZoneMagnitude = 20;      //DeadZone of swipe movement calculated as ratio between this value and screen height
+    public enum SwipeDirection {UP, DOWN, LEFT, RIGHT}
 
     //Screen width and height
     private int height;
@@ -23,9 +24,19 @@ public class touchController : MonoBehaviour {
     private int MAXTOUCHES = 2;
     //Array for touch data
     private TouchInstanceData[] touchDataArray;
-    int[] a;
+    //Deadzone of swipe move, calculated as a ratio of the screen height
+    private float deadZone;
+
+    //Event Stuff
+    public delegate void SwipeEvent(SwipeDirection direction);
+    public static event SwipeEvent OnSwipe;
     
-    
+    void triggerSwipe(SwipeDirection direction)
+    {
+        if (OnSwipe != null)
+            OnSwipe(direction);
+    }
+
 
 	void Awake () {
         if (Instance == null)
@@ -41,6 +52,7 @@ public class touchController : MonoBehaviour {
         width = Screen.width;
         touchDataArray = new TouchInstanceData[2];
         updateTime = 0;
+        deadZone = height / DeadZoneMagnitude;
 	}
 	
 	void Update () {
@@ -62,7 +74,7 @@ public class touchController : MonoBehaviour {
             case TouchPhase.Began:
                 touchDataArray[touch.fingerId] = new TouchInstanceData();
                 touchDataArray[touch.fingerId].StartPosition = touch.position;
-                touchDataArray[touch.fingerId].LastPosition = touch.position;
+                touchDataArray[touch.fingerId].swipeOriginPosition = touch.position;
                 touchDataArray[touch.fingerId].totalTime = 0;
                 break;
             //Midpoint of a touch, need to see how far it moved, how fast it moved that distance and react accordingly
@@ -70,15 +82,12 @@ public class touchController : MonoBehaviour {
                 TouchInstanceData data = touchDataArray[touch.fingerId];
                 data.totalTime += touch.deltaTime;
                 data.moveTime += touch.deltaTime;
-                data.DeltaFromStart = data.StartPosition - touch.position;
                 checkSwipe(touch, data);
-                data.LastPosition = touch.position;     //update last position after the swipe check happens
                 break;
-            //End of a touch
-
+            //Finger stopped, swipe data resets
             case TouchPhase.Stationary:
                 touchDataArray[touch.fingerId].moveTime = 0;      //reset the move time
-                print("Movement time reset");
+                touchDataArray[touch.fingerId].swipeOriginPosition = touch.position;    //reset move origin to finger resting point
                 GameObject.Find("MovingText").GetComponent<Text>().text = "Movement time reset";
                 break;
             case TouchPhase.Ended:
@@ -90,19 +99,126 @@ public class touchController : MonoBehaviour {
     //Checks if the move should be a swipe
     void checkSwipe(Touch touch, TouchInstanceData data)
     {
-        print("Time passed form movement: " + data.moveTime);
-        GameObject.Find("MovingText").GetComponent<Text>().text = "Moving/n" + "Time passed form movement: " + data.moveTime;
+        if (data.moveTime < SwipeTime)
+        {
+            data.DeltaFromSwipe = touch.position - data.swipeOriginPosition;
+            GameObject.Find("ScreenText").GetComponent<Text>().text = "DeadZone Magnitude: " + deadZone
+                + "\nSwipe instance vector: " + data.DeltaFromSwipe + "  Magnatude of swipe instance: " + data.DeltaFromSwipe.magnitude;
+            if (data.DeltaFromSwipe.magnitude > deadZone)
+            {
+                //movement has been decieded as swipe, fire the corresponding event
+                triggerDirection(data);
+                resetSwipeData(touch, data);
+                
+            }
+        }
+        GameObject.Find("MovingText").GetComponent<Text>().text = "Total Time passed from movement: " + data.moveTime;
+    }
+
+    //Sets the direction of the swipe in relation to device orientation
+    //  and triggers an event accordingly
+    //Takes the larger of the x, y displacement and uses as direction
+    //In portrait x > 0 is right, y > 0 is up
+    //Can this be more elegant?
+    void triggerDirection(TouchInstanceData data)
+    {
+        bool swipeX;    //flag to follow x or y
+
+        if (Mathf.Abs(data.DeltaFromSwipe.x) > Mathf.Abs(data.DeltaFromSwipe.y))
+            swipeX = true;
+        else
+            swipeX = false;
+ 
+        switch(OrientationListener.instanceOf.currentOrientation())
+        {
+            case OrientationListener.Orientation.PORTRAIT:
+                if(swipeX)
+                {
+                    if (data.DeltaFromSwipe.x > 0)
+                        triggerSwipe(SwipeDirection.RIGHT);
+                    else
+                        triggerSwipe(SwipeDirection.LEFT);
+                }
+                else
+                {
+                    if (data.DeltaFromSwipe.y > 0)
+                        triggerSwipe(SwipeDirection.UP);
+                    else
+                        triggerSwipe(SwipeDirection.DOWN);
+                }
+                break;
+            case OrientationListener.Orientation.INVERTED_PORTRAIT:
+                if (swipeX)
+                {
+                    if (data.DeltaFromSwipe.x < 0)
+                        triggerSwipe(SwipeDirection.RIGHT);
+                    else
+                        triggerSwipe(SwipeDirection.LEFT);
+                }
+                else
+                {
+                    if (data.DeltaFromSwipe.y < 0)
+                        triggerSwipe(SwipeDirection.UP);
+                    else
+                        triggerSwipe(SwipeDirection.DOWN);
+                }
+                break;
+            case OrientationListener.Orientation.LANDSCAPE_LEFT:
+                if (swipeX)
+                {
+                    if (data.DeltaFromSwipe.x > 0)
+                        triggerSwipe(SwipeDirection.UP);
+                    else
+                        triggerSwipe(SwipeDirection.DOWN);
+                }
+                else
+                {
+                    if (data.DeltaFromSwipe.y > 0)
+                        triggerSwipe(SwipeDirection.LEFT);
+                    else
+                        triggerSwipe(SwipeDirection.RIGHT);
+                }
+                break;
+            case OrientationListener.Orientation.LANDSCAPE_RIGHT:
+                if (swipeX)
+                {
+                    if (data.DeltaFromSwipe.x < 0)
+                        triggerSwipe(SwipeDirection.UP);
+                    else
+                        triggerSwipe(SwipeDirection.DOWN);
+                }
+                else
+                {
+                    if (data.DeltaFromSwipe.y < 0)
+                        triggerSwipe(SwipeDirection.LEFT);
+                    else
+                        triggerSwipe(SwipeDirection.RIGHT);
+                }
+                break;
+        }
+    }
+
+    void resetSwipeData(Touch touch, TouchInstanceData data)
+    {
+        data.swipeOriginPosition = touch.position;
+        data.moveTime = 0;
     }
 
 }
 
 class TouchInstanceData
 {
-    public Vector2 StartPosition;
-    public Vector2 DeltaFromStart;
-    public Vector2 LastPosition;    //last known position
-    public float totalTime;
-    public float moveTime;
+    public Vector2 StartPosition;   //the origin of the touch
+    public Vector2 DeltaFromSwipe;  //the movement vector from where the swipe started
+    public Vector2 swipeOriginPosition;    //The point where the swipe starts
+    public float totalTime;         //total life of the touch
+    public float moveTime;          //how long the swipe has been moving
+
+    public TouchInstanceData()
+    {
+        totalTime = 0;
+        moveTime = 0;
+    }                                   
 }
 
 

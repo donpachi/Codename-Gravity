@@ -21,6 +21,7 @@ public class PlayerJump : MonoBehaviour {
     private float doubleJumpState;
     private float doubleJumpDecValue;
     private GameObject doubleJumpBar;
+    int singlejumpCount = 0;
 
     public float DeadZone = 0;
     public float jumpForce = 10;
@@ -111,7 +112,7 @@ public class PlayerJump : MonoBehaviour {
         {
             if (jumpLimit != 1)
                 doubleJumpCheck();
-            jump();
+            //jump();
             fingerLifted = false;
             fingerMoved = false;
         }
@@ -159,6 +160,15 @@ public class PlayerJump : MonoBehaviour {
                 playerBody.AddForce(rightVector * jumpForce);
                 ++jumpCount;
             }
+        }
+    }
+
+    void jump(TouchController.SwipeDirection direction)
+    {
+        if(direction == TouchController.SwipeDirection.UP && !gameObject.GetComponent<Player>().inAir)
+        {
+            playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
+            ++singlejumpCount;
         }
     }
 
@@ -215,5 +225,15 @@ public class PlayerJump : MonoBehaviour {
         {
             inAir = true;
         }
+    }
+
+    //Event handling for swipe events
+    void OnEnable()
+    {
+        TouchController.OnSwipe += jump;
+    }
+    void OnDisable()
+    {
+        TouchController.OnSwipe -= jump;
     }
 }

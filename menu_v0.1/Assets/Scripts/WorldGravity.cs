@@ -7,7 +7,7 @@ public class WorldGravity : MonoBehaviour {
 
     private bool gravityOnCooldown;
     private float elapsedTime;
-    private int previousGravityDirection;
+    private OrientationListener.Orientation previousGravityDirection;
 
     // Use this for initialization
     void Start () {
@@ -19,7 +19,7 @@ public class WorldGravity : MonoBehaviour {
         elapsedTime += Time.deltaTime;
         if (elapsedTime > GRAVITYCOOLDOWN) {
             gravityOnCooldown = false;
-            if (!gravityOnCooldown && (previousGravityDirection != OrientationListener.instanceOf.currentOrientation()){
+            if (!gravityOnCooldown && (previousGravityDirection != OrientationListener.instanceOf.currentOrientation())){
                 updateGravity();
                 gravityOnCooldown = true;
                 elapsedTime = 0;

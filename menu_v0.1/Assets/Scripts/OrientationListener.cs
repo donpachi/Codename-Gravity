@@ -80,9 +80,9 @@ public class OrientationListener : MonoBehaviour {
         }
     }
 
-    public int currentOrientation()
+    public Orientation currentOrientation()
     {
-        return orientationInt;
+        return (Orientation)orientationInt;
     }
 
     Vector2 ApplyLowPassFilterAccelerometer(float filter)
@@ -106,6 +106,11 @@ public class OrientationListener : MonoBehaviour {
     public Vector2 getRelativeDownVector()
     {
         return downVector;
+    }
+
+    public Vector2 getRelativeUpVector()
+    {
+        return downVector * -1;
     }
 
     public Vector2 getRelativeRightVector()
