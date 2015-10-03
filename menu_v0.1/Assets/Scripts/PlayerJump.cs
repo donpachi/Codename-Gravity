@@ -21,6 +21,7 @@ public class PlayerJump : MonoBehaviour {
     private float doubleJumpState;
     private float doubleJumpDecValue;
     private GameObject doubleJumpBar;
+    int singlejumpCount = 0;
 
     public float DeadZone = 0;
     public float jumpForce = 10;
@@ -71,6 +72,12 @@ public class PlayerJump : MonoBehaviour {
     //    }
     //}
 
+    //required conditions for a jump
+    //      finger on screen
+    //      finger moved a certain amount
+    //      finger lifted - maybe not as essential
+    //      move must be fast enough
+    //      
     void Update()
     {
         if (jumpCount < jumpLimit)
@@ -101,12 +108,11 @@ public class PlayerJump : MonoBehaviour {
 
     void jumpCheck()
     {
-        Debug.Log("FingerLifted: " + fingerLifted + " --- FingerMoved: " + fingerMoved);
         if (fingerLifted && fingerMoved)
         {
             if (jumpLimit != 1)
                 doubleJumpCheck();
-            jump();
+            //jump();
             fingerLifted = false;
             fingerMoved = false;
         }
@@ -126,7 +132,6 @@ public class PlayerJump : MonoBehaviour {
             {
                 playerBody.AddForce(upVector * jumpForce);
                 ++jumpCount;
-                Debug.Log("**JUMPED Portrait**");
             }
         }
         else if (currentOrientation == DeviceOrientation.LandscapeRight)
@@ -136,7 +141,6 @@ public class PlayerJump : MonoBehaviour {
             {
                 playerBody.AddForce(leftVector * jumpForce);
                 ++jumpCount;
-                Debug.Log("**JUMPED LandscapeRight**");
             }
         }
         else if (currentOrientation == DeviceOrientation.PortraitUpsideDown)
@@ -146,7 +150,6 @@ public class PlayerJump : MonoBehaviour {
             {
                 playerBody.AddForce(downVector * jumpForce);
                 ++jumpCount;
-                Debug.Log("**JUMPED PortraitUpsideDown**");
             }
         }
         else if (currentOrientation == DeviceOrientation.LandscapeLeft)
@@ -156,8 +159,16 @@ public class PlayerJump : MonoBehaviour {
             {
                 playerBody.AddForce(rightVector * jumpForce);
                 ++jumpCount;
-                Debug.Log("**JUMPED LandscapeLeft**");
             }
+        }
+    }
+
+    void jump(TouchController.SwipeDirection direction)
+    {
+        if(direction == TouchController.SwipeDirection.UP && !gameObject.GetComponent<Player>().inAir)
+        {
+            playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
+            ++singlejumpCount;
         }
     }
 
@@ -214,5 +225,15 @@ public class PlayerJump : MonoBehaviour {
         {
             inAir = true;
         }
+    }
+
+    //Event handling for swipe events
+    void OnEnable()
+    {
+        TouchController.OnSwipe += jump;
+    }
+    void OnDisable()
+    {
+        TouchController.OnSwipe -= jump;
     }
 }
