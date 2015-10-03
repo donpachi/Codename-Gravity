@@ -95,7 +95,7 @@ public class Water : MonoBehaviour {
 			rightRayOrigin = new Vector2 (this.transform.position.y - Math.Abs (this.GetComponent<SpriteRenderer> ().bounds.min.y), this.transform.position.x);
 			rightsidehit = Physics2D.Raycast (rightRayOrigin, Vector2.up);
 		}
-		Physics2D.Raycast (this.transform, Vector2.down, 1, 1 << LayerMask.NameToLayer)("Walls");
+		//Physics2D.Raycast (this.transform, Vector2.down, 1, 1 << LayerMask.NameToLayer)("Walls");
 		Vector2 scale = this.transform.localScale;
 		Vector2 position = this.transform.position;
 		BoxCollider2D waterCollider = (BoxCollider2D)this.GetComponent<BoxCollider2D> ();
