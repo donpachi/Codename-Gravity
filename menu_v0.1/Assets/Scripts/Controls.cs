@@ -107,46 +107,62 @@ public class Controls : MonoBehaviour
         else
             topSpeedReached = true;
 
-
-        if (Input.touchCount == 1)
+        if (!topSpeedReached)
         {
-            Touch myTouch = Input.GetTouch(0);
-            switch (gravityOrientation)
+            TouchController.TouchLocation movementDirection = TouchController.Instance.getTouchDirection();
+            switch (movementDirection)
             {
-                case 'P':                       // portrait mode
-                    left = bottomLeft;
-                    right = bottomRight;
-                    if (left && !topSpeedReached)
-                        addForce(leftForce * THRUST, ForceMode2D.Impulse);
-                    else if (right && !topSpeedReached)
-                        addForce(rightForce * THRUST, ForceMode2D.Impulse);
+                case TouchController.TouchLocation.LEFT:
+                    addForce(OrientationListener.instanceOf.getRelativeLeftVector(), ForceMode2D.Impulse);
                     break;
-                case 'L':                       // Landscape left
-                    left = topLeft;
-                    right = bottomLeft;
-                    if (left && !topSpeedReached)
-                        addForce(upForce * THRUST, ForceMode2D.Impulse);
-                    else if (right && !topSpeedReached)
-                        addForce(downForce * THRUST, ForceMode2D.Impulse);
+                case TouchController.TouchLocation.RIGHT:
+                    addForce(OrientationListener.instanceOf.getRelativeRightVector(), ForceMode2D.Impulse);
                     break;
-                case 'R':                       // Landscape Right
-                    left = bottomRight;
-                    right = topRight;
-                    if (left && !topSpeedReached)
-                        addForce(downForce * THRUST, ForceMode2D.Impulse);
-                    else if (right && !topSpeedReached)
-                        addForce(upForce * THRUST, ForceMode2D.Impulse);
-                    break;
-                case 'U':                       // Portrait Ura
-                    left = topRight;
-                    right = topLeft;
-                    if (left && !topSpeedReached)
-                        addForce(rightForce * THRUST, ForceMode2D.Impulse);
-                    else if (right && !topSpeedReached)
-                        addForce(leftForce * THRUST, ForceMode2D.Impulse);
+                case TouchController.TouchLocation.NONE:
                     break;
             }
         }
+
+
+        //if (Input.touchCount == 1)
+        //{
+        //    Touch myTouch = Input.GetTouch(0);
+        //    switch (gravityOrientation)
+        //    {
+        //        case 'P':                       // portrait mode
+        //            left = bottomLeft;
+        //            right = bottomRight;
+        //            if (left && !topSpeedReached)
+        //                addForce(leftForce * THRUST, ForceMode2D.Impulse);
+        //            else if (right && !topSpeedReached)
+        //                addForce(rightForce * THRUST, ForceMode2D.Impulse);
+        //            break;
+        //        case 'L':                       // Landscape left
+        //            left = topLeft;
+        //            right = bottomLeft;
+        //            if (left && !topSpeedReached)
+        //                addForce(upForce * THRUST, ForceMode2D.Impulse);
+        //            else if (right && !topSpeedReached)
+        //                addForce(downForce * THRUST, ForceMode2D.Impulse);
+        //            break;
+        //        case 'R':                       // Landscape Right
+        //            left = bottomRight;
+        //            right = topRight;
+        //            if (left && !topSpeedReached)
+        //                addForce(downForce * THRUST, ForceMode2D.Impulse);
+        //            else if (right && !topSpeedReached)
+        //                addForce(upForce * THRUST, ForceMode2D.Impulse);
+        //            break;
+        //        case 'U':                       // Portrait Ura
+        //            left = topRight;
+        //            right = topLeft;
+        //            if (left && !topSpeedReached)
+        //                addForce(rightForce * THRUST, ForceMode2D.Impulse);
+        //            else if (right && !topSpeedReached)
+        //                addForce(leftForce * THRUST, ForceMode2D.Impulse);
+        //            break;
+        //    }
+        //}
     }
 
     // Update is called once per frame

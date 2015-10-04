@@ -66,7 +66,7 @@ public class OrientationListener : MonoBehaviour {
                 downVector.y = 1;
                 downVector.x = 0;
                 rightVector.y = 0;
-                rightVector.x = 1;
+                rightVector.x = -1;
                 orientationInt = 2;
             }
             else
@@ -74,7 +74,7 @@ public class OrientationListener : MonoBehaviour {
                 downVector.y = -1;
                 downVector.x = 0;
                 rightVector.y = 0;
-                rightVector.x = -1;
+                rightVector.x = 1;
                 orientationInt = 0;
             }
         }

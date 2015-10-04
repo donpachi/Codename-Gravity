@@ -15,7 +15,6 @@ public class TouchController : MonoBehaviour {
     public static TouchController Instance;
     public float SwipeTime = 1.0f;     //Max time for movement check of a swipe.
     public float DeadZoneMagnitude = 20;      //DeadZone of swipe movement calculated as ratio between this value and screen height
-    public bool firstFingerDown;
     public enum SwipeDirection {UP, DOWN, LEFT, RIGHT}
     public enum TouchLocation {LEFT, RIGHT, NONE}
 
@@ -40,7 +39,6 @@ public class TouchController : MonoBehaviour {
             OnSwipe(direction);
     }
 
-
 	void Awake () {
         if (Instance == null)
         {
@@ -53,10 +51,18 @@ public class TouchController : MonoBehaviour {
         }
         height = Screen.height;
         width = Screen.width;
-        touchDataArray = new TouchInstanceData[MAXTOUCHES];
+        initTouchDataArray();
         deadZone = height / DeadZoneMagnitude;
-        firstFingerDown = false;
 	}
+
+    void initTouchDataArray()
+    {
+        touchDataArray = new TouchInstanceData[MAXTOUCHES];
+        for (int i = 0; i < touchDataArray.Length; i++)
+        {
+            touchDataArray[i] = new TouchInstanceData();
+        }
+    }
 	
 	void Update () {
         if (Input.touchCount > 0 && Input.touchCount <= MAXTOUCHES)
@@ -64,10 +70,10 @@ public class TouchController : MonoBehaviour {
             GameObject.Find("ScreenText").GetComponent<Text>().text = "";
             for (int i = 0; i < Input.touchCount; ++i)        //only loops for the number of max touches
             {
-                GameObject.Find("ScreenText").GetComponent<Text>().text += "Key and Index Of Key: \n Key: " + Input.touches[i].fingerId + "    i: " + i + "\n";
+                //GameObject.Find("ScreenText").GetComponent<Text>().text += "Key and Index Of Key: \n Key: " + Input.touches[i].fingerId + "    i: " + i + "\n";
                 if (Input.touches[i].fingerId < MAXTOUCHES)
                     processATouch(Input.touches[i], i);
-                GameObject.Find("ScreenText").GetComponent<Text>().text += "TouchLocation: " + touchDataArray[Input.touches[i].fingerId].touchLocation + " touchposition: " + Input.touches[i].position + "\n";
+                //GameObject.Find("ScreenText").GetComponent<Text>().text += "TouchLocation: " + touchDataArray[Input.touches[i].fingerId].touchLocation + " touchposition: " + Input.touches[i].position + "\n";
             }
 
         }
@@ -79,9 +85,7 @@ public class TouchController : MonoBehaviour {
         {
             //Beginning of a touch, need start position, set delta time to 0
             case TouchPhase.Began:
-                touchDataArray[touch.fingerId] = new TouchInstanceData();
-                touchDataArray[touch.fingerId].StartPosition = touch.position;
-                touchDataArray[touch.fingerId].swipeOriginPosition = touch.position;
+                resetTouchData(touch, touchDataArray[touch.fingerId]);
                 updateTouchLocation(touch, touchDataArray[touch.fingerId]);
                 break;
             //Midpoint of a touch, need to see how far it moved, how fast it moved that distance and react accordingly
@@ -100,10 +104,7 @@ public class TouchController : MonoBehaviour {
                 updateTouchLocation(touch, touchDataArray[touch.fingerId]);
                 break;
             case TouchPhase.Ended:
-                touchDataArray[touch.fingerId].swipeOriginPosition = touch.position;
-                touchDataArray[touch.fingerId].moveTime = 0;
-                touchDataArray[touch.fingerId].totalTime = 0;
-                touchDataArray[touch.fingerId].touchLocation = TouchLocation.NONE;
+                resetTouchData(touch, touchDataArray[touch.fingerId]);
                 break;
         }
 
@@ -240,10 +241,30 @@ public class TouchController : MonoBehaviour {
         }
     }
 
+
     void resetSwipeData(Touch touch, TouchInstanceData data)
     {
         data.swipeOriginPosition = touch.position;
         data.moveTime = 0;
+    }
+
+    void resetTouchData(Touch touch, TouchInstanceData data)
+    {
+        data.StartPosition = touch.position;
+        data.swipeOriginPosition = touch.position;
+        data.touchLocation = TouchLocation.NONE;
+        data.moveTime = 0;
+        data.totalTime = 0;
+        data.swipeTriggered = false;
+    }
+
+    //returns the touch direction
+    public TouchLocation getTouchDirection()
+    {
+        if (Input.touchCount == 1)
+            return touchDataArray[Input.touches[0].fingerId].touchLocation;
+
+        return TouchLocation.NONE;
     }
 
 }
@@ -261,6 +282,7 @@ class TouchInstanceData
     public TouchInstanceData()
     {
         moveTime = 0;
+        totalTime = 0;
         swipeTriggered = false;
         touchLocation = TouchController.TouchLocation.NONE;
     }                                   

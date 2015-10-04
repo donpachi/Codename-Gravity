@@ -33,10 +33,6 @@ public class Player : MonoBehaviour {
             inAir = true;
 	}
 
-	void addForce(Vector3 vector) {
-
-	}
-
 
 	void OnCollisionEnter2D(Collision2D collisionEvent) {
 
