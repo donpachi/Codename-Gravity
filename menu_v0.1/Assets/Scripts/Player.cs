@@ -17,7 +17,7 @@ public class Player : MonoBehaviour {
     public float deathSpeed = 25;
     public bool inAir;
 
-	void Start () {
+	void Awake () {
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         inAir = false;

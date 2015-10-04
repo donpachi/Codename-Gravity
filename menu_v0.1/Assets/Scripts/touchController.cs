@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;       //FOR DEBUG REMOVE LATER
 
 
 //Will only follow the first two fingers on screen
 //First finger on screen will be the priority for movement. Second finger can be used for swipe up and down.
+//
 //Manager has a deadzone for movement
 //
 
@@ -13,7 +15,9 @@ public class TouchController : MonoBehaviour {
     public static TouchController Instance;
     public float SwipeTime = 1.0f;     //Max time for movement check of a swipe.
     public float DeadZoneMagnitude = 20;      //DeadZone of swipe movement calculated as ratio between this value and screen height
+    public bool firstFingerDown;
     public enum SwipeDirection {UP, DOWN, LEFT, RIGHT}
+    public enum TouchLocation {LEFT, RIGHT, NONE}
 
     //Screen width and height
     private int height;
@@ -49,22 +53,27 @@ public class TouchController : MonoBehaviour {
         }
         height = Screen.height;
         width = Screen.width;
-        touchDataArray = new TouchInstanceData[2];
+        touchDataArray = new TouchInstanceData[MAXTOUCHES];
         deadZone = height / DeadZoneMagnitude;
+        firstFingerDown = false;
 	}
 	
-	void FixedUpdate () {
+	void Update () {
         if (Input.touchCount > 0 && Input.touchCount <= MAXTOUCHES)
         {
+            GameObject.Find("ScreenText").GetComponent<Text>().text = "";
             for (int i = 0; i < Input.touchCount; ++i)        //only loops for the number of max touches
             {
-                processATouch(Input.touches[i]);
+                GameObject.Find("ScreenText").GetComponent<Text>().text += "Key and Index Of Key: \n Key: " + Input.touches[i].fingerId + "    i: " + i + "\n";
+                if (Input.touches[i].fingerId < MAXTOUCHES)
+                    processATouch(Input.touches[i], i);
+                GameObject.Find("ScreenText").GetComponent<Text>().text += "TouchLocation: " + touchDataArray[Input.touches[i].fingerId].touchLocation + " touchposition: " + Input.touches[i].position + "\n";
             }
 
         }
 	}
 
-    void processATouch(Touch touch)
+    void processATouch(Touch touch, int touchOrder)
     {
         switch (touch.phase)
         {
@@ -73,27 +82,63 @@ public class TouchController : MonoBehaviour {
                 touchDataArray[touch.fingerId] = new TouchInstanceData();
                 touchDataArray[touch.fingerId].StartPosition = touch.position;
                 touchDataArray[touch.fingerId].swipeOriginPosition = touch.position;
-                touchDataArray[touch.fingerId].totalTime = 0;
+                updateTouchLocation(touch, touchDataArray[touch.fingerId]);
                 break;
             //Midpoint of a touch, need to see how far it moved, how fast it moved that distance and react accordingly
             case TouchPhase.Moved:
                 TouchInstanceData data = touchDataArray[touch.fingerId];
-                data.totalTime += touch.deltaTime;
                 data.moveTime += touch.deltaTime;
+                data.totalTime += touch.deltaTime;
                 checkSwipe(touch, data);
+                updateTouchLocation(touch, data);
                 break;
             //Finger stopped or ended, swipe data resets
             case TouchPhase.Stationary:
                 touchDataArray[touch.fingerId].swipeTriggered = false;
+                touchDataArray[touch.fingerId].totalTime += touch.deltaTime;
                 resetSwipeData(touch, touchDataArray[touch.fingerId]);
-                //GameObject.Find("MovingText").GetComponent<Text>().text = "Movement time reset";
+                updateTouchLocation(touch, touchDataArray[touch.fingerId]);
                 break;
             case TouchPhase.Ended:
-                touchDataArray[touch.fingerId].swipeTriggered = false;
-                resetSwipeData(touch, touchDataArray[touch.fingerId]);
+                touchDataArray[touch.fingerId].swipeOriginPosition = touch.position;
+                touchDataArray[touch.fingerId].moveTime = 0;
+                touchDataArray[touch.fingerId].totalTime = 0;
+                touchDataArray[touch.fingerId].touchLocation = TouchLocation.NONE;
                 break;
         }
 
+    }
+
+    //update the touch location in realation to orientation and screen position
+    void updateTouchLocation(Touch touch, TouchInstanceData data)
+    {
+        switch (OrientationListener.instanceOf.currentOrientation())
+        {
+            case OrientationListener.Orientation.PORTRAIT:
+                if (touch.position.x > width / 2)
+                    data.touchLocation = TouchLocation.RIGHT;
+                else
+                    data.touchLocation = TouchLocation.LEFT;
+                break;
+            case OrientationListener.Orientation.INVERTED_PORTRAIT:
+                if (touch.position.x < width / 2)
+                    data.touchLocation = TouchLocation.RIGHT;
+                else
+                    data.touchLocation = TouchLocation.LEFT;
+                break;
+            case OrientationListener.Orientation.LANDSCAPE_LEFT:
+                if (touch.position.y < height / 2)
+                    data.touchLocation = TouchLocation.RIGHT;
+                else
+                    data.touchLocation = TouchLocation.LEFT;
+                break;
+            case OrientationListener.Orientation.LANDSCAPE_RIGHT:
+                if (touch.position.y > height / 2)
+                    data.touchLocation = TouchLocation.RIGHT;
+                else
+                    data.touchLocation = TouchLocation.LEFT;
+                break;
+        }
     }
 
     //Checks if the move should be a swipe
@@ -102,8 +147,6 @@ public class TouchController : MonoBehaviour {
         if (!data.swipeTriggered && data.moveTime < SwipeTime)
         {
             data.DeltaFromSwipe = touch.position - data.swipeOriginPosition;
-            //GameObject.Find("ScreenText").GetComponent<Text>().text = "DeadZone Magnitude: " + deadZone
-            //    + "\nSwipe instance vector: " + data.DeltaFromSwipe + "  Magnatude of swipe instance: " + data.DeltaFromSwipe.magnitude;
             if (data.DeltaFromSwipe.magnitude > deadZone)
             {
                 //movement has been decieded as swipe, fire the corresponding event
@@ -112,7 +155,6 @@ public class TouchController : MonoBehaviour {
                 resetSwipeData(touch, data);
             }
         }
-        //GameObject.Find("MovingText").GetComponent<Text>().text = "Total Time passed from movement: " + data.moveTime;
     }
 
     //Sets the direction of the swipe in relation to device orientation
@@ -211,15 +253,16 @@ class TouchInstanceData
     public Vector2 StartPosition;   //the origin of the touch
     public Vector2 DeltaFromSwipe;  //the movement vector from where the swipe started
     public Vector2 swipeOriginPosition;    //The point where the swipe starts
-    public float totalTime;         //total life of the touch
     public float moveTime;          //how long the swipe has been moving
+    public float totalTime;         //total life of touch
     public bool swipeTriggered;    //flag to prevent one swipe firing multiple events
+    public TouchController.TouchLocation touchLocation; //Touch location in relation to orientation 
 
     public TouchInstanceData()
     {
-        totalTime = 0;
         moveTime = 0;
         swipeTriggered = false;
+        touchLocation = TouchController.TouchLocation.NONE;
     }                                   
 }
 

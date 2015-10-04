@@ -1,0 +1,144 @@
+fileFormatVersion: 2
+guid: 851a2de4c86340f4db9976d1c4626bf8
+timeCreated: 1443896588
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: potatobody
+    21300002: potatoRightFoot
+    21300004: potatoLeftFoot
+    21300006: potatoRightArm
+    21300008: potatoLeftArm
+    21300010: potatoLeftEye
+    21300012: potatoRightEye
+    21300014: potatoMouth
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 50
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: potatobody
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 34
+        width: 25
+        height: 35
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: potatoRightFoot
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 8
+        width: 12
+        height: 11
+      alignment: 9
+      pivot: {x: .360048383, y: .94105947}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: potatoRightArm
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 43
+        width: 8
+        height: 17
+      alignment: 9
+      pivot: {x: .773572922, y: .973494828}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: potatoLeftArm
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 16
+        width: 10
+        height: 16
+      alignment: 9
+      pivot: {x: .108135983, y: .919854999}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: potatoLeftEye
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 87
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: potatoRightEye
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 87
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: potatoMouth
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 87
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: potatoLeftFoot
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 8
+        width: 12
+        height: 11
+      alignment: 9
+      pivot: {x: .406698853, y: .958023429}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
