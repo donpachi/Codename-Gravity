@@ -11,6 +11,7 @@ public class DebugScreenSize : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        gameObject.GetComponent<Text>().text = "Height: " + Screen.height + "\n Width: " + Screen.width;
+        gameObject.GetComponent<Text>().text = "Height: " + Screen.height + " Width: " + Screen.width
+                                                    + "\n ";
 	}
 }

@@ -17,7 +17,7 @@ public class Player : MonoBehaviour {
     public float deathSpeed = 25;
     public bool inAir;
 
-	void Start () {
+	void Awake () {
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         inAir = false;
@@ -25,16 +25,12 @@ public class Player : MonoBehaviour {
 	
 	
 	void FixedUpdate () {
-        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, Vector2.down, 1, wallMask);
+        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getRelativeDownVector(), 1, wallMask);
 
         if (groundCheckRay.collider != null)
-            inAir = true;
-        else
             inAir = false;
-	}
-
-	void addForce(Vector3 vector) {
-
+        else
+            inAir = true;
 	}
 
 

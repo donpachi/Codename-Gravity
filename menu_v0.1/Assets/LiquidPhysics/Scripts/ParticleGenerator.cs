@@ -19,10 +19,12 @@ public class ParticleGenerator : MonoBehaviour {
 	public DynamicParticle.STATES particlesState=DynamicParticle.STATES.WATER; // The state of the particles spawned
 	public Transform particlesParent; // Where will the spawned particles will be parented (To avoid covering the whole inspector with them)
 
+	public int particleNumber = 0;
+
 	void Start() { 	}
 
 	void Update() {	
-		if( lastSpawnTime+SPAWN_INTERVAL<Time.time ){ // Is it time already for spawning a new particle?
+		if( lastSpawnTime+SPAWN_INTERVAL<Time.time && particleNumber < 100){ // Is it time already for spawning a new particle?
 			GameObject newLiquidParticle=(GameObject)Instantiate(Resources.Load("LiquidPhysics/DynamicParticle")); //Spawn a particle
 			newLiquidParticle.GetComponent<Rigidbody2D>().AddForce( particleForce); //Add our custom force
 			DynamicParticle particleScript=newLiquidParticle.GetComponent<DynamicParticle>(); // Get the particle script
@@ -30,7 +32,9 @@ public class ParticleGenerator : MonoBehaviour {
 			particleScript.SetState(particlesState); //Set the particle State
 			newLiquidParticle.transform.position=transform.position;// Relocate to the spawner position
 			newLiquidParticle.transform.parent=particlesParent;// Add the particle to the parent container			
-			lastSpawnTime=Time.time; // Register the last spawnTime			
+			lastSpawnTime=Time.time; // Register the last spawnTime		
+
+			particleNumber++;
 		}		
 	}
 }
