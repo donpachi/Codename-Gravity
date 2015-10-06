@@ -16,6 +16,7 @@ public class Player : MonoBehaviour {
 	public event PlayerDied OnPlayerDeath;
     public float deathSpeed = 25;
     public bool inAir;
+    public float OnGroundRaySize;
 
 	void Awake () {
         playerRigidBody = GetComponent<Rigidbody2D>();
@@ -25,7 +26,7 @@ public class Player : MonoBehaviour {
 	
 	
 	void FixedUpdate () {
-        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getRelativeDownVector(), 1, wallMask);
+        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getRelativeDownVector(), OnGroundRaySize, wallMask);
 
         if (groundCheckRay.collider != null)
             inAir = false;
