@@ -32,11 +32,13 @@ public class Controls : MonoBehaviour
     */
     private char gravityOrientation;
     private static Vector2 gravVector;
+    private Animator anim;
 
 
     // Use this for initialization
     void Start()
     {
+        anim = GetComponent<Animator>();
         elapsedTime = 0;
         playerBody = GetComponent<Rigidbody2D>();
         lowPassValue = Input.acceleration;
@@ -122,7 +124,7 @@ public class Controls : MonoBehaviour
                     break;
             }
         }
-
+        anim.SetFloat("Speed", playerBody.velocity.magnitude);
 
         //if (Input.touchCount == 1)
         //{
