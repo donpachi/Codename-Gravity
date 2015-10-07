@@ -128,13 +128,13 @@ public class TouchController : MonoBehaviour {
                     data.touchLocation = TouchLocation.LEFT;
                 break;
             case OrientationListener.Orientation.LANDSCAPE_LEFT:
-                if (touch.position.y < height / 2)
+                if (touch.position.y > height / 2)
                     data.touchLocation = TouchLocation.RIGHT;
                 else
                     data.touchLocation = TouchLocation.LEFT;
                 break;
             case OrientationListener.Orientation.LANDSCAPE_RIGHT:
-                if (touch.position.y > height / 2)
+                if (touch.position.y < height / 2)
                     data.touchLocation = TouchLocation.RIGHT;
                 else
                     data.touchLocation = TouchLocation.LEFT;

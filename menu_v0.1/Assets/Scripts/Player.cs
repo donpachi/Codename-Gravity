@@ -26,15 +26,44 @@ public class Player : MonoBehaviour {
 	
 	
 	void FixedUpdate () {
+
+        groundCheck();
+
+
+
+	}
+
+    //Raycasts down to check for a floor
+    void groundCheck()
+    {
         RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getRelativeDownVector(), OnGroundRaySize, wallMask);
 
         if (groundCheckRay.collider != null)
             inAir = false;
         else
             inAir = true;
-	}
+    }
+
+    //updates sprite to correct orientation
+    void spriteUpdate()
+    {
+        OrientationListener.Orientation current = OrientationListener.instanceOf.currentOrientation();
+
+        switch (current)
+        {
+            case OrientationListener.Orientation.PORTRAIT:
+
+                break;
+            case OrientationListener.Orientation.LANDSCAPE_LEFT:
+
+                break;
+        }
+
+    }
 
 
+
+/*---------------Event Functions Start Here---------------*/
 	void OnCollisionEnter2D(Collision2D collisionEvent) {
 
         if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed)
