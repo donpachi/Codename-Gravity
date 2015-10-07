@@ -24,7 +24,7 @@ public class GameControl : MonoBehaviour {
             Destroy(gameObject);
         }
 
-        if (File.Exists(Application.persistentDataPath + "/gameSave.dat"))
+        if (!File.Exists(Application.persistentDataPath + "/gameSave.dat"))
         {
             NewGame();
         }

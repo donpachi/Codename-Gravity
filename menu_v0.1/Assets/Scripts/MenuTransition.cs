@@ -16,11 +16,11 @@ public class MenuTransition : MonoBehaviour
 
     // Use this for initialization
     void Start () {
-        contentViewer = this.GetComponent<RectTransform>();
         released = false;
+        contentViewer = this.GetComponent<RectTransform>();
+        buttonImage = Resources.Load<Sprite>("unity_builtin_extra/UISprite");   //change to better image
         levelSelectScreens = GameObject.FindGameObjectsWithTag("Level Select");
         Array.Reverse(levelSelectScreens);
-        buttonImage = Resources.Load<Sprite>("unity_builtin_extra/UISprite");   //change to better image
         GenerateLevelList();
     }
 	
