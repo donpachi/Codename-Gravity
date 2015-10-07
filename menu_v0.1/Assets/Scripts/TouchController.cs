@@ -67,7 +67,7 @@ public class TouchController : MonoBehaviour {
 	void Update () {
         if (Input.touchCount > 0 && Input.touchCount <= MAXTOUCHES)
         {
-            GameObject.Find("ScreenText").GetComponent<Text>().text = "";
+            //GameObject.Find("ScreenText").GetComponent<Text>().text = "";
             for (int i = 0; i < Input.touchCount; ++i)        //only loops for the number of max touches
             {
                 //GameObject.Find("ScreenText").GetComponent<Text>().text += "Key and Index Of Key: \n Key: " + Input.touches[i].fingerId + "    i: " + i + "\n";
