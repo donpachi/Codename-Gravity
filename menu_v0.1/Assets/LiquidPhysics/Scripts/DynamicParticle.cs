@@ -97,14 +97,19 @@ public class DynamicParticle : MonoBehaviour {
 	public void SetLifeTime(float time){
 		particleLifeTime=time;	
 	}
+
 	// Here we handle the collision events with another particles, in this example water+lava= water-> gas
+    // Logic here for creating a new waterbody
 	void OnCollisionEnter2D(Collision2D other){
 		if(currentState==STATES.WATER && other.gameObject.tag=="DynamicParticle"){ 
 			if(other.collider.GetComponent<DynamicParticle>().currentState==STATES.LAVA){
 				SetState(STATES.GAS);
 			}
 		}
+        if (other.gameObject.tag == "water")
+        {
 
+        }
 	}
 	
 }

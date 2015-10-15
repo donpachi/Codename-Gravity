@@ -191,19 +191,8 @@ public class Water : MonoBehaviour {
         else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT)
         {
             scale.x = scale.x - WATERRUNOFFRATE;
-            //foreach (Transform child in this.transform)
-            //{
-            //    if (this.GetComponent<SpriteRenderer>().bounds.min.x == child.GetComponent<SpriteRenderer>().bounds.min.x)//the x value of a water spawner)
-            //    {
-            //        Destroy(child);
-            //    }
-            //}
-            
             if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT)
-            {
-                this.transform.position = new Vector2(this.transform.position.x + WATERRUNOFFRATE, this.transform.position.y);
-                
-            }
+                this.transform.position = new Vector2(this.transform.position.x + WATERRUNOFFRATE, this.transform.position.y);                
             else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT)
                 this.transform.position = new Vector2(this.transform.position.x - WATERRUNOFFRATE, this.transform.position.y);
         }
