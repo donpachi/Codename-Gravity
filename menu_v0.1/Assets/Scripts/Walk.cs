@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;       //FOR DEBUG REMOVE LATER
 
 public class Walk : MonoBehaviour {
 
@@ -27,6 +28,7 @@ public class Walk : MonoBehaviour {
         if (!atTopSpeed)
         {
             TouchController.TouchLocation movementDirection = TouchController.Instance.getTouchDirection();
+
             switch (movementDirection)
             {
                 case TouchController.TouchLocation.LEFT:
@@ -39,6 +41,10 @@ public class Walk : MonoBehaviour {
                     break;
             }
         }
-        anim.SetFloat("Speed", playerBody.velocity.magnitude);
+
+        if (TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
+            anim.SetBool("Moving", true);
+        else
+            anim.SetBool("Moving", false);
 	}
 }
