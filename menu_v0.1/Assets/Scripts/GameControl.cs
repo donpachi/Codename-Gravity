@@ -9,8 +9,8 @@ public class GameControl : MonoBehaviour {
 
     public static GameControl Instance;
     
-    public bool[] levelUnlocked;
-    public int[] levelHighScore;
+    private bool[] levelUnlocked;
+    private int[] levelHighScore;
 
     void Awake()
     {
@@ -22,6 +22,15 @@ public class GameControl : MonoBehaviour {
         else if (Instance != this)
         {
             Destroy(gameObject);
+        }
+
+        if (!File.Exists(Application.persistentDataPath + "/gameSave.dat"))
+        {
+            NewGame();
+        }
+        else
+        {
+            Load();
         }
     }
 
@@ -50,6 +59,33 @@ public class GameControl : MonoBehaviour {
             levelUnlocked = data.levelUnlocked;
             levelHighScore = data.levelHighScore;
         }
+    }
+
+    public void NewGame()
+    {
+        levelUnlocked = new Boolean[Application.levelCount-1];
+        levelUnlocked[0] = true; // Unlock First Level
+        levelHighScore = new Int32[Application.levelCount-1];
+        Save();
+    }
+
+    public void SetLevelComplete(int score)
+    {
+        if (score > levelHighScore[Application.loadedLevel])
+            levelHighScore[Application.loadedLevel] = score;
+
+        levelUnlocked[Application.loadedLevel] = true;
+        Save();
+    }
+
+    public bool[] GetLevelUnlock()
+    {
+        return levelUnlocked;
+    }
+
+    public int[] GetLevelHighScore()
+    {
+        return levelHighScore;
     }
 }
 

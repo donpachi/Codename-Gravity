@@ -23,6 +23,7 @@ public class ExitGate : MonoBehaviour {
             Time.timeScale = 0;
             victory.GetComponent<Canvas>().enabled = true;
             controller.GetComponent<Canvas>().enabled = false;
+            GameObject.Find("GameController").GetComponent<GameControl>().SetLevelComplete(100);
         }
     }
 }

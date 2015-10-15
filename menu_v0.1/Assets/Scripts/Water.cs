@@ -4,163 +4,214 @@ using System;
 
 public class Water : MonoBehaviour {
 	
-	Controls controls;
-	float WATERRUNOFFRATE = 0.8f;
-	float waterScale = 1f;
-	float DISAPPEARTHRESHOLD = 0.05f;
-	bool resizing = false;
-	float originalLengthOfWaterBody = 0f;
-	OrientationListener.Orientation previousOrientation;
-	int frameCounter = 0;
-    float RAYCASTCOLLISIONDISTANCE = 0.486f;
+    //Controls controls;
+    float WATERRUNOFFRATE = 0.9f;
+    //float waterScale = 1f;
+    //float DISAPPEARTHRESHOLD = 0.05f;
+    bool resizing = false;
+    //float originalLengthOfWaterBody = 0f;
+    OrientationListener.Orientation previousOrientation;
+    //int frameCounter = 0;
+    float RAYCASTCOLLISIONDISTANCE = 5f;//0.490f;
+    float absoluteYPosition;
 
-	// Use this for initialization
-	void Start () {
+    //// Use this for initialization
+    void Start()
+    {
 
-		controls = GameObject.FindGameObjectWithTag("Player").GetComponent<Controls>();
-		AddListener (controls);
-		originalLengthOfWaterBody = this.GetComponent<SpriteRenderer>().bounds.size.x;
+        //controls = GameObject.FindGameObjectWithTag("Player").GetComponent<Controls>();
+        //originalLengthOfWaterBody = this.GetComponent<SpriteRenderer>().bounds.size.x;
         previousOrientation = OrientationListener.instanceOf.currentOrientation();
-	}
+    }
 
-	private void AddListener (Controls controls)
-	{
-		//controls.OrientationChange += HandleOrientationChange;
-	}
+    public void checkToSpawn() {
 
-	public void HandleOrientationChange() {
-		resizing = true;
-	}
+        RaycastHit2D leftsidedownhit;
+        RaycastHit2D rightsidedownhit;
+        RaycastHit2D leftsidehit;
+        RaycastHit2D rightsidehit;
 
-	public void resizeWater() {
-		RaycastHit2D leftsidedownhit;
-		RaycastHit2D rightsidedownhit;
-		RaycastHit2D leftsidehit;
-		RaycastHit2D rightsidehit;
-		
-		Vector2 leftRayOrigin;
-		Vector2 rightRayOrigin;
+        Vector2 leftRayOrigin;
+        Vector2 rightRayOrigin;
 
 
         if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT)
         {
-            leftRayOrigin = new Vector2(this.GetComponent<SpriteRenderer>().bounds.min.x, this.transform.position.y);          
+            leftRayOrigin = new Vector2(this.GetComponent<SpriteRenderer>().bounds.min.x, this.transform.position.y);
             rightRayOrigin = new Vector2(this.GetComponent<SpriteRenderer>().bounds.max.x, this.transform.position.y);
+            absoluteYPosition = this.GetComponent<SpriteRenderer>().bounds.min.y;
         }
         else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
         {
             leftRayOrigin = new Vector2(this.GetComponent<SpriteRenderer>().bounds.max.x, this.transform.position.y);
             rightRayOrigin = new Vector2(this.GetComponent<SpriteRenderer>().bounds.min.x, this.transform.position.y);
+            absoluteYPosition = this.GetComponent<SpriteRenderer>().bounds.max.y;
         }
         else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT)
         {
             leftRayOrigin = new Vector2(this.transform.position.x, this.GetComponent<SpriteRenderer>().bounds.max.y);
             rightRayOrigin = new Vector2(this.transform.position.x, this.GetComponent<SpriteRenderer>().bounds.min.y);
-            
+            absoluteYPosition = this.GetComponent<SpriteRenderer>().bounds.min.x;
+
         }
         else
         {
             leftRayOrigin = new Vector2(this.transform.position.x, this.GetComponent<SpriteRenderer>().bounds.min.y);
             rightRayOrigin = new Vector2(this.transform.position.x, this.GetComponent<SpriteRenderer>().bounds.max.y);
-            
+            absoluteYPosition = this.GetComponent<SpriteRenderer>().bounds.max.y;
+
         }
         leftsidehit = Physics2D.Raycast(leftRayOrigin, OrientationListener.instanceOf.getRelativeLeftVector(), RAYCASTCOLLISIONDISTANCE, 1 << LayerMask.NameToLayer("Walls"));
         rightsidehit = Physics2D.Raycast(rightRayOrigin, OrientationListener.instanceOf.getRelativeRightVector(), RAYCASTCOLLISIONDISTANCE, 1 << LayerMask.NameToLayer("Walls"));
 
         
-        //Physics2D.Raycast (this.transform, Vector2.down, 1, 1 << LayerMask.NameToLayer("Walls"));
-        Vector2 scale = this.transform.localScale;
-		Vector2 position = this.transform.position;
-		BoxCollider2D waterCollider = (BoxCollider2D)this.GetComponent<BoxCollider2D> ();
+    
 
 
-        /*
-		// If there is a wall only on the left side of the water body
-		if (leftsidehit.distance < 5 && rightsidehit.distance > 5) {
-			if (Input.deviceOrientation == DeviceOrientation.Portrait || Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown) {
-				scale.y = scale.y * WATERRUNOFFRATE;
-				scale.x = scale.x * 1 / WATERRUNOFFRATE;
-				if (Input.deviceOrientation == DeviceOrientation.Portrait) {
-					position.x += scale.x * WATERRUNOFFRATE;
-				} else if (Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown) {
-					position.x -= scale.x * WATERRUNOFFRATE;
-				}
-			} else if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft || Input.deviceOrientation == DeviceOrientation.LandscapeRight) {
-				scale.x = scale.x * WATERRUNOFFRATE;
-				scale.y = scale.y * 1 / WATERRUNOFFRATE;
-				if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft) {
-					position.y += scale.y * WATERRUNOFFRATE;
-				} else if (Input.deviceOrientation == DeviceOrientation.LandscapeRight) {
-					position.y -= scale.y * WATERRUNOFFRATE;
-				}
-			}
-		} 
-
-		// If there is a wall only on the right side of the water body
-		else if (leftsidehit.distance > 5 && rightsidehit.distance < 5) {
-			if (Input.deviceOrientation == DeviceOrientation.Portrait || Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown) {
-				scale.y = scale.y * WATERRUNOFFRATE;
-				scale.x = scale.x * 1 / WATERRUNOFFRATE;
-				if (Input.deviceOrientation == DeviceOrientation.Portrait) {
-					position.x -= scale.x * WATERRUNOFFRATE;
-				} else if (Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown) {
-					position.x += scale.x * WATERRUNOFFRATE;
-				}
-			} else if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft || Input.deviceOrientation == DeviceOrientation.LandscapeRight) {
-				scale.x = scale.x * WATERRUNOFFRATE;
-				scale.y = scale.y * 1 / WATERRUNOFFRATE;
-				if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft) {
-					position.y -= scale.y * WATERRUNOFFRATE;
-				} else if (Input.deviceOrientation == DeviceOrientation.LandscapeRight) {
-					position.y += scale.y * WATERRUNOFFRATE;
-				}
-			}
-		} 
-		*/
-        // If there are no walls on either side of the water body
-        if (!leftsidehit && !rightsidehit){
-			if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT) {
-				scale.y = scale.y * WATERRUNOFFRATE;
-				scale.x = scale.x * 1 / WATERRUNOFFRATE;
-			} else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT) {
-				scale.x = scale.x * WATERRUNOFFRATE;
-				scale.y = scale.y * 1 / WATERRUNOFFRATE;
-			}
-			this.transform.localScale = scale;
-			//this.transform.position = position;
-			//waterScale = waterScale * WATERRUNOFFRATE;
-			//if (waterScale <= DISAPPEARTHRESHOLD) {
-			//	Destroy (this);
-			//}
-		}
         // If there are walls on both sides of the water body
-        else
+        if (leftsidehit && rightsidehit)
         {
+            Debug.Log("Walls on both sides");
             resizing = false;
-            /*
-        	// Spawn another water source
-        	GameObject newParticleGenerator=(GameObject)Instantiate(Resources.Load("LiquidPhysics/ParticleGenerator"));
-        	if (leftsidehit.distance > 1) {
-        		newParticleGenerator.transform.position = leftRayOrigin;
-        	}
-        	if (rightsidehit.distance > 1) {
-        		newParticleGenerator.transform.position = rightRayOrigin;
-        	}*/
+        }
 
+    //    // If there is a wall only on the left side of the water body
+        else if (leftsidehit && rightsidehit.collider == null)
+        {
+            Debug.Log("No wall on right side");
+            createSpawners(rightRayOrigin);
+    //        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT)
+    //        {
+    //            scale.y = scale.y * WATERRUNOFFRATE;
+    //            scale.x = scale.x * 1 / WATERRUNOFFRATE;
+    //            if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
+    //            {
+    //                position.x -= 1/WATERRUNOFFRATE;
+    //            }
+    //            else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT)
+    //            {
+    //                position.x += 1/WATERRUNOFFRATE;
+    //            }
+    //        }
+    //        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT)
+    //        {
+    //            scale.x = scale.x * WATERRUNOFFRATE;
+    //            scale.y = scale.y * 1 / WATERRUNOFFRATE;
+    //            if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT)
+    //            {
+    //                position.y -= 1/WATERRUNOFFRATE;
+    //            }
+    //            else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT)
+    //            {
+    //                position.y += 1/WATERRUNOFFRATE;
+    //            }
+    //        }
+
+            
+    //        this.transform.position = position;
+    //        this.transform.localScale = scale;
+    //        //Debug.Log("Leftsidehit " + position);
+        }
+
+    //    // If there is a wall only on the right side of the water body
+        else if (leftsidehit.collider == null && rightsidehit)
+        {
+            Debug.Log("No wall on left side");
+            createSpawners(rightRayOrigin);
+    
+        }
+
+
+    //    // If there are no walls on either side of the water body
+        else if (!leftsidehit && !rightsidehit)
+        {
+            Debug.Log("No walls on either side");
+            //if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT)
+            //{
+            //    scale.y = scale.y * WATERRUNOFFRATE;
+            //    scale.x = scale.x * 1 / WATERRUNOFFRATE;
+            //}
+            //else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT)
+            //{
+            //    scale.x = scale.x * WATERRUNOFFRATE;
+            //    scale.y = scale.y * 1 / WATERRUNOFFRATE;
+            //}
+            //this.transform.localScale = scale;
+            //if (waterScale <= DISAPPEARTHRESHOLD) {
+            //	Destroy (this);
+            //}
+
+        }
+
+    }
+
+    // Create more waterSpawners
+    void createSpawners(Vector2 origin)
+    {
+        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT) 
+        {
+            for (float distanceFromOrigin = 0; distanceFromOrigin < (this.GetComponent<SpriteRenderer>().bounds.size.x / 2); distanceFromOrigin += 2)
+            {
+                GameObject spawnerAbove = (GameObject)Instantiate(Resources.Load("ParticleSource"));
+                GameObject spawnerBelow = (GameObject)Instantiate(Resources.Load("ParticleSource"));
+                Vector2 originOffsetAbove = new Vector2(origin.x - distanceFromOrigin, origin.y);
+                Vector2 originOffsetBelow = new Vector2(origin.x + distanceFromOrigin, origin.y);
+                spawnerAbove.transform.position = originOffsetAbove;
+                spawnerBelow.transform.position = originOffsetBelow;
+            }
+        }
+        else 
+        {
+            for (float distanceFromOrigin = 0; distanceFromOrigin < (this.GetComponent<SpriteRenderer>().bounds.size.y / 2); distanceFromOrigin += 2)
+            {
+                GameObject spawnerAbove = (GameObject)Instantiate(Resources.Load("ParticleSource"));
+                GameObject spawnerBelow = (GameObject)Instantiate(Resources.Load("ParticleSource"));
+                Vector2 originOffsetAbove = new Vector2(origin.x, origin.y - distanceFromOrigin);
+                Vector2 originOffsetBelow = new Vector2(origin.x, origin.y + distanceFromOrigin);
+                spawnerAbove.transform.position = originOffsetAbove;
+                spawnerBelow.transform.position = originOffsetBelow;
+            }
         }
     }
 
-	// Update is called once per frame
-	void FixedUpdate () {
 
+    void resizeWater()
+    {
+        Vector2 scale = this.transform.localScale;
+        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT)
+        {
+            scale.y = scale.y - 0.3f;//* WATERRUNOFFRATE;      
+            //this.transform.position = new Vector2(this.transform.position.x, absoluteYPosition);
+        }
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT)
+        {
+            scale.x = scale.x * WATERRUNOFFRATE;
+            //this.transform.position = new Vector2(this.transform.position.x, absoluteYPosition);
+        }
+        this.transform.localScale = scale;
+        
+        if (scale.x <= 0 || scale.y <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
 
-		if (previousOrientation != OrientationListener.instanceOf.currentOrientation()) {
-			resizing = true;
-		}
-		if (resizing == true) {
-			resizeWater ();
-		}
-	    previousOrientation = OrientationListener.instanceOf.currentOrientation();
-		frameCounter++;
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        Debug.Log(OrientationListener.instanceOf.currentOrientation());
+
+        if (previousOrientation != OrientationListener.instanceOf.currentOrientation())
+        {
+            
+            
+            checkToSpawn();
+            resizing = true;
+        }
+        if (resizing == true)
+        {
+            //resizeWater();
+        }
+        previousOrientation = OrientationListener.instanceOf.currentOrientation();
 	}
 }

@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.IO;
+using System;
 
 public class MenuTransition : MonoBehaviour
 {
@@ -9,11 +12,16 @@ public class MenuTransition : MonoBehaviour
     private RectTransform closestScreenRect;
     private GameObject[] levelSelectScreens;
 
+    private Sprite buttonImage;
+
     // Use this for initialization
     void Start () {
-        contentViewer = this.GetComponent<RectTransform>();
         released = false;
+        contentViewer = this.GetComponent<RectTransform>();
+        buttonImage = Resources.Load<Sprite>("unity_builtin_extra/UISprite");   //change to better image
         levelSelectScreens = GameObject.FindGameObjectsWithTag("Level Select");
+        Array.Reverse(levelSelectScreens);
+        GenerateLevelList();
     }
 	
 	// Update is called once per frame
@@ -56,5 +64,38 @@ public class MenuTransition : MonoBehaviour
     public void BeginDrag()
     {
         released = false;
+    }
+
+    public void LoadLevel(int level)
+    {
+        Application.LoadLevel(level);
+    }
+
+    private void GenerateLevelList()
+    {
+        bool[] levelUnlocked = GameObject.Find("GameController").GetComponent<GameControl>().GetLevelUnlock();
+        int[] levelHighScore = GameObject.Find("GameController").GetComponent<GameControl>().GetLevelHighScore();
+
+        ColorBlock color;
+        Selectable[] levelButtons;
+
+        for (int i = 0; i < levelSelectScreens.Length; i++)
+        {
+            levelButtons = levelSelectScreens[i].GetComponentsInChildren<Selectable>();
+            for (int j = 0; j < levelButtons.Length; j++)
+            {
+                int current = j + (i * levelButtons.Length);
+
+                if (levelUnlocked.Length > current && levelUnlocked[current] == true)
+                {
+                    levelButtons[j].GetComponentInChildren<Text>().enabled = true;
+                    levelButtons[j].image.sprite = buttonImage;
+                    color = levelButtons[j].colors;
+                    color.normalColor = Color.white;
+                    color.pressedColor = Color.grey;
+                    levelButtons[j].colors = color;
+                }
+            }
+        }
     }
 }
