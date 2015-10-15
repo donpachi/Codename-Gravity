@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;       //FOR DEBUG REMOVE LATER
 
 public class Walk : MonoBehaviour {
 
@@ -27,6 +28,7 @@ public class Walk : MonoBehaviour {
         if (!atTopSpeed)
         {
             TouchController.TouchLocation movementDirection = TouchController.Instance.getTouchDirection();
+
             switch (movementDirection)
             {
                 case TouchController.TouchLocation.LEFT:
