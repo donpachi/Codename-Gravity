@@ -10,26 +10,35 @@ public class Player : MonoBehaviour {
 
     private Rigidbody2D playerRigidBody;
     private LayerMask wallMask;
+    private bool facingRight;
 
-	// Use this for initialization
-
+    public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
     public float deathSpeed = 25;
     public bool inAir;
     public float OnGroundRaySize;
 
 	void Awake () {
+        if (Instance == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         inAir = false;
+        facingRight = true;
 	}
 	
 	
 	void FixedUpdate () {
 
         groundCheck();
-
-
+        faceDirectionCheck();
 
 	}
 
@@ -44,24 +53,46 @@ public class Player : MonoBehaviour {
             inAir = true;
     }
 
-    //updates sprite to correct orientation
-    void spriteUpdate()
+    void faceDirectionCheck()
     {
-        OrientationListener.Orientation current = OrientationListener.instanceOf.currentOrientation();
+        if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.RIGHT && !facingRight)
+            flipSprite();
+        else if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.LEFT && facingRight)
+            flipSprite();
+    }
 
-        switch (current)
+    //updates sprite to correct orientation
+    void gravitySpriteUpdate(OrientationListener.Orientation orientation)
+    {
+        Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
+        Quaternion playerRotation = transform.localRotation;
+        playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
+        switch (orientation)
         {
             case OrientationListener.Orientation.PORTRAIT:
-
+                
                 break;
-            case OrientationListener.Orientation.LANDSCAPE_LEFT:
-
+            case OrientationListener.Orientation.LANDSCAPE_RIGHT:
+                transform.rotation = playerRotation;
                 break;
+
         }
 
     }
 
+    //Flip character while moving left and right
+    void flipSprite()
+    {
+        facingRight = !facingRight;
+        Vector3 playerScale = transform.localScale;
+        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT
+                || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
+            playerScale.x *= -1;
+        else
+            playerScale.y *= -1;
 
+        transform.localScale = playerScale;
+    }
 
 /*---------------Event Functions Start Here---------------*/
 	void OnCollisionEnter2D(Collision2D collisionEvent) {
@@ -95,4 +126,16 @@ public class Player : MonoBehaviour {
 			OnPlayerDeath();
 		}
 	}
+
+    //Listeners for player
+    void OnEnable()
+    {
+        WorldGravity.GravityChanged += gravitySpriteUpdate;
+    }
+
+    void OnDisable()
+    {
+        WorldGravity.GravityChanged -= gravitySpriteUpdate;
+    }
+
 }

@@ -39,6 +39,10 @@ public class Walk : MonoBehaviour {
                     break;
             }
         }
-        anim.SetFloat("Speed", playerBody.velocity.magnitude);
+
+        if (TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
+            anim.SetBool("Moving", true);
+        else
+            anim.SetBool("Moving", false);
 	}
 }
