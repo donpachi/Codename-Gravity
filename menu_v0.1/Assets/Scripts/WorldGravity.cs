@@ -29,12 +29,13 @@ public class WorldGravity : MonoBehaviour {
         elapsedTime += Time.deltaTime;
         if (elapsedTime > GRAVITYCOOLDOWN) {
             gravityOnCooldown = false;
-            if (!gravityOnCooldown && (previousGravityDirection != OrientationListener.instanceOf.currentOrientation())){
+        }
+        if (!gravityOnCooldown && (previousGravityDirection != OrientationListener.instanceOf.currentOrientation())){
                 updateGravity();
                 gravityOnCooldown = true;
                 elapsedTime = 0;
             }
-        }
+        
 	}
 
     void initialize()
