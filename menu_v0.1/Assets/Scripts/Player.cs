@@ -66,16 +66,24 @@ public class Player : MonoBehaviour {
     {
         Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
         Quaternion playerRotation = transform.localRotation;
-        playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
+        //playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
         switch (orientation)
         {
             case OrientationListener.Orientation.PORTRAIT:
-                
+                playerRotation.SetLookRotation(Vector3.forward, Vector3.up);
                 break;
             case OrientationListener.Orientation.LANDSCAPE_RIGHT:
+                playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
                 transform.rotation = playerRotation;
                 break;
-
+            case OrientationListener.Orientation.LANDSCAPE_LEFT:
+                playerRotation.SetLookRotation(Vector3.forward, Vector3.right);
+                transform.rotation = playerRotation;
+                break;
+            case OrientationListener.Orientation.INVERTED_PORTRAIT:
+                playerRotation.SetLookRotation(Vector3.forward, Vector3.down);
+                transform.rotation = playerRotation;
+                break;
         }
 
     }
@@ -85,11 +93,11 @@ public class Player : MonoBehaviour {
     {
         facingRight = !facingRight;
         Vector3 playerScale = transform.localScale;
-        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT
-                || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
+        //if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT
+        //        || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
             playerScale.x *= -1;
-        else
-            playerScale.y *= -1;
+        //else
+        //    playerScale.y *= -1;
 
         transform.localScale = playerScale;
     }
