@@ -19,15 +19,6 @@ public class Player : MonoBehaviour {
     public float OnGroundRaySize;
 
 	void Awake () {
-        if (Instance == null)
-        {
-            DontDestroyOnLoad(gameObject);
-            Instance = this;
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         inAir = false;
