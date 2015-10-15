@@ -3,12 +3,10 @@ using System.Collections;
 
 public class ExitGate : MonoBehaviour {
 
-    GameObject victory;
-    GameObject controller;
+    GameObject menuCanvas;
 	// Use this for initialization
 	void Start () {
-        controller = GameObject.Find("ControlCanvas");
-        victory = GameObject.Find("VictoryCanvas");
+        menuCanvas = GameObject.Find("MenuCanvas");
 	}
 	
 	// Update is called once per frame
@@ -19,11 +17,6 @@ public class ExitGate : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D collisionInfo)
     {
         if (collisionInfo.gameObject.tag == "Player")
-        {
-            Time.timeScale = 0;
-            victory.GetComponent<Canvas>().enabled = true;
-            controller.GetComponent<Canvas>().enabled = false;
-            GameObject.Find("GameController").GetComponent<GameControl>().SetLevelComplete(100);
-        }
+            menuCanvas.GetComponent<MenuCanvas>().VictoryScreen();
     }
 }
