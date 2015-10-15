@@ -90,10 +90,7 @@ public class MenuTransition : MonoBehaviour
                 {
                     levelButtons[j].GetComponentInChildren<Text>().enabled = true;
                     levelButtons[j].image.sprite = buttonImage;
-                    color = levelButtons[j].colors;
-                    color.normalColor = Color.white;
-                    color.pressedColor = Color.grey;
-                    levelButtons[j].colors = color;
+                    levelButtons[j].interactable = true;
                 }
             }
         }
