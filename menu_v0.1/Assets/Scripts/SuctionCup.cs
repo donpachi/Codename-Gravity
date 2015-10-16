@@ -1,4 +1,4 @@
-﻿/*using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -7,10 +7,10 @@ public class SuctionCup : MonoBehaviour {
     public float suctionTimer;
 
     private Vector3 zAxis =  new Vector3(0,0,1);
-    private Vector3 portrait = new Vector3(150, 280, 0);
-    private Vector3 landscapeRight = new Vector3(-150, 280, 0);
-    private Vector3 portraitUpsideDown = new Vector3(-150, -280, 0);
-    private Vector3 landscapeLeft = new Vector3(150, -280, 0);
+    private Vector3 portrait = new Vector3(220, 435, 0);
+    private Vector3 landscapeRight = new Vector3(-220, 435, 0);
+    private Vector3 portraitUpsideDown = new Vector3(-220, -435, 0);
+    private Vector3 landscapeLeft = new Vector3(220, -435, 0);
 
     private float timer;
     private bool triggered;
@@ -57,7 +57,7 @@ public class SuctionCup : MonoBehaviour {
             {
                 suctionCupBootsEnd();
                 timer = 0;
-                suctionText.GetComponent<Text>().text = "";
+                suctionText.GetComponent<Text>().enabled = false;
                 this.gameObject.SetActive(false);
             }
         }
@@ -70,8 +70,13 @@ public class SuctionCup : MonoBehaviour {
             playerBody = collisionInfo.GetComponent<Rigidbody2D>();
 			playerBody.gravityScale = 0.0f;
             playerBody.GetComponent<ConstantForce2D>().relativeForce = suctionVector * 2;
-            player.GetComponent<Controls>().SuctionStatusOn();
-            this.transform.Translate(0, 0, 3);
+            player.GetComponent<Player>().SuctionStatusOn();
+            player.GetComponent<Walk>().enabled = false;
+            player.GetComponent<SuctionWalk>().enabled = true;
+            player.GetComponent<SuctionWalk>().GetVectors();
+            suctionText.GetComponent<Text>().enabled = true;
+            this.GetComponent<Collider2D>().enabled = false;
+            this.GetComponent<SpriteRenderer>().enabled = false;
 
             triggered = true;
             timer = suctionTimer;
@@ -82,6 +87,6 @@ public class SuctionCup : MonoBehaviour {
     {
         playerBody.GetComponent<ConstantForce2D>().relativeForce = new Vector2(0, 0);
         playerBody.gravityScale = 1.0f;
-        player.GetComponent<Controls>().SuctionStatusEnd();
+        player.GetComponent<Player>().SuctionStatusEnd();
     }
-}*/
+}

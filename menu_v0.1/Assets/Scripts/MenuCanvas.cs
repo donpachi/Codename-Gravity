@@ -46,7 +46,7 @@ public class MenuCanvas : MonoBehaviour {
 
     private void GetButtons()
     {
-        Selectable[] menuButtons = this.GetComponentsInChildren<Selectable>(); //Collects buttons in-order from editor hierarchy
+        Selectable[] menuButtons = this.GetComponentsInChildren<Selectable>();
         for (int i = 0; i < menuButtons.Length; i++)
         {
             if (menuButtons[i].name == "Continue")

@@ -11,6 +11,7 @@ public class Player : MonoBehaviour {
     private Rigidbody2D playerRigidBody;
     private LayerMask wallMask;
     private bool facingRight;
+    private bool suctionStatus;
 
     public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
@@ -22,6 +23,7 @@ public class Player : MonoBehaviour {
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         inAir = false;
+        suctionStatus = false;
         facingRight = true;
 	}
 	
@@ -137,4 +139,13 @@ public class Player : MonoBehaviour {
         WorldGravity.GravityChanged -= gravitySpriteUpdate;
     }
 
+    public void SuctionStatusOn()
+    {
+        suctionStatus = true;
+    }
+
+    public void SuctionStatusEnd()
+    {
+        suctionStatus = false;
+    }
 }
