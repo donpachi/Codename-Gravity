@@ -127,7 +127,7 @@ public class DynamicParticle : MonoBehaviour {
             // Create a water body
             GameObject waterBody = (GameObject)Instantiate(Resources.Load("Prefabs/Water"));
             waterBody.transform.position = this.transform.position;
-            waterBody.transform.localScale = resizeWater(waterBody);
+            //waterBody.transform.localScale = resizeWater(waterBody);
 
             
             Destroy(gameObject);
@@ -143,10 +143,10 @@ public class DynamicParticle : MonoBehaviour {
 		particleLifeTime=time;	
 	}
 
-    Vector2 resizeWater(GameObject waterBody)
-    {
+    //Vector2 resizeWater(GameObject waterBody)
+    //{
 
-    }
+    //}
 
 	// Here we handle the collision events with another particles, in this example water+lava= water-> gas
     
