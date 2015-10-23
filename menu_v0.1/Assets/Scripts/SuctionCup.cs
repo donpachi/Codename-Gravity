@@ -6,59 +6,27 @@ public class SuctionCup : MonoBehaviour {
 
     public float suctionTimer;
 
-    private Vector3 zAxis =  new Vector3(0,0,1);
-    private Vector3 portrait = new Vector3(220, 435, 0);
-    private Vector3 landscapeRight = new Vector3(-220, 435, 0);
-    private Vector3 portraitUpsideDown = new Vector3(-220, -435, 0);
-    private Vector3 landscapeLeft = new Vector3(220, -435, 0);
-
     private float timer;
     private bool triggered;
     private GameObject player;
-    private GameObject suctionText;
     private Rigidbody2D playerBody;
 	private Vector2 suctionVector;
 
 	// Use this for initialization
 	void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
-        suctionText = GameObject.Find("SuctionText");
         timer = 0;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        if (Input.deviceOrientation == DeviceOrientation.Portrait) {
-            suctionText.transform.localPosition = portrait;
-            suctionText.transform.rotation = Quaternion.AngleAxis(0, zAxis);
-        }
-        if (Input.deviceOrientation == DeviceOrientation.LandscapeRight) {
-            suctionText.transform.localPosition = landscapeRight;
-            suctionText.transform.rotation = Quaternion.AngleAxis(90, zAxis);
-        }
-        if (Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown){
-            suctionText.transform.localPosition = portraitUpsideDown;
-            suctionText.transform.rotation = Quaternion.AngleAxis(180, zAxis);
-        }
-        if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft)
-        {
-            suctionText.transform.localPosition = landscapeLeft;
-            suctionText.transform.rotation = Quaternion.AngleAxis(270, zAxis);
-        }
-
         if (timer != 0)
         {
             timer -= Time.deltaTime;
-            if (timer > 0)
-                suctionText.GetComponent<Text>().text = timer.ToString();
-
-            else
+            if (timer <= 0)
             {
                 suctionCupBootsEnd();
-                timer = 0;
-                suctionText.GetComponent<Text>().enabled = false;
-                this.gameObject.SetActive(false);
             }
         }
 
@@ -66,27 +34,27 @@ public class SuctionCup : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D collisionInfo) {
 		if (collisionInfo.gameObject.tag == "Player" && !triggered) {
-			suctionVector = Physics2D.gravity;
             playerBody = collisionInfo.GetComponent<Rigidbody2D>();
-			playerBody.gravityScale = 0.0f;
-            playerBody.GetComponent<ConstantForce2D>().relativeForce = suctionVector * 2;
+            playerBody.GetComponent<ConstantForce2D>().relativeForce = Physics2D.gravity * 3;
             player.GetComponent<Player>().SuctionStatusOn();
             player.GetComponent<Walk>().enabled = false;
+            player.GetComponent<PlayerJump>().enabled = false;
             player.GetComponent<SuctionWalk>().enabled = true;
             player.GetComponent<SuctionWalk>().GetVectors();
-            suctionText.GetComponent<Text>().enabled = true;
+
             this.GetComponent<Collider2D>().enabled = false;
             this.GetComponent<SpriteRenderer>().enabled = false;
 
-            triggered = true;
             timer = suctionTimer;
+            player.GetComponent<SuctionWalk>().SetTimer(suctionTimer);
 		}
 	}
 
     private void suctionCupBootsEnd()
     {
-        playerBody.GetComponent<ConstantForce2D>().relativeForce = new Vector2(0, 0);
-        playerBody.gravityScale = 1.0f;
-        player.GetComponent<Player>().SuctionStatusEnd();
+        timer = 0;
+
+        this.GetComponent<Collider2D>().enabled = true;
+        this.GetComponent<SpriteRenderer>().enabled = true;
     }
 }

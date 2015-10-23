@@ -12,6 +12,7 @@ public class Player : MonoBehaviour {
     private LayerMask wallMask;
     private bool facingRight;
     private bool suctionStatus;
+    private bool inTransition;
 
     public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
@@ -24,13 +25,15 @@ public class Player : MonoBehaviour {
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         inAir = false;
         suctionStatus = false;
+        inTransition = false;
         facingRight = true;
 	}
 	
 	
 	void FixedUpdate () {
 
-        groundCheck();
+        if (!inTransition)
+            groundCheck();
         faceDirectionCheck();
 
 	}
@@ -38,12 +41,34 @@ public class Player : MonoBehaviour {
     //Raycasts down to check for a floor
     void groundCheck()
     {
-        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getRelativeDownVector(), OnGroundRaySize, wallMask);
+        if (suctionStatus == false){
+            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getRelativeDownVector(), OnGroundRaySize, wallMask);
 
-        if (groundCheckRay.collider != null)
-            inAir = false;
-        else
-            inAir = true;
+            if (groundCheckRay.collider != null)
+                inAir = false;
+            else
+                inAir = true;
+        }
+        else {
+            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, playerRigidBody.GetComponent<ConstantForce2D>().relativeForce.normalized, OnGroundRaySize, wallMask);
+
+            if (groundCheckRay.collider != null)
+            {
+                inAir = false;
+                playerRigidBody.gravityScale = 0.0f;
+                playerRigidBody.GetComponent<ConstantForce2D>().enabled = true;
+
+            }
+            else
+            {
+                inAir = true;
+                playerRigidBody.gravityScale = 1.0f;
+                playerRigidBody.GetComponent<ConstantForce2D>().enabled = false;
+                playerRigidBody.GetComponent<ConstantForce2D>().relativeForce = Physics2D.gravity * 3;
+                this.GetComponent<SuctionWalk>().GetVectors();
+            }
+        }
+
     }
 
     void faceDirectionCheck()
@@ -55,30 +80,34 @@ public class Player : MonoBehaviour {
     }
 
     //updates sprite to correct orientation
+    //might have to update constant force while suction cups are on
     void gravitySpriteUpdate(OrientationListener.Orientation orientation)
     {
         Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
         Quaternion playerRotation = transform.localRotation;
         //playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
-        switch (orientation)
+        if (suctionStatus == false && inAir == true)
         {
-            case OrientationListener.Orientation.PORTRAIT:
-                playerRotation.SetLookRotation(Vector3.forward, Vector3.up);
-                break;
-            case OrientationListener.Orientation.LANDSCAPE_RIGHT:
-                playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
-                transform.rotation = playerRotation;
-                break;
-            case OrientationListener.Orientation.LANDSCAPE_LEFT:
-                playerRotation.SetLookRotation(Vector3.forward, Vector3.right);
-                transform.rotation = playerRotation;
-                break;
-            case OrientationListener.Orientation.INVERTED_PORTRAIT:
-                playerRotation.SetLookRotation(Vector3.forward, Vector3.down);
-                transform.rotation = playerRotation;
-                break;
+            switch (orientation)
+            {
+                case OrientationListener.Orientation.PORTRAIT:
+                    playerRotation.SetLookRotation(Vector3.forward, Vector3.up);
+                    transform.rotation = playerRotation;
+                    break;
+                case OrientationListener.Orientation.LANDSCAPE_RIGHT:
+                    playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
+                    transform.rotation = playerRotation;
+                    break;
+                case OrientationListener.Orientation.LANDSCAPE_LEFT:
+                    playerRotation.SetLookRotation(Vector3.forward, Vector3.right);
+                    transform.rotation = playerRotation;
+                    break;
+                case OrientationListener.Orientation.INVERTED_PORTRAIT:
+                    playerRotation.SetLookRotation(Vector3.forward, Vector3.down);
+                    transform.rotation = playerRotation;
+                    break;
+            }
         }
-
     }
 
     //Flip character while moving left and right
@@ -147,5 +176,15 @@ public class Player : MonoBehaviour {
     public void SuctionStatusEnd()
     {
         suctionStatus = false;
+    }
+
+    public void InTransitionStatusOn()
+    {
+        inTransition = true;
+    }
+
+    public void InTransitionStatusEnd()
+    {
+        inTransition = false;
     }
 }

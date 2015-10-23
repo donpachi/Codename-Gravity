@@ -13,6 +13,14 @@ public class SuctionWalk : MonoBehaviour
     private bool atTopSpeed;
     private Vector2 leftVector;
     private Vector2 rightVector;
+    private GameObject suctionText;
+    private float timer;
+
+    private Vector3 zAxis = new Vector3(0, 0, 1);
+    private Vector3 portrait = new Vector3(220, 435, 0);
+    private Vector3 landscapeRight = new Vector3(-220, 435, 0);
+    private Vector3 portraitUpsideDown = new Vector3(-220, -435, 0);
+    private Vector3 landscapeLeft = new Vector3(220, -435, 0);
 
     // Use this for initialization
     void Start()
@@ -20,6 +28,8 @@ public class SuctionWalk : MonoBehaviour
         atTopSpeed = false;
         playerBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        suctionText = GameObject.Find("SuctionText");
+        suctionText.GetComponent<Text>().enabled = true;
     }
 
     // Update is called once per frame
@@ -51,11 +61,56 @@ public class SuctionWalk : MonoBehaviour
             anim.SetBool("Moving", true);
         else
             anim.SetBool("Moving", false);
+
+        if (Input.deviceOrientation == DeviceOrientation.Portrait)
+        {
+            suctionText.transform.localPosition = portrait;
+            suctionText.transform.rotation = Quaternion.AngleAxis(0, zAxis);
+        }
+        if (Input.deviceOrientation == DeviceOrientation.LandscapeRight)
+        {
+            suctionText.transform.localPosition = landscapeRight;
+            suctionText.transform.rotation = Quaternion.AngleAxis(90, zAxis);
+        }
+        if (Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown)
+        {
+            suctionText.transform.localPosition = portraitUpsideDown;
+            suctionText.transform.rotation = Quaternion.AngleAxis(180, zAxis);
+        }
+        if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft)
+        {
+            suctionText.transform.localPosition = landscapeLeft;
+            suctionText.transform.rotation = Quaternion.AngleAxis(270, zAxis);
+        }
+
+        if (timer != 0)
+        {
+            timer -= Time.deltaTime;
+            suctionText.GetComponent<Text>().text = timer.ToString();
+            if (timer <= 0)
+            {
+                suctionText.GetComponent<Text>().enabled = false;
+                playerBody.gravityScale = 1.0f;
+                this.GetComponent<ConstantForce2D>().enabled = false;
+                this.GetComponent<Player>().SuctionStatusEnd();
+                this.GetComponent<Walk>().enabled = true;
+                this.GetComponent<PlayerJump>().enabled = true;
+                this.GetComponent<SuctionWalk>().enabled = false;
+            }
+        }
+
     }
 
     public void GetVectors()
     {
         leftVector = OrientationListener.instanceOf.getRelativeLeftVector();
         rightVector = OrientationListener.instanceOf.getRelativeRightVector();
+    }
+
+    public void SetTimer(float t)
+    {
+        timer = t;
+        if (suctionText != null)
+            suctionText.GetComponent<Text>().enabled = true;
     }
 }

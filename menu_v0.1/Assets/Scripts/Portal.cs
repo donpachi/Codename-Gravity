@@ -31,7 +31,7 @@ public class Portal : MonoBehaviour {
                 if ((linkedPortalPosition - bodies[i].body.transform.position).magnitude <= distanceThreshold)
                 {
                     bodies[i].body.Sleep();
-                    StartCoroutine(LaunchPlayer(bodies[i].body, bodies[i].velocity, 2f));
+                    StartCoroutine(LaunchPlayer(bodies[i], 2f));
                     bodies.RemoveAt(i);
                     i -= 1;
                 }
@@ -44,6 +44,8 @@ public class Portal : MonoBehaviour {
         if (collisionInfo.gameObject.tag != "Water")
         {
             Rigidbody2D tempBody = collisionInfo.rigidbody;
+            Collider2D[] colliders = tempBody.GetComponents<Collider2D>();
+            bool isPlayer = collisionInfo.gameObject.tag.Equals("Player");
             Vector3 hiddenPosition = new Vector3(tempBody.transform.position.x,
                                         tempBody.transform.position.y,
                                         1f);
@@ -51,37 +53,49 @@ public class Portal : MonoBehaviour {
             tempBody.gravityScale = 0;
             tempBody.Sleep();
             tempBody.transform.position = hiddenPosition;
-            tempBody.GetComponent<Collider2D>().enabled = false;
-            
-            bodies.Add(new Node(true, tempBody, collisionInfo.relativeVelocity));
+
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                colliders[i].enabled = false;
+            }
+            bodies.Add(new Node(tempBody, collisionInfo.relativeVelocity, isPlayer));
         }
     }
 
-    IEnumerator LaunchPlayer(Rigidbody2D body, Vector3 velocity, float delayTime)
+    IEnumerator LaunchPlayer(Node entity, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
 
+        Collider2D[] colliders = entity.body.GetComponents<Collider2D>();
         float launchAngle = linkedPortal.transform.rotation.eulerAngles.z;
-        body.transform.position = new Vector3(body.transform.position.x,
-                                           body.transform.position.y,
+        entity.body.transform.position = new Vector3(entity.body.transform.position.x,
+                                           entity.body.transform.position.y,
                                            -2f);
-        body.gravityScale = 1;
-        body.GetComponent<Collider2D>().enabled = true;
-        velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * velocity;
-        body.velocity = velocity;
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].enabled = true;
+        }
+
+        entity.body.gravityScale = 1;
+        entity.velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * entity.velocity;
+        entity.body.velocity = entity.velocity;
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().InTransitionStatusOn(); 
     }
 }
 
 class Node
 {
-    public bool inTransition = false;
     public Rigidbody2D body;
     public Vector3 velocity;
+    public bool isPlayer;
 
-    public Node(bool transition, Rigidbody2D rb, Vector3 v)
+    public Node(Rigidbody2D rb, Vector3 v, bool p)
     {
-        inTransition = transition;
         body = rb;
         velocity = v;
+        isPlayer = p;
+
+        if (isPlayer)
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().InTransitionStatusOn(); 
     }
 }
