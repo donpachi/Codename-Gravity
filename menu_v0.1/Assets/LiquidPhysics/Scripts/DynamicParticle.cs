@@ -18,8 +18,10 @@ public class DynamicParticle : MonoBehaviour {
 	public GameObject[] particleImages; //We need multiple particle images to reduce drawcalls
 	float GAS_FLOATABILITY=7.0f; //How fast does the gas goes up?
 	float particleLifeTime=3.0f,startTime;//How much time before the particle scalesdown and dies	
+    float RAYCASTCOLLISIONDISTANCE = 5f;
+    float rayOriginOffset = 0;
 
-	void Awake(){ 
+    void Awake(){ 
 		if (currentState == STATES.NONE)
 			SetState (STATES.WATER);
 	}
@@ -85,7 +87,50 @@ public class DynamicParticle : MonoBehaviour {
 		float scaleValue = 1.0f-((Time.time-startTime)/particleLifeTime);
 		Vector2 particleScale=Vector2.one;
 		if (scaleValue <= 0) {
-						Destroy (gameObject);
+            // Logic here for creating a new waterbody
+            
+
+            Vector2 leftRayOrigin = new Vector2(this.transform.position.x, this.transform.position.y);
+            Vector2 rightRayOrigin = new Vector2(this.transform.position.x, this.transform.position.y);
+            RaycastHit2D leftsidedownhit = Physics2D.Raycast(leftRayOrigin, OrientationListener.instanceOf.getRelativeDownVector(), RAYCASTCOLLISIONDISTANCE, 1 << LayerMask.NameToLayer("Walls"));
+            RaycastHit2D rightsidedownhit = Physics2D.Raycast(rightRayOrigin, OrientationListener.instanceOf.getRelativeDownVector(), RAYCASTCOLLISIONDISTANCE, 1 << LayerMask.NameToLayer("Walls"));
+            RaycastHit2D leftsidehit = Physics2D.Raycast(leftRayOrigin, OrientationListener.instanceOf.getRelativeLeftVector(), RAYCASTCOLLISIONDISTANCE, 1 << LayerMask.NameToLayer("Walls"));
+            RaycastHit2D rightsidehit = Physics2D.Raycast(leftRayOrigin, OrientationListener.instanceOf.getRelativeRightVector(), RAYCASTCOLLISIONDISTANCE, 1 << LayerMask.NameToLayer("Walls"));
+
+            while (leftsidedownhit.collider != null && rightsidedownhit.collider != null && leftsidehit.collider != null && rightsidehit.collider != null)
+            {
+                if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT)
+                {
+                    leftRayOrigin = new Vector2(this.transform.position.x - rayOriginOffset, this.transform.position.y);
+                    rightRayOrigin = new Vector2(this.transform.position.x + rayOriginOffset, this.transform.position.y);
+                }
+                else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
+                {
+                    leftRayOrigin = new Vector2(this.transform.position.x + rayOriginOffset, this.transform.position.y);
+                    rightRayOrigin = new Vector2(this.transform.position.x - rayOriginOffset, this.transform.position.y);
+                }
+                else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT)
+                {
+                    leftRayOrigin = new Vector2(this.transform.position.x + rayOriginOffset, this.transform.position.y);
+                    rightRayOrigin = new Vector2(this.transform.position.x - rayOriginOffset, this.transform.position.y);
+                }
+                else
+                {
+                    leftRayOrigin = new Vector2(this.transform.position.x, this.transform.position.y - rayOriginOffset);
+                    rightRayOrigin = new Vector2(this.transform.position.x, this.transform.position.y + rayOriginOffset);
+                }
+                leftsidedownhit = Physics2D.Raycast(leftRayOrigin, OrientationListener.instanceOf.getRelativeDownVector(), RAYCASTCOLLISIONDISTANCE, 1 << LayerMask.NameToLayer("Walls"));
+                rightsidedownhit = Physics2D.Raycast(rightRayOrigin, OrientationListener.instanceOf.getRelativeDownVector(), RAYCASTCOLLISIONDISTANCE, 1 << LayerMask.NameToLayer("Walls"));
+                rayOriginOffset++;
+            }
+
+            // Create a water body
+            GameObject waterBody = (GameObject)Instantiate(Resources.Load("Prefabs/Water"));
+            waterBody.transform.position = this.transform.position;
+            //waterBody.transform.localScale = resizeWater(waterBody);
+
+            
+            Destroy(gameObject);
 		} else{
 			particleScale.x=scaleValue;
 			particleScale.y=scaleValue;
@@ -98,18 +143,25 @@ public class DynamicParticle : MonoBehaviour {
 		particleLifeTime=time;	
 	}
 
+    //Vector2 resizeWater(GameObject waterBody)
+    //{
+
+    //}
+
 	// Here we handle the collision events with another particles, in this example water+lava= water-> gas
-    // Logic here for creating a new waterbody
+    
 	void OnCollisionEnter2D(Collision2D other){
 		if(currentState==STATES.WATER && other.gameObject.tag=="DynamicParticle"){ 
 			if(other.collider.GetComponent<DynamicParticle>().currentState==STATES.LAVA){
 				SetState(STATES.GAS);
 			}
 		}
-        if (other.gameObject.tag == "water")
+        // Logic here for combining into a waterbody
+        if (other.gameObject.tag == "Water")
         {
 
         }
+        
 	}
 	
 }

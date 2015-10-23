@@ -7,10 +7,8 @@ public class Water : MonoBehaviour {
     //Controls controls;
     float WATERRUNOFFRATE = 0.05f;
     //float waterScale = 1f;
-    //float DISAPPEARTHRESHOLD = 0.05f;
     bool resizing = false;
     OrientationListener.Orientation previousOrientation;
-    //int frameCounter = 0;
     float RAYCASTCOLLISIONDISTANCE = 5f;//0.490f;
     float heightAnchor;
 
@@ -198,9 +196,6 @@ public class Water : MonoBehaviour {
         }
         this.transform.localScale = scale;
         
-        
-
-
         if (scale.x <= 0 || scale.y <= 0)
         {
             Destroy(gameObject);
