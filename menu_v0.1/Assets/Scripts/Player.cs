@@ -64,7 +64,7 @@ public class Player : MonoBehaviour {
             else
             {
                 inAir = true;
-                //gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation());
+                gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation());
                 playerRigidBody.gravityScale = 1.0f;
                 playerRigidBody.GetComponent<ConstantForce2D>().enabled = false;
                 this.GetComponent<SuctionWalk>().GetVectors();
