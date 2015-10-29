@@ -5,17 +5,21 @@ using UnityEngine.UI;       //FOR DEBUG REMOVE LATER
 public class Walk : MonoBehaviour {
 
     public float THRUST = 0.5f;
+    public float INAIRTHRUST = 0.1f;
     public float MAXSPEED = 10f;
+    public float MAXFLOATSPEED = 2f;
 
     private Rigidbody2D playerBody;
     private Animator anim;
     private bool atTopSpeed;
+    private Player playerState;
 
 	// Use this for initialization
 	void Start () {
         atTopSpeed = false;
         playerBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        playerState = gameObject.GetComponent<Player>();
 	}
 	
 	// Update is called once per frame
@@ -25,26 +29,40 @@ public class Walk : MonoBehaviour {
         else
             atTopSpeed = true;
 
-        if (!atTopSpeed)
+        if (playerState.inAir && playerBody.velocity.magnitude < MAXFLOATSPEED)
         {
-            TouchController.TouchLocation movementDirection = TouchController.Instance.getTouchDirection();
-
-            switch (movementDirection)
-            {
-                case TouchController.TouchLocation.LEFT:
-                    playerBody.AddForce(OrientationListener.instanceOf.getRelativeLeftVector() * THRUST, ForceMode2D.Impulse);
-                    break;
-                case TouchController.TouchLocation.RIGHT:
-                    playerBody.AddForce(OrientationListener.instanceOf.getRelativeRightVector() * THRUST, ForceMode2D.Impulse);
-                    break;
-                case TouchController.TouchLocation.NONE:
-                    break;
-            }
+            applyMoveForce(INAIRTHRUST);
+        }
+        else if (!atTopSpeed && !playerState.inAir)
+        {
+            applyMoveForce(THRUST);
+            if (TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
+                anim.SetBool("Moving", true);
         }
 
-        if (TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
-            anim.SetBool("Moving", true);
-        else
+        if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.NONE)
             anim.SetBool("Moving", false);
+
+
+
 	}
+
+    void applyMoveForce(float force)
+    {
+        TouchController.TouchLocation movementDirection = TouchController.Instance.getTouchDirection();
+
+        switch (movementDirection)
+        {
+            case TouchController.TouchLocation.LEFT:
+                playerBody.AddForce(OrientationListener.instanceOf.getRelativeLeftVector() * force, ForceMode2D.Impulse);
+                break;
+            case TouchController.TouchLocation.RIGHT:
+                playerBody.AddForce(OrientationListener.instanceOf.getRelativeRightVector() * force, ForceMode2D.Impulse);
+                break;
+            case TouchController.TouchLocation.NONE:
+                break;
+        }
+
+    }
+
 }
