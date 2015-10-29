@@ -36,7 +36,9 @@ public class Player : MonoBehaviour {
             groundCheck();
         faceDirectionCheck();
 
-	}
+       print( OrientationListener.instanceOf.currentOrientation());
+
+    }
 
     //Raycasts down to check for a floor
     void groundCheck()
@@ -62,9 +64,9 @@ public class Player : MonoBehaviour {
             else
             {
                 inAir = true;
+                gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation());
                 playerRigidBody.gravityScale = 1.0f;
                 playerRigidBody.GetComponent<ConstantForce2D>().enabled = false;
-                playerRigidBody.GetComponent<ConstantForce2D>().relativeForce = Physics2D.gravity * 3;
                 this.GetComponent<SuctionWalk>().GetVectors();
             }
         }
@@ -86,7 +88,7 @@ public class Player : MonoBehaviour {
         Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
         Quaternion playerRotation = transform.localRotation;
         //playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
-        if (suctionStatus == false && inAir == true)
+        if (suctionStatus == false || inAir == true)
         {
             switch (orientation)
             {
