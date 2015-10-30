@@ -54,7 +54,7 @@ public class Player : MonoBehaviour {
                 inAir = true;
         }
         else {
-            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, playerRigidBody.GetComponent<ConstantForce2D>().relativeForce.normalized, OnGroundRaySize, wallMask);
+            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, playerRigidBody.GetComponent<ConstantForce2D>().force.normalized, OnGroundRaySize, wallMask);
 
             if (groundCheckRay.collider != null)
             {
@@ -69,6 +69,7 @@ public class Player : MonoBehaviour {
                 gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
                 playerRigidBody.gravityScale = 1.0f;
                 playerRigidBody.GetComponent<ConstantForce2D>().enabled = false;
+                playerRigidBody.GetComponent<ConstantForce2D>().force = Physics2D.gravity * 3;
                 this.GetComponent<SuctionWalk>().GetVectors(OrientationListener.instanceOf.getRelativeDownVector());
             }
         }
@@ -131,10 +132,9 @@ public class Player : MonoBehaviour {
     void ForwardCheck()
     {
         Vector2 forwardVector;
-        Vector2 currentDownVector = playerRigidBody.GetComponent<ConstantForce2D>().relativeForce.normalized;
+        Vector2 currentDownVector = playerRigidBody.GetComponent<ConstantForce2D>().force.normalized;
         float degrees;
-        print(currentDownVector.ToString());
-
+        
         if (facingRight)
         {
             degrees = 90;
@@ -156,7 +156,7 @@ public class Player : MonoBehaviour {
         RaycastHit2D forwardCheckRay = Physics2D.Raycast(transform.position, forwardVector, ForwardRaySize, wallMask);
         if (forwardCheckRay.collider != null)
         {
-            print(currentDownVector.ToString());
+            print(forwardVector.ToString());
             this.GetComponent<SuctionWalk>().GetVectors(forwardVector);
             this.transform.Rotate(new Vector3 (0,0, degrees));
         }
