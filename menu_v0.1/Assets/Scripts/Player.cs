@@ -66,7 +66,7 @@ public class Player : MonoBehaviour {
             else
             {
                 inAir = true;
-                gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation());
+                gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
                 playerRigidBody.gravityScale = 1.0f;
                 playerRigidBody.GetComponent<ConstantForce2D>().enabled = false;
                 this.GetComponent<SuctionWalk>().GetVectors(OrientationListener.instanceOf.getRelativeDownVector());
@@ -85,7 +85,7 @@ public class Player : MonoBehaviour {
 
     //updates sprite to correct orientation
     //might have to update constant force while suction cups are on
-    void gravitySpriteUpdate(OrientationListener.Orientation orientation)
+    void gravitySpriteUpdate(OrientationListener.Orientation orientation, float timer)
     {
         Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
         Quaternion playerRotation = transform.localRotation;

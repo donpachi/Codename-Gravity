@@ -13,8 +13,14 @@ public class SuctionCup : MonoBehaviour {
 	private Vector2 suctionVector;
 
     //Event thrown when picked up
-    public delegate void SuctionCupActivated();
+    public delegate void SuctionCupActivated(float time);   //give it a length for the timer
     public static event SuctionCupActivated SCActivated;
+
+    void triggerSuctionEvent()
+    {
+        if (SCActivated != null)
+            SCActivated(suctionTimer);
+    }
 
 	// Use this for initialization
 	void Start () {

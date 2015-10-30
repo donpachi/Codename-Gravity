@@ -9,22 +9,41 @@ public class StatusCanvasController : MonoBehaviour {
     private Vector3 bottomLeft = new Vector3(-220, -435, 0);
     private Vector3 bottomRight = new Vector3(220, -435, 0);
 
-    GameObject suctionCounter;
-    GameObject gravityCooldown;
+    private bool gravityCooldownFlag;
+    private bool suctionCounterFlag;
+
+    private float SCCounter = 0;
+    private float GCCounter = 0;
 
 	// Use this for initialization
 	void Start () {
-        suctionCounter = transform.FindChild("SuctionText").gameObject;
-        gravityCooldown = transform.FindChild("GravityCooldown").gameObject;
-
+        suctionCounterFlag = false;
+        gravityCooldownFlag = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if (suctionCounterFlag)
+            updateSCCounter();
+        if (gravityCooldownFlag)
+            updateGCCounter();
 	}
 
+    void updateSCCounter()
+    {
+        if (SCCounter <= 0)
+        {
+            suctionCounterFlag = false;
+        }
+    }
+
+    void updateGCCounter()
+    {
+
+    }
+
     //update all the objects in canvas to the correct orientation
-    void updateCanvasObjectOrientation(OrientationListener.Orientation orientation)
+    void updateCanvasObjectOrientation(OrientationListener.Orientation orientation, float timer)
     {
         foreach (Transform child in transform)
         {
@@ -45,18 +64,33 @@ public class StatusCanvasController : MonoBehaviour {
             }
         }
 
+        setGCTimer(timer);
     }
 
+    //Set fuctions for when events thrown
+    void setSCTimer(float timer)
+    {
+        suctionCounterFlag = true;
+        SCCounter = timer;
+    }
 
-    //Listeners for player
+    void setGCTimer(float timer)
+    {
+        gravityCooldownFlag = true;
+        GCCounter = timer;
+    }
+
+    //Listeners for canvas
     void OnEnable()
     {
         WorldGravity.GravityChanged += updateCanvasObjectOrientation;
+        SuctionCup.SCActivated += setSCTimer;
     }
 
     void OnDisable()
     {
         WorldGravity.GravityChanged -= updateCanvasObjectOrientation;
+        SuctionCup.SCActivated += setSCTimer;
     }
 
 }

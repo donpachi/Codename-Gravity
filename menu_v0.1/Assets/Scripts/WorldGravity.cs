@@ -10,13 +10,13 @@ public class WorldGravity : MonoBehaviour {
     private OrientationListener.Orientation previousGravityDirection;
 
     //Event for gravity change
-    public delegate void GravityEvent(OrientationListener.Orientation orientation);
+    public delegate void GravityEvent(OrientationListener.Orientation orientation, float timer);
     public static event GravityEvent GravityChanged;
 
-    void triggerGravityChange(OrientationListener.Orientation orientation)
+    void triggerGravityChange(OrientationListener.Orientation orientation, float timer)
     {
         if (GravityChanged != null)
-            GravityChanged(orientation);           
+            GravityChanged(orientation, timer);           
     }
 
     // Use this for initialization
@@ -50,7 +50,7 @@ public class WorldGravity : MonoBehaviour {
     {
         previousGravityDirection = OrientationListener.instanceOf.currentOrientation();
         Physics2D.gravity = OrientationListener.instanceOf.getRelativeDownVector() * GRAVITYVALUE;
-        triggerGravityChange(OrientationListener.instanceOf.currentOrientation());
+        triggerGravityChange(OrientationListener.instanceOf.currentOrientation(), GRAVITYCOOLDOWN);
     }
 
     public void toggleCooldown()

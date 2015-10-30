@@ -62,27 +62,6 @@ public class SuctionWalk : MonoBehaviour
         else
             anim.SetBool("Moving", false);
 
-        if (Input.deviceOrientation == DeviceOrientation.Portrait)
-        {
-            suctionText.transform.localPosition = portrait;
-            suctionText.transform.rotation = Quaternion.AngleAxis(0, zAxis);
-        }
-        if (Input.deviceOrientation == DeviceOrientation.LandscapeRight)
-        {
-            suctionText.transform.localPosition = landscapeRight;
-            suctionText.transform.rotation = Quaternion.AngleAxis(90, zAxis);
-        }
-        if (Input.deviceOrientation == DeviceOrientation.PortraitUpsideDown)
-        {
-            suctionText.transform.localPosition = portraitUpsideDown;
-            suctionText.transform.rotation = Quaternion.AngleAxis(180, zAxis);
-        }
-        if (Input.deviceOrientation == DeviceOrientation.LandscapeLeft)
-        {
-            suctionText.transform.localPosition = landscapeLeft;
-            suctionText.transform.rotation = Quaternion.AngleAxis(270, zAxis);
-        }
-
         if (timer != 0)
         {
             timer -= Time.deltaTime;
