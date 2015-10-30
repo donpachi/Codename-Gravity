@@ -157,7 +157,7 @@ public class DynamicParticle : MonoBehaviour {
         // Create a water body
         GameObject waterBody = (GameObject)Instantiate(Resources.Load("Prefabs/Water"));
         waterBody.transform.localScale = new Vector2(0.1f, 0.1f);
-        waterBody.transform.position = (closestCollisionLeft + closestCollisionRight) / 2;
+        waterBody.transform.position = new Vector2(this.transform.position.x, (leftsidehit.point.y + rightsidehit.point.y)/2);
         
         waterBody.transform.localScale = resizeWater(waterBody);
         //Debug.Log("WaterBodyLeftSize " + waterBody.GetComponent<SpriteRenderer>().bounds.min.y);
@@ -177,25 +177,26 @@ public class DynamicParticle : MonoBehaviour {
 
     // Here we handle the collision events with another particles, in this example water+lava= water-> gas
 
-    //void OnCollisionEnter2D(Collision2D other){
-    //    //if(currentState==STATES.WATER && other.gameObject.tag=="DynamicParticle"){ 
-    //    //	if(other.collider.GetComponent<DynamicParticle>().currentState==STATES.LAVA){
-    //    //		SetState(STATES.GAS);
-    //    //	}
-    //    //}
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        //if(currentState==STATES.WATER && other.gameObject.tag=="DynamicParticle"){ 
+        //	if(other.collider.GetComponent<DynamicParticle>().currentState==STATES.LAVA){
+        //		SetState(STATES.GAS);
+        //	}
+        //}
 
-    //    //Logic here for combining into a waterbody
-    //    if (other.gameObject.tag == "Water" && this.transform.localScale.x < 0.7f)
-    //    {
-    //        Vector2 localScale = other.transform.localScale;
-    //        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT)
-    //        {
-    //            localScale.x = localScale.x + 0.1f;
-    //            other.transform.localScale = localScale;
-    //        }
-    //        Destroy(this);
-    //    }
+        //Logic here for combining into a waterbody
+        if (other.gameObject.tag == "Water" && this.transform.localScale.x < 0.7f)
+        {
+            Vector2 localScale = other.transform.localScale;
+            if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT)
+            {
+                localScale.x = localScale.x + 0.1f;
+                other.transform.localScale = localScale;
+            }
+            Destroy(this);
+        }
 
-    //}
-	
+    }
+
 }
