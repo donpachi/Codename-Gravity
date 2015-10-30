@@ -12,6 +12,10 @@ public class SuctionCup : MonoBehaviour {
     private Rigidbody2D playerBody;
 	private Vector2 suctionVector;
 
+    //Event thrown when picked up
+    public delegate void SuctionCupActivated();
+    public static event SuctionCupActivated SCActivated;
+
 	// Use this for initialization
 	void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
