@@ -55,7 +55,7 @@ public class Player : MonoBehaviour {
         }
         else {
             RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, playerRigidBody.GetComponent<ConstantForce2D>().force.normalized, OnGroundRaySize, wallMask);
-
+            Vector2 lol = playerRigidBody.GetComponent<ConstantForce2D>().force;
             if (groundCheckRay.collider != null)
             {
                 inAir = false;
@@ -153,11 +153,13 @@ public class Player : MonoBehaviour {
             forwardVector.y = (sin * currentDownVector.x) + (cos * currentDownVector.y);
         }
 
+        print(forwardVector.ToString());
+
         RaycastHit2D forwardCheckRay = Physics2D.Raycast(transform.position, forwardVector, ForwardRaySize, wallMask);
         if (forwardCheckRay.collider != null)
         {
-            print(forwardVector.ToString());
             this.GetComponent<SuctionWalk>().GetVectors(forwardVector);
+            this.GetComponent<ConstantForce2D>().force = forwardVector.normalized * 75;
             this.transform.Rotate(new Vector3 (0,0, degrees));
         }
         // raycast based on the boolean value facingRight

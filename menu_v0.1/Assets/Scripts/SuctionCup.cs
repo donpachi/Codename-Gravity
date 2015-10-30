@@ -39,6 +39,7 @@ public class SuctionCup : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D collisionInfo) {
 		if (collisionInfo.gameObject.tag == "Player" && !triggered) {
             playerBody = collisionInfo.GetComponent<Rigidbody2D>();
+            playerBody.GetComponent<ConstantForce2D>().force = Physics2D.gravity * 3;
             player.GetComponent<Player>().SuctionStatusOn();
             player.GetComponent<Walk>().enabled = false;
             player.GetComponent<PlayerJump>().enabled = false;
