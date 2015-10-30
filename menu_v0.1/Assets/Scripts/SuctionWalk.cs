@@ -101,10 +101,17 @@ public class SuctionWalk : MonoBehaviour
 
     }
 
-    public void GetVectors()
+    public void GetVectors(Vector2 downVector)
     {
-        leftVector = OrientationListener.instanceOf.getRelativeLeftVector();
-        rightVector = OrientationListener.instanceOf.getRelativeRightVector();
+        float sin = Mathf.Sin(-90 * Mathf.Deg2Rad);
+        float cos = Mathf.Cos(-90 * Mathf.Deg2Rad);
+        leftVector.x = (cos * downVector.x) - (sin * downVector.y);
+        leftVector.y = (sin * downVector.x) + (cos * downVector.y);
+
+        sin = Mathf.Sin(90 * Mathf.Deg2Rad);
+        cos = Mathf.Cos(90 * Mathf.Deg2Rad);
+        rightVector.x = (cos * downVector.x) - (sin * downVector.y);
+        rightVector.y = (sin * downVector.x) + (cos * downVector.y);
     }
 
     public void SetTimer(float t)

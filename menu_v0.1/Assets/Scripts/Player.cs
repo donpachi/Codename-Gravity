@@ -19,8 +19,9 @@ public class Player : MonoBehaviour {
     public float deathSpeed = 25;
     public bool inAir;
     public float OnGroundRaySize;
+    public float ForwardRaySize;
 
-	void Awake () {
+    void Awake () {
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         inAir = false;
@@ -33,11 +34,12 @@ public class Player : MonoBehaviour {
 	void FixedUpdate () {
 
         if (!inTransition)
+        {
             groundCheck();
+            ForwardCheck();
+        }
         faceDirectionCheck();
-
-       print( OrientationListener.instanceOf.currentOrientation());
-
+    
     }
 
     //Raycasts down to check for a floor
@@ -67,7 +69,7 @@ public class Player : MonoBehaviour {
                 gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation());
                 playerRigidBody.gravityScale = 1.0f;
                 playerRigidBody.GetComponent<ConstantForce2D>().enabled = false;
-                this.GetComponent<SuctionWalk>().GetVectors();
+                this.GetComponent<SuctionWalk>().GetVectors(OrientationListener.instanceOf.getRelativeDownVector());
             }
         }
 
@@ -126,8 +128,45 @@ public class Player : MonoBehaviour {
         transform.localScale = playerScale;
     }
 
-/*---------------Event Functions Start Here---------------*/
-	void OnCollisionEnter2D(Collision2D collisionEvent) {
+    void ForwardCheck()
+    {
+        Vector2 forwardVector;
+        Vector2 currentDownVector = playerRigidBody.GetComponent<ConstantForce2D>().relativeForce.normalized;
+        float degrees;
+        print(currentDownVector.ToString());
+
+        if (facingRight)
+        {
+            degrees = 90;
+            float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
+            float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
+            forwardVector.x = (cos * currentDownVector.x) - (sin * currentDownVector.y);
+            forwardVector.y = (sin * currentDownVector.x) + (cos * currentDownVector.y);
+        }
+
+        else
+        {
+            degrees = -90;
+            float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
+            float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
+            forwardVector.x = (cos * currentDownVector.x) - (sin * currentDownVector.y);
+            forwardVector.y = (sin * currentDownVector.x) + (cos * currentDownVector.y);
+        }
+
+        RaycastHit2D forwardCheckRay = Physics2D.Raycast(transform.position, forwardVector, ForwardRaySize, wallMask);
+        if (forwardCheckRay.collider != null)
+        {
+            print(currentDownVector.ToString());
+            this.GetComponent<SuctionWalk>().GetVectors(forwardVector);
+            this.transform.Rotate(new Vector3 (0,0, degrees));
+        }
+        // raycast based on the boolean value facingRight
+        // use constant force value to derive the new left and right vectors
+        // reorientate the player
+    }
+
+    /*---------------Event Functions Start Here---------------*/
+    void OnCollisionEnter2D(Collision2D collisionEvent) {
 
         if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed)
         {
