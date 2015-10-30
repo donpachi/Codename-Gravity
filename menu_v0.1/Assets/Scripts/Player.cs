@@ -153,7 +153,7 @@ public class Player : MonoBehaviour {
             forwardVector.y = (sin * currentDownVector.x) + (cos * currentDownVector.y);
         }
 
-        print(forwardVector.ToString());
+        //print(forwardVector.ToString());
 
         RaycastHit2D forwardCheckRay = Physics2D.Raycast(transform.position, forwardVector, ForwardRaySize, wallMask);
         if (forwardCheckRay.collider != null)

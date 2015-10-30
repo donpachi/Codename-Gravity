@@ -33,8 +33,8 @@ public class ParticleGenerator : MonoBehaviour {
 			newLiquidParticle.transform.position=transform.position;// Relocate to the spawner position
 			newLiquidParticle.transform.parent=particlesParent;// Add the particle to the parent container			
 			lastSpawnTime=Time.time; // Register the last spawnTime		
-
-			particleNumber++;
+            //newLiquidParticle.transform.Rotate(Vector3.forward * -90f);
+            particleNumber++;
 		}		
 	}
 }

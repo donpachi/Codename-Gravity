@@ -26,7 +26,7 @@ public class DynamicParticle : MonoBehaviour {
     void Awake(){ 
 		if (currentState == STATES.NONE)
 			SetState (STATES.WATER);
-        this.tag = "Droplet";
+        
 	}
 
 	//The definitios to each state
