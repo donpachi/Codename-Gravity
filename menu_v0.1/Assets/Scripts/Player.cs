@@ -55,7 +55,7 @@ public class Player : MonoBehaviour {
         }
         else {
             RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, playerRigidBody.GetComponent<ConstantForce2D>().force.normalized, OnGroundRaySize, wallMask);
-            Vector2 lol = playerRigidBody.GetComponent<ConstantForce2D>().force;
+
             if (groundCheckRay.collider != null)
             {
                 inAir = false;
@@ -140,8 +140,8 @@ public class Player : MonoBehaviour {
             degrees = 90;
             float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
             float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
-            forwardVector.x = (cos * currentDownVector.x) - (sin * currentDownVector.y);
-            forwardVector.y = (sin * currentDownVector.x) + (cos * currentDownVector.y);
+            forwardVector.x = Mathf.Round( (cos * currentDownVector.x) - (sin * currentDownVector.y) );
+            forwardVector.y = Mathf.Round( (sin * currentDownVector.x) + (cos * currentDownVector.y) );
         }
 
         else
@@ -149,8 +149,8 @@ public class Player : MonoBehaviour {
             degrees = -90;
             float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
             float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
-            forwardVector.x = (cos * currentDownVector.x) - (sin * currentDownVector.y);
-            forwardVector.y = (sin * currentDownVector.x) + (cos * currentDownVector.y);
+            forwardVector.x = Mathf.Round( (cos * currentDownVector.x) - (sin * currentDownVector.y) );
+            forwardVector.y = Mathf.Round( (sin * currentDownVector.x) + (cos * currentDownVector.y) );
         }
 
         //print(forwardVector.ToString());

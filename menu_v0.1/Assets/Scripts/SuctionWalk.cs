@@ -11,8 +11,8 @@ public class SuctionWalk : MonoBehaviour
     private Rigidbody2D playerBody;
     private Animator anim;
     private bool atTopSpeed;
-    private Vector2 leftVector;
-    private Vector2 rightVector;
+    public Vector2 leftVector;
+    public Vector2 rightVector;
     private GameObject suctionText;
     private float timer;
 
@@ -85,13 +85,14 @@ public class SuctionWalk : MonoBehaviour
     {
         float sin = Mathf.Sin(-90 * Mathf.Deg2Rad);
         float cos = Mathf.Cos(-90 * Mathf.Deg2Rad);
-        leftVector.x = (cos * downVector.x) - (sin * downVector.y);
-        leftVector.y = (sin * downVector.x) + (cos * downVector.y);
+        leftVector.x = Mathf.Round( (cos * downVector.x) - (sin * downVector.y) );
+        leftVector.y = Mathf.Round( (sin * downVector.x) + (cos * downVector.y) );
+
 
         sin = Mathf.Sin(90 * Mathf.Deg2Rad);
         cos = Mathf.Cos(90 * Mathf.Deg2Rad);
-        rightVector.x = (cos * downVector.x) - (sin * downVector.y);
-        rightVector.y = (sin * downVector.x) + (cos * downVector.y);
+        rightVector.x = Mathf.Round( (cos * downVector.x) - (sin * downVector.y) );
+        rightVector.y = Mathf.Round( (sin * downVector.x) + (cos * downVector.y) );
     }
 
     public void SetTimer(float t)
