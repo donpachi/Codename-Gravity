@@ -17,7 +17,7 @@ public class DynamicParticle : MonoBehaviour {
 	public GameObject currentImage; //The image is for the metaball shader for the effect, it is onle seen by the liquids camera.
 	public GameObject[] particleImages; //We need multiple particle images to reduce drawcalls
 	float GAS_FLOATABILITY=7.0f; //How fast does the gas goes up?
-	float particleLifeTime=3.0f,startTime;//How much time before the particle scalesdown and dies	
+	float particleLifeTime=4.0f,startTime;//How much time before the particle scalesdown and dies	
     float RAYCASTCOLLISIONDISTANCE = 5f;
     float rayOriginOffset = 0;
     float absoluteSize = 0;
@@ -150,8 +150,8 @@ public class DynamicParticle : MonoBehaviour {
 
         // Calculate which is closer, the raycast wall collision or floor collision
         // Left raycast, temporarily just for Landscape Right
-        Vector2 closestCollisionLeft = new Vector2(this.transform.position.x, Mathf.Max(leftsidehit.point.y, leftsidedownhit.point.y));
-        Vector2 closestCollisionRight = new Vector2(this.transform.position.x, Mathf.Min(rightsidehit.point.y, rightsidedownhit.point.y));
+        Vector2 closestCollisionLeft = new Vector2(this.transform.position.x, leftsidehit.point.y);//Mathf.Max(leftsidehit.point.y, leftsidedownhit.point.y));
+        Vector2 closestCollisionRight = new Vector2(this.transform.position.x, rightsidehit.point.y);//Mathf.Min(rightsidehit.point.y, rightsidedownhit.point.y));
         absoluteSize = Mathf.Abs(leftsidehit.point.y) + Mathf.Abs(rightsidehit.point.y);//Mathf.Abs(closestCollisionLeft.y) + Mathf.Abs(closestCollisionRight.y);
 
         // Create a water body
