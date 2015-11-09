@@ -11,7 +11,7 @@ public class OrientationListener : MonoBehaviour {
     private float LowPassFilterFactor;
     private Vector3 lowPassValue = Vector3.zero;
     private static Vector2 downVector, rightVector;
-    private int orientationInt;
+    private Orientation currentorientation;
 
     public static OrientationListener instanceOf;
 
@@ -48,7 +48,7 @@ public class OrientationListener : MonoBehaviour {
                 downVector.y = 0;
                 rightVector.x = 0;
                 rightVector.y = -1;
-                orientationInt = 1;
+                currentorientation = Orientation.LANDSCAPE_LEFT;
             }
             else
             {
@@ -56,7 +56,7 @@ public class OrientationListener : MonoBehaviour {
                 downVector.y = 0;
                 rightVector.x = 0;
                 rightVector.y = 1;
-                orientationInt = 3;
+                currentorientation = Orientation.LANDSCAPE_RIGHT;
             }
         }
         else if (Mathf.Abs(filteredVector.x) <= Mathf.Abs(filteredVector.y))
@@ -67,7 +67,7 @@ public class OrientationListener : MonoBehaviour {
                 downVector.x = 0;
                 rightVector.y = 0;
                 rightVector.x = -1;
-                orientationInt = 2;
+                currentorientation = Orientation.INVERTED_PORTRAIT;
             }
             else
             {
@@ -75,14 +75,14 @@ public class OrientationListener : MonoBehaviour {
                 downVector.x = 0;
                 rightVector.y = 0;
                 rightVector.x = 1;
-                orientationInt = 0;
+                currentorientation = Orientation.PORTRAIT;
             }
         }
     }
 
     public Orientation currentOrientation()
     {
-        return (Orientation)orientationInt;
+        return currentorientation;
     }
 
     Vector2 ApplyLowPassFilterAccelerometer(float filter)
