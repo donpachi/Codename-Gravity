@@ -78,10 +78,9 @@ public class StatusCanvasController : MonoBehaviour {
         }
         else
             gcText.GetComponent<Text>().text = GCCounter.ToString();
-
     }
 
-    //WorldGravity Listener: updates all the objects in canvas to the correct orientation
+    //Orientation Listener: updates all the objects in canvas to the correct orientation
     void updateCanvasObjectOrientation(OrientationListener.Orientation orientation, float timer)
     {
         foreach (Transform child in transform)
