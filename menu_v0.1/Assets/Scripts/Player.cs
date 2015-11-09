@@ -13,6 +13,7 @@ public class Player : MonoBehaviour {
     private bool facingRight;
     private bool suctionStatus;
     private bool inTransition;
+    private bool launched;
 
     public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
@@ -176,9 +177,13 @@ public class Player : MonoBehaviour {
 			{
 				OnPlayerDeath();
 			}
-		}
+		}        
 
-        
+        else if (launched == true)
+        {
+            playerRigidBody.gravityScale = 1.0f;
+            this.GetComponent<Walk>().enabled = true;
+        }
 	}
 
     void OnTriggerEnter2D(Collider2D colliderEvent)
@@ -209,6 +214,11 @@ public class Player : MonoBehaviour {
     void OnDisable()
     {
         WorldGravity.GravityChanged -= gravitySpriteUpdate;
+    }
+
+    public void LaunchStatusOn()
+    {
+        launched = true;
     }
 
     public void SuctionStatusOn()

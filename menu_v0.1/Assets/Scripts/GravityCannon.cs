@@ -4,13 +4,13 @@ using System.Collections;
 
 public class GravityCannon : MonoBehaviour {
 
-	private GameObject player;
-	private Rigidbody2D playerBody;
 	public Animator anim;
 	public GameObject cannonTip;
-	public GameObject[] buttons;
 
 	private float LAUNCHFORCE = 5.0f;
+    private GameObject player;
+    private Rigidbody2D playerBody;
+    private bool cannonReady = false;
 	
 	// Use this for initialization
 	void Start () {
@@ -19,32 +19,33 @@ public class GravityCannon : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-	}
+        if (cannonReady && TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
+            FirePlayer();
+    }
 
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
 		if (collisionInfo.gameObject.tag == "Player") {
+            player.GetComponent<Walk>().enabled = false;
+
 			playerBody = collisionInfo.rigidbody;
-			Vector3 hiddenPosition = new Vector3 (cannonTip.transform.position.x,
+            playerBody.gravityScale = 0f;
+            Vector3 hiddenPosition = new Vector3 (cannonTip.transform.position.x,
 			                                      cannonTip.transform.position.y,
 			                                      1);
 			playerBody.GetComponent<Transform>().position = (hiddenPosition);
-			player.GetComponent<Controls>().resetMovementFlags();
-			playerBody.gravityScale = 0f;
 			playerBody.Sleep();
+            EnableFireButton();
+            
 
-			anim.SetBool("activated", true);
-
-			for (int i = 0; i < buttons.Length - 1; i++)
-				buttons[i].SetActive(false);
+            anim.SetBool("activated", true);
 		}
 	}
 
 	public void EnableFireButton() {
-		buttons[buttons.Length - 1].SetActive(true);
+        cannonReady = true;
 	}
 
-	public void FireDown() {
+	public void FirePlayer() {
 		Vector2 direction;
 		Vector3 firePosition = new Vector3 (cannonTip.transform.position.x,
 		                                   cannonTip.transform.position.y,
@@ -52,16 +53,12 @@ public class GravityCannon : MonoBehaviour {
 		playerBody.GetComponent<Transform>().position = (firePosition);
 		playerBody.WakeUp();
 
-		player.GetComponent<Controls>().launchStatusOn();
+		player.GetComponent<Player>().LaunchStatusOn();
 		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform> ().position).normalized;
-		player.GetComponent<Controls>().addForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
+        playerBody.AddForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
+        cannonReady = false;
 
-		anim.SetBool("activated", false);
-		
-		for (int i = 0; i < buttons.Length - 1; i++)
-			buttons[i].SetActive(true);
-
-		buttons[buttons.Length - 1].SetActive(false);
+        anim.SetBool("activated", false);
 
 	}
 }
