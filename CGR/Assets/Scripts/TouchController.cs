@@ -261,9 +261,10 @@ public class TouchController : MonoBehaviour {
     //returns the touch direction
     public TouchLocation getTouchDirection()
     {
-        if (Input.touchCount == 1)
+        if (Input.touchCount == 1 && Input.touches[0].fingerId < MAXTOUCHES)
+        {
             return touchDataArray[Input.touches[0].fingerId].touchLocation;
-
+        }
         return TouchLocation.NONE;
     }
 
