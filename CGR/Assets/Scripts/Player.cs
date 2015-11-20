@@ -47,7 +47,7 @@ public class Player : MonoBehaviour {
     void groundCheck()
     {
         if (suctionStatus == false){
-            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getRelativeDownVector(), OnGroundRaySize, wallMask);
+            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getWorldDownVector(), OnGroundRaySize, wallMask);
 
             if (groundCheckRay.collider != null)
                 inAir = false;
