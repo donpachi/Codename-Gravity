@@ -12,6 +12,8 @@ public class OrientationListener : MonoBehaviour {
     private Vector3 lowPassValue = Vector3.zero;
     private static Vector2 downVector, rightVector;
     private Orientation currentorientation;
+    private Vector2 gVector;
+    private Vector2 gVectorPerpendicularCW;
 
     public static OrientationListener instanceOf;
 
@@ -103,6 +105,32 @@ public class OrientationListener : MonoBehaviour {
         lowPassValue = DEFAULT_ACCELEROMETER_VECTOR;
     }
 
+    public void saveGravityVector(Vector2 gravVector)
+    {
+        gVector = gravVector;
+        gVectorPerpendicularCW = new Vector2(gravVector.y * -1, gravVector.x);
+    }
+
+    public Vector2 getWorldDownVector()
+    {
+        return gVector;
+    }
+
+    public Vector2 getWorldUpVector()
+    {
+        return gVector * -1;
+    }
+
+    public Vector2 getWorldLeftVector()
+    {
+        return gVectorPerpendicularCW * -1;
+    }
+
+    public Vector2 getWorldRightVector()
+    {
+        return gVectorPerpendicularCW;
+    }
+
     public Vector2 getRelativeDownVector()
     {
         return downVector;
@@ -123,5 +151,6 @@ public class OrientationListener : MonoBehaviour {
         return rightVector * -1;
     }
 
+    
 }
  

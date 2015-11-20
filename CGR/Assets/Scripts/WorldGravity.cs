@@ -4,6 +4,7 @@ using System.Collections;
 public class WorldGravity : MonoBehaviour {
     public float GRAVITYVALUE = 25f;
     public float GRAVITYCOOLDOWN = 5f;
+    public Vector2 gVector;
 
     private bool gravityOnCooldown;
     private float elapsedTime;
@@ -40,7 +41,7 @@ public class WorldGravity : MonoBehaviour {
 
     void initialize()
     {
-        Physics2D.gravity = OrientationListener.instanceOf.DEFAULT_ACCELEROMETER_VECTOR * GRAVITYVALUE;
+        Physics2D.gravity = OrientationListener.instanceOf.DEFAULT_ACCELEROMETER_VECTOR * GRAVITYVALUE; // modify so that this is modifiable when the level starts.
         elapsedTime = 0;
         gravityOnCooldown = false;
         previousGravityDirection = (int)OrientationListener.Orientation.PORTRAIT;
@@ -49,7 +50,11 @@ public class WorldGravity : MonoBehaviour {
     public void updateGravity()
     {
         previousGravityDirection = OrientationListener.instanceOf.currentOrientation();
-        Physics2D.gravity = OrientationListener.instanceOf.getRelativeDownVector() * GRAVITYVALUE;
+        float gx = OrientationListener.instanceOf.getRelativeDownVector().x;
+        float gy = OrientationListener.instanceOf.getRelativeDownVector().y;
+        gVector = new Vector2(gx, gy);
+        OrientationListener.instanceOf.saveGravityVector(gVector);
+        Physics2D.gravity = gVector * GRAVITYVALUE;
         triggerGravityChange(OrientationListener.instanceOf.currentOrientation(), GRAVITYCOOLDOWN);
     }
 
