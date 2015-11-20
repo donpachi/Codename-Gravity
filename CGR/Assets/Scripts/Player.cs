@@ -183,6 +183,7 @@ public class Player : MonoBehaviour {
         {
             playerRigidBody.gravityScale = 1.0f;
             this.GetComponent<Walk>().enabled = true;
+            launched = false;
         }
 	}
 
@@ -214,6 +215,13 @@ public class Player : MonoBehaviour {
     void OnDisable()
     {
         WorldGravity.GravityChanged -= gravitySpriteUpdate;
+    }
+
+    public void ToggleRender()
+    {
+        Renderer[] potatoParts = this.GetComponentsInChildren<Renderer>();
+        foreach (Renderer i in potatoParts)
+            i.enabled = !i.enabled;
     }
 
     public void LaunchStatusOn()
