@@ -23,10 +23,11 @@ public class RPGText : MonoBehaviour {
     {
         pauseGame();
         // check orientation
-        // animate player art
-        // animate textbox art
-        // create box within dimensions of box art
-
+        // then
+        // animate player art (scroll in from the right)
+        // animate textbox art (alpha in)
+        // create box within dimensions of textbox art
+        // print out string2type char by char with typespeed intervals
         resumeGame();
     }
 
