@@ -16,8 +16,6 @@ public class ShrinkingDoor : MonoBehaviour {
 	void Start () {
         originalScale = transform.localScale;
         parent = this.GetComponentInParent<Transform>().gameObject;
-        PressurePlate.Enter += triggerDoorShrink;
-        PressurePlate.Exit += triggerDoorGrow;
         if (Mathf.Abs(gameObject.GetComponent<SpriteRenderer>().bounds.max.x) - Mathf.Abs(gameObject.GetComponent<SpriteRenderer>().bounds.min.x) > Mathf.Abs(gameObject.GetComponent<SpriteRenderer>().bounds.max.y) - Mathf.Abs(gameObject.GetComponent<SpriteRenderer>().bounds.min.y))
         {
             originalOrientation = "widthwise";
@@ -29,22 +27,23 @@ public class ShrinkingDoor : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        if (shrinking == true)
+	void FixedUpdate () {
+        if (shrinking == true && growing == false)
         {
             shrinkDoor();
             growing = false;
         }
-        if (growing == true)
+        if (shrinking == false && growing == true)
         {
             growDoor();
             shrinking = false;
         }
 	}
 
-    void triggerDoorShrink()
+    void plateDepressed()
     {
         shrinking = true;
+        growing = false;
     }
 
     void shrinkDoor()
@@ -65,13 +64,13 @@ public class ShrinkingDoor : MonoBehaviour {
             scale = new Vector2(scale.x, scale.y - resizespeed);
             transform.position = new Vector2(transform.gameObject.transform.position.x, transform.gameObject.transform.position.y - resizespeed);
         }
-        Debug.Log("Shrinking: " + transform.localScale);
         transform.localScale = scale;
     }
 
-    void triggerDoorGrow()
+    void plateReleased()
     {
         growing = true;
+        shrinking = false;
     }
 
     void growDoor()
@@ -92,7 +91,6 @@ public class ShrinkingDoor : MonoBehaviour {
             scale = new Vector2(scale.x, scale.y + resizespeed);
             transform.position = new Vector2(transform.gameObject.transform.position.x, transform.gameObject.transform.position.y + resizespeed);
         }
-        Debug.Log("Growing:" + transform.localScale);
         transform.localScale = scale;
     }
 }

@@ -3,66 +3,72 @@ using System.Collections;
 
 public class MovingPlatform : MonoBehaviour {
 
-    public string XDirection;
-    public string YDirection;
+    public bool MoveRight;
+    public bool MoveDown;
     public int XDistance;
     public int YDistance;
     private int XDistRemain;
     private int YDistRemain;
     public float speed;
+    GameObject parent;
 
 	// Use this for initialization
 	void Start () {
         XDistRemain = XDistance;
         YDistRemain = YDistance;
+        parent = this.GetComponentInParent<Transform>().gameObject;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        Vector2 vector = new Vector2(gameObject.GetComponent<Rigidbody2D>().position.x, gameObject.GetComponent<Rigidbody2D>().position.y);
-        if (XDirection != null && XDirection == "left")
+        if (parent.name == "PressurePlate")
+        {
+
+        }
+        Vector2 vector = this.transform.position;
+        if (MoveRight == false)
         {
             vector = new Vector2(vector.x - speed, vector.y);
             XDistRemain--;
-            if (XDistRemain == 0)
+            if (XDistRemain <= 0)
             {
-                XDirection = "right";
+                MoveRight = true;
                 XDistRemain = XDistance;
             }
         }
-        else if (YDirection != null && XDirection == "right") 
+        else 
         {
             vector = new Vector2(vector.x + speed, vector.y);
             XDistRemain--;
-            if (XDistRemain == 0)
+            if (XDistRemain <= 0)
             {
-                XDirection = "left";
+                MoveRight = false;
                 XDistRemain = XDistance;
             }
         }
 
-        if (YDirection != null && YDirection == "down")
+        if (MoveDown == true)
         {
             vector = new Vector2(vector.x, vector.y - speed);
             YDistRemain--;
-            if (YDistRemain == 0)
+            if (YDistRemain <= 0)
             {
-                YDirection = "up";
+                MoveDown = false;
                 YDistRemain = YDistance;
             }
         }
-        else if (YDirection != null && YDirection == "up")
+        else
         {
             vector = new Vector2(vector.x, vector.y + speed);
             YDistRemain--;
-            if (YDistRemain == 0)
+            if (YDistRemain <= 0)
             {
-                YDirection = "down";
+                MoveDown = true;
                 YDistRemain = YDistance;
             }
         }
         
         
-        this.GetComponent<Rigidbody2D>().MovePosition(vector);
+        this.transform.position = vector;
 	}
 }
