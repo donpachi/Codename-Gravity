@@ -4,10 +4,7 @@ using System;
 
 public class PressurePlate : MonoBehaviour {
 
-    public delegate void PlateTriggeredHandler();
     public bool canBeUntriggered = false;
-    public static event PlateTriggeredHandler Enter;
-    public static event PlateTriggeredHandler Exit;
 
 	// Use this for initialization
 	void Start () {
@@ -20,30 +17,15 @@ public class PressurePlate : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        OnEnter();
+        BroadcastMessage("plateDepressed");
     }
 
     void OnTriggerExit2D(Collider2D collider)
     {
         if (canBeUntriggered == true)
         {
-            OnExit();
+            BroadcastMessage("plateReleased");
         }
     }
 
-    void OnEnter()
-    {
-        if (Enter != null)
-        {
-            Enter();
-        }
-    }
-
-    void OnExit()
-    {
-        if (Exit != null)
-        {
-            Exit();
-        }
-    }
 }

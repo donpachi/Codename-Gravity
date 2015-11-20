@@ -3,13 +3,15 @@ using System.Collections;
 
 public class MovingPlatform : MonoBehaviour {
 
-    public string XDirection;
-    public string YDirection;
-    public int XDistance;
-    public int YDistance;
+    public bool MoveRight;
+    public bool MoveDown;
+    public int XDistance = -1;
+    public int YDistance = -1;
     private int XDistRemain;
     private int YDistRemain;
     public float speed;
+    GameObject parent;
+    public bool isActive;
 
 	// Use this for initialization
 	void Start () {
@@ -19,50 +21,62 @@ public class MovingPlatform : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        Vector2 vector = new Vector2(gameObject.GetComponent<Rigidbody2D>().position.x, gameObject.GetComponent<Rigidbody2D>().position.y);
-        if (XDirection != null && XDirection == "left")
+        if (isActive == true)
         {
-            vector = new Vector2(vector.x - speed, vector.y);
-            XDistRemain--;
-            if (XDistRemain == 0)
+            Vector2 vector = this.transform.position;
+            if (MoveRight == false && XDistance != -1)
             {
-                XDirection = "right";
-                XDistRemain = XDistance;
+                if (XDistRemain == 0)
+                {
+                    MoveRight = true;
+                    XDistRemain = XDistance;
+                }
+                vector = new Vector2(vector.x - speed, vector.y);
+                XDistRemain--;
+                
             }
-        }
-        else if (YDirection != null && XDirection == "right") 
-        {
-            vector = new Vector2(vector.x + speed, vector.y);
-            XDistRemain--;
-            if (XDistRemain == 0)
+            else if (MoveRight == true && XDistance != -1)
             {
-                XDirection = "left";
-                XDistRemain = XDistance;
+                if (XDistRemain == 0)
+                {
+                    MoveRight = false;
+                    XDistRemain = XDistance;
+                }
+                vector = new Vector2(vector.x + speed, vector.y);
+                XDistRemain--;
+                
             }
-        }
 
-        if (YDirection != null && YDirection == "down")
-        {
-            vector = new Vector2(vector.x, vector.y - speed);
-            YDistRemain--;
-            if (YDistRemain == 0)
+            if (MoveDown == true && YDistance != -1)
             {
-                YDirection = "up";
-                YDistRemain = YDistance;
+                if (YDistRemain == 0)
+                {
+                    MoveDown = false;
+                    YDistRemain = YDistance;
+                }
+                vector = new Vector2(vector.x, vector.y - speed);
+                YDistRemain--;
+                
             }
-        }
-        else if (YDirection != null && YDirection == "up")
-        {
-            vector = new Vector2(vector.x, vector.y + speed);
-            YDistRemain--;
-            if (YDistRemain == 0)
+            else if (MoveDown == false && YDistance != -1)
             {
-                YDirection = "down";
-                YDistRemain = YDistance;
+                if (YDistRemain == 0)
+                {
+                    MoveDown = true;
+                    YDistRemain = YDistance;
+                }
+                vector = new Vector2(vector.x, vector.y + speed);
+                YDistRemain--;
+                
             }
+
+
+            this.transform.position = vector;
         }
-        
-        
-        this.GetComponent<Rigidbody2D>().MovePosition(vector);
 	}
+
+    void plateDepressed()
+    {
+        isActive = true;
+    }
 }
