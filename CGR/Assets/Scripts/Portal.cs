@@ -14,7 +14,7 @@ public class Portal : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         linkedPortalPosition = linkedPortal.transform.position;
-        distanceThreshold = 3.1f;
+        distanceThreshold = 1.1f;
         bodies = new List<Node>();
 	}
 	
@@ -46,19 +46,19 @@ public class Portal : MonoBehaviour {
             Rigidbody2D tempBody = collisionInfo.rigidbody;
             Collider2D[] colliders = tempBody.GetComponents<Collider2D>();
             bool isPlayer = collisionInfo.gameObject.tag.Equals("Player");
-            Vector3 hiddenPosition = new Vector3(tempBody.transform.position.x,
-                                        tempBody.transform.position.y,
-                                        1f);
 
             tempBody.gravityScale = 0;
             tempBody.Sleep();
-            tempBody.transform.position = hiddenPosition;
+            GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().ToggleRender();
+            GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Walk>().enabled = false;
 
+            if (isPlayer)
+                GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().InTransitionStatusOn(); 
             for (int i = 0; i < colliders.Length; i++)
             {
                 colliders[i].enabled = false;
             }
-            bodies.Add(new Node(tempBody, collisionInfo.relativeVelocity, isPlayer));
+            bodies.Add(new Node(tempBody, collisionInfo.relativeVelocity));
         }
     }
 
@@ -79,7 +79,9 @@ public class Portal : MonoBehaviour {
         entity.body.gravityScale = 1;
         entity.velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * entity.velocity;
         entity.body.velocity = entity.velocity;
-        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().InTransitionStatusOn(); 
+        GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().ToggleRender();
+        GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Walk>().enabled = true;
+        GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().InTransitionStatusEnd(); 
     }
 }
 
@@ -87,15 +89,10 @@ class Node
 {
     public Rigidbody2D body;
     public Vector3 velocity;
-    public bool isPlayer;
 
-    public Node(Rigidbody2D rb, Vector3 v, bool p)
+    public Node(Rigidbody2D rb, Vector3 v)
     {
         body = rb;
         velocity = v;
-        isPlayer = p;
-
-        if (isPlayer)
-            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().InTransitionStatusOn(); 
     }
 }
