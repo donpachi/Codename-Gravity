@@ -50,7 +50,13 @@ public class Player : MonoBehaviour {
             RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getWorldDownVector(), OnGroundRaySize, wallMask);
 
             if (groundCheckRay.collider != null)
+            {
+                if (groundCheckRay.collider.gameObject.tag == "MovingPlatform")
+                {
+                    groundCheckRay.collider.gameObject.SendMessage("playerOn");
+                }
                 inAir = false;
+            }
             else
                 inAir = true;
         }
@@ -62,7 +68,6 @@ public class Player : MonoBehaviour {
                 inAir = false;
                 playerRigidBody.gravityScale = 0.0f;
                 playerRigidBody.GetComponent<ConstantForce2D>().enabled = true;
-
             }
             else
             {

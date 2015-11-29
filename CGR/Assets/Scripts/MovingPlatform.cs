@@ -12,11 +12,18 @@ public class MovingPlatform : MonoBehaviour {
     public float speed;
     GameObject parent;
     public bool isActive;
+    private float RAYCASTDISTANCE = 0.5f;
+    GameObject player;
+    Player playerScript;
+    private bool playerOnTop = false;
+    Vector2 moveDifference;
 
 	// Use this for initialization
 	void Start () {
         XDistRemain = XDistance;
         YDistRemain = YDistance;
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerScript = player.GetComponent<Player>();
 	}
 	
 	// Update is called once per frame
@@ -24,6 +31,7 @@ public class MovingPlatform : MonoBehaviour {
         if (isActive == true)
         {
             Vector2 vector = this.transform.position;
+            Vector2 originalPosition = this.transform.position;
             if (MoveRight == false && XDistance != -1)
             {
                 if (XDistRemain == 0)
@@ -70,10 +78,27 @@ public class MovingPlatform : MonoBehaviour {
                 
             }
 
+            moveDifference = new Vector2(originalPosition.x - vector.x, originalPosition.y - vector.y);
+            if (playerOnTop == true)
+            {
+                player.transform.position = new Vector2(player.transform.position.x - moveDifference.x, player.transform.position.y - moveDifference.y);
+            }
 
             this.transform.position = vector;
+
+            
         }
 	}
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        playerOnTop = false;
+    }
+
+    void playerOn()
+    {
+        playerOnTop = true;
+    }
 
     void plateDepressed()
     {
