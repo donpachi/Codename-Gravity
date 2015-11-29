@@ -92,7 +92,8 @@ public class MovingPlatform : MonoBehaviour {
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        playerOnTop = false;
+        if (collision.gameObject.tag == "Player")
+            playerOnTop = false;
     }
 
     void playerOn()
