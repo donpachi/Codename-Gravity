@@ -5,8 +5,9 @@ using System.Collections;
 public class GravityCannon : MonoBehaviour {
 
 	public Animator anim;
-	public GameObject cannonTip;
 
+    private Transform cannonTip;
+    private Transform launchPosition;
     private GameObject player;
     private Rigidbody2D playerBody;
     private float LAUNCHFORCE = 5.0f;
@@ -15,6 +16,15 @@ public class GravityCannon : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		player = GameObject.FindGameObjectWithTag("Player");
+        Transform[] components = this.GetComponentsInChildren<Transform>();
+        foreach (var i in components)
+        {
+            //print(i.position);
+            if (i.name == "CannonTip")
+                cannonTip = i;
+            else if (i.name == "LaunchPosition")
+                launchPosition = i;
+        }
 	}
 	
 	// Update is called once per frame
@@ -28,17 +38,12 @@ public class GravityCannon : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
 		if (collisionInfo.gameObject.tag == "Player") {
-            print("Collided");
             player.GetComponent<Walk>().enabled = false;
-            Vector3 hiddenPosition = new Vector3(cannonTip.transform.position.x + 1,
-                                                 cannonTip.transform.position.y + 1,
-                                                 -2);
             playerBody = collisionInfo.rigidbody;
             playerBody.gravityScale = 0f;
 			playerBody.Sleep();
-            playerBody.GetComponent<Transform>().position = (hiddenPosition);
+            playerBody.GetComponent<Transform>().position = launchPosition.position;
             player.GetComponent<Player>().ToggleRender();
-            print("Start timer");
 
             anim.SetBool("activated", true);
 		}
@@ -46,20 +51,16 @@ public class GravityCannon : MonoBehaviour {
 
     void EnableFireButton()
     {
-        print("finish timer");
         cannonReady = true;
     }
 
 	public void FirePlayer() {
         Vector2 direction;
-		Vector3 firePosition = new Vector3 (cannonTip.transform.position.x,
-		                                   cannonTip.transform.position.y,
-		                                   -2);
         player.GetComponent<Player>().ToggleRender();
-        playerBody.GetComponent<Transform>().position = (firePosition);
+        playerBody.GetComponent<Transform>().position = cannonTip.position;
 		playerBody.WakeUp();
 		player.GetComponent<Player>().LaunchStatusOn();
-		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform> ().position).normalized;
+		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform>().position).normalized;
         playerBody.AddForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
 
         anim.SetBool("activated", false);
