@@ -10,11 +10,14 @@ public class Portal : MonoBehaviour {
     private List<Node> bodies;
     private float distanceThreshold;
     private Vector3 linkedPortalPosition;
+    private GameObject playerStatus;
+    private bool playerComing;
 
 	// Use this for initialization
 	void Start () {
         linkedPortalPosition = linkedPortal.transform.position;
-        distanceThreshold = 1.1f;
+        playerStatus = GameObject.FindGameObjectWithTag("Player");
+        distanceThreshold = 0.1f;
         bodies = new List<Node>();
 	}
 	
@@ -26,8 +29,7 @@ public class Portal : MonoBehaviour {
             {
                 bodies[i].body.transform.position = new Vector3(Mathf.Lerp(bodies[i].body.transform.position.x, linkedPortalPosition.x, transitionSpeed * Time.deltaTime),
                                 Mathf.Lerp(bodies[i].body.transform.position.y, linkedPortalPosition.y, transitionSpeed * Time.deltaTime),
-                                1f);
-
+                                0f);
                 if ((linkedPortalPosition - bodies[i].body.transform.position).magnitude <= distanceThreshold)
                 {
                     bodies[i].body.Sleep();
@@ -47,19 +49,33 @@ public class Portal : MonoBehaviour {
             Collider2D[] colliders = tempBody.GetComponents<Collider2D>();
             bool isPlayer = collisionInfo.gameObject.tag.Equals("Player");
 
-            tempBody.gravityScale = 0;
-            tempBody.Sleep();
-            GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().ToggleRender();
-            GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Walk>().enabled = false;
-
+            if (isPlayer && playerComing)
+                return;
             if (isPlayer)
-                GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().InTransitionStatusOn(); 
+            {
+                GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().InTransitionStatusOn();
+                linkedPortal.GetComponent<Portal>().PlayerComing();
+            }
+            tempBody.gravityScale = 0;
+            tempBody.velocity = new Vector2(0, 0);
+            tempBody.Sleep();
+            playerStatus.GetComponent<Player>().ToggleRender();
+            playerStatus.GetComponent<Walk>().enabled = false;
+            playerStatus.GetComponent<SuctionWalk>().enabled = false;
+
             for (int i = 0; i < colliders.Length; i++)
             {
                 colliders[i].enabled = false;
             }
-            bodies.Add(new Node(tempBody, collisionInfo.relativeVelocity));
+            bodies.Add(new Node(tempBody, tempBody.transform.TransformVector(collisionInfo.relativeVelocity)));
         }
+    }
+
+    void OnTriggerExit2D(Collider2D collisionInfo)
+    {
+        bool isPlayer = collisionInfo.gameObject.tag.Equals("Player");
+        if (isPlayer)
+            playerComing = false;
     }
 
     IEnumerator LaunchPlayer(Node entity, float delayTime)
@@ -67,30 +83,39 @@ public class Portal : MonoBehaviour {
         yield return new WaitForSeconds(delayTime);
 
         Collider2D[] colliders = entity.body.GetComponents<Collider2D>();
-        float launchAngle = linkedPortal.transform.rotation.eulerAngles.z;
+        float launchAngle = (this.transform.rotation.eulerAngles.z - linkedPortal.transform.rotation.eulerAngles.z);
         entity.body.transform.position = new Vector3(entity.body.transform.position.x,
                                            entity.body.transform.position.y,
                                            -2f);
+
+        entity.body.gravityScale = 1;
+        entity.velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * entity.velocity;
+        entity.body.AddForce(entity.velocity * entity.velocity.magnitude * 5);
+
         for (int i = 0; i < colliders.Length; i++)
         {
             colliders[i].enabled = true;
         }
 
-        entity.body.gravityScale = 1;
-        entity.velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * entity.velocity;
-        entity.body.velocity = entity.velocity;
-        GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().ToggleRender();
-        GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Walk>().enabled = true;
-        GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().InTransitionStatusEnd(); 
+        if (playerStatus.GetComponent<Player>().IsSuctioned())
+            playerStatus.GetComponent<SuctionWalk>().enabled = true;
+        playerStatus.GetComponent<Player>().ToggleRender();
+        playerStatus.GetComponent<Walk>().enabled = true;
+        playerStatus.GetComponent<Player>().InTransitionStatusEnd(); 
+    }
+
+    public void PlayerComing()
+    {
+        playerComing = true;
     }
 }
 
 class Node
 {
     public Rigidbody2D body;
-    public Vector3 velocity;
+    public Vector2 velocity;
 
-    public Node(Rigidbody2D rb, Vector3 v)
+    public Node(Rigidbody2D rb, Vector2 v)
     {
         body = rb;
         velocity = v;
