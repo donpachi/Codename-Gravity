@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class WindTunnel : MonoBehaviour {
 
@@ -7,11 +8,17 @@ public class WindTunnel : MonoBehaviour {
 	private GameObject player;
 	private float windForce;
 	private Animator anim;
+    private List<GameObject> objectArray;
+    private GameObject closestObj;
 
 	//Adjustable variables
 	public float MaxWindForce;
 	public float MaxWindDistance; //size of the box collider
 	public Vector2 Direction; //Sets the default orientation or of the force, will rotate with game object
+    public bool TurbineOn;
+
+
+    //TODO Ray cast instead of bounding box. design the prefab so that it is a game object with wind tunnel children, the main game object has this script and bounding box and each wind tunnel just has the sprite and animation
 
 	// Use this for initialization
 	void Start () {
@@ -20,11 +27,12 @@ public class WindTunnel : MonoBehaviour {
 		windForce = 1;
 		Direction = gameObject.GetComponent<Transform> ().rotation * Direction;
 		anim = gameObject.GetComponent<Animator> ();
+        objectArray = new List<GameObject>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (inTunnelPath) {
+		if (inTunnelPath && TurbineOn) {
 			addWindForce();
 		}
 	}
@@ -42,12 +50,48 @@ public class WindTunnel : MonoBehaviour {
 		player.GetComponent<Rigidbody2D>().AddForce(Direction.normalized * windForce);
 	}
 
-	void OnTriggerEnter2D(Collider2D collision){
+	void OnTriggerEnter2D(Collider2D collision)
+    {
+        float distance = (collision.gameObject.transform.position - gameObject.transform.position).magnitude;
+        if (!objectArray.Contains(collision.gameObject))
+        {
+            //check if this is the closest object
+            if (closestObj == null)
+            {
+                closestObj = collision.gameObject;
+            }
+            else if (distance < (closestObj.transform.position - gameObject.transform.position).magnitude)
+            {
+                closestObj = collision.gameObject;
+            }
+            //add to array
+            objectArray.Add(collision.gameObject);
+        }
 		inTunnelPath = true;
-		anim.SetTrigger ("StartTurbine");
+        Debug.Log(objectArray.Count);
+        Debug.Log(closestObj.name);
 	}
 
-	void OnTriggerExit2D(Collider2D collision){
+    void OnTriggerStay2D(Collider2D collision)
+    {
+
+    }
+
+	void OnTriggerExit2D(Collider2D collision)
+    {
+        //remove from array
+        Debug.Log(objectArray.Remove(collision.gameObject));
 		inTunnelPath = false;
 	}
+
+    void plateDepressed()
+    {
+        TurbineOn = !TurbineOn;
+        anim.SetBool("TurbineOn", TurbineOn);
+    }
+
+    void plateReleased()
+    {
+
+    }
 }

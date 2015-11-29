@@ -234,6 +234,11 @@ public class Player : MonoBehaviour {
         launched = true;
     }
 
+    public bool IsLaunched()
+    {
+        return launched;
+    }
+
     public void SuctionStatusOn()
     {
         suctionStatus = true;
@@ -244,6 +249,11 @@ public class Player : MonoBehaviour {
         suctionStatus = false;
     }
 
+    public bool IsSuctioned()
+    {
+        return suctionStatus;
+    }
+
     public void InTransitionStatusOn()
     {
         inTransition = true;
@@ -252,5 +262,10 @@ public class Player : MonoBehaviour {
     public void InTransitionStatusEnd()
     {
         inTransition = false;
+    }
+
+    public bool IsInTransition()
+    {
+        return inTransition;
     }
 }
