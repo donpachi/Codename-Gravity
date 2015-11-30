@@ -9,7 +9,7 @@ public class MenuCanvas : MonoBehaviour {
 
 	void Start()
 	{
-		Player character = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+		Player character = GameObject.Find("Player").GetComponent<Player>();
 		AddListener (character);
         GetButtons();
 	}

@@ -7,7 +7,7 @@ public class FollowPlayer : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.Find("Player");
         position = new Vector3(0, 0, -9);
 	}
 	
