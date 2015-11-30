@@ -17,7 +17,7 @@ public class Player : MonoBehaviour {
 
     public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
-    public float deathSpeed = 25;
+    public float deathSpeed = 10f;
     public bool inAir;
     public float OnGroundRaySize;
     public float ForwardRaySize;
@@ -175,13 +175,9 @@ public class Player : MonoBehaviour {
 
     /*---------------Event Functions Start Here---------------*/
     void OnCollisionEnter2D(Collision2D collisionEvent) {
-
-        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.tag == "Boulder")
+        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > 10 && collisionEvent.gameObject.tag == "Boulder")
         {
-			if(OnPlayerDeath != null)
-			{
-				OnPlayerDeath();
-			}
+            TriggerDeath();
 		}        
 
         else if (launched == true)
@@ -196,10 +192,7 @@ public class Player : MonoBehaviour {
     {
         if (colliderEvent.gameObject.tag == "SpikeTop")
         {
-            if (OnPlayerDeath != null)
-            {
-                OnPlayerDeath();
-            }
+            TriggerDeath();
         }
     }
 
