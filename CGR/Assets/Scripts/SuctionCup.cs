@@ -24,7 +24,7 @@ public class SuctionCup : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.Find("Player");
         timer = 0;
 	}
 	
@@ -43,7 +43,7 @@ public class SuctionCup : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D collisionInfo) {
-		if (collisionInfo.gameObject.tag == "Player" && !triggered) {
+		if (collisionInfo.gameObject.name == "Player" && !triggered) {
             playerBody = collisionInfo.GetComponent<Rigidbody2D>();
             playerBody.GetComponent<ConstantForce2D>().force = Physics2D.gravity * 3;
             player.GetComponent<Player>().SuctionStatusOn();

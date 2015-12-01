@@ -10,7 +10,7 @@ public class SpringBoard : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.Find("Player");
         Direction = gameObject.GetComponent<Transform>().rotation * Direction;
 	}
 	

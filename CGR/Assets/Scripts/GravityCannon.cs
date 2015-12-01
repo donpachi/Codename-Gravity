@@ -15,7 +15,7 @@ public class GravityCannon : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		player = GameObject.FindGameObjectWithTag("Player");
+		player = GameObject.Find("Player");
         Transform[] components = this.GetComponentsInChildren<Transform>();
         foreach (var i in components)
         {
@@ -28,7 +28,7 @@ public class GravityCannon : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update() {
         if (cannonReady && TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
         {
             cannonReady = false;
@@ -37,7 +37,7 @@ public class GravityCannon : MonoBehaviour {
     }
 
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
-		if (collisionInfo.gameObject.tag == "Player") {
+		if (collisionInfo.gameObject.name == "Player") {
             player.GetComponent<Walk>().enabled = false;
             playerBody = collisionInfo.rigidbody;
             playerBody.gravityScale = 0f;
@@ -52,6 +52,7 @@ public class GravityCannon : MonoBehaviour {
     void EnableFireButton()
     {
         cannonReady = true;
+		Debug.Log("LOL");
     }
 
 	public void FirePlayer() {

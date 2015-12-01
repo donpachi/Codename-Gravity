@@ -12,15 +12,17 @@ public class ScrollingBackground : MonoBehaviour {
 
     void Start () {
         speed = speed / 10000;
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
+        player = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         character = player.GetComponent<Player>();
         AddListener(character);
     }
 	
 	// Update is called once per frame
 	void Update () {
-        horizontal += (player.velocity.x * speed);
-        vertical += (player.velocity.y * speed);
+		if (Time.timeScale != 0) {
+			horizontal += (player.velocity.x * speed);
+			vertical += (player.velocity.y * speed);
+		}
         this.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(horizontal, vertical);
     }
 

@@ -10,15 +10,15 @@ public class GravityVortex : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		player = GameObject.FindGameObjectWithTag("Player");
+		player = GameObject.Find("Player");
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		float distance = Vector2.Distance (player.GetComponent<Transform> ().position, this.GetComponent<Transform> ().position);
+		float distance = Vector2.Distance (player.GetComponent<Transform>().position, this.GetComponent<Transform> ().position);
 
-		if (distance < VORTEXDISTANCE) {
-			Vector2 direction = (this.GetComponent<Transform> ().position - player.GetComponent<Transform> ().position).normalized;
+		if (distance < VORTEXDISTANCE && !player.GetComponent<Player>().IsInTransition()) {
+			Vector2 direction = (this.GetComponent<Transform>().position - player.GetComponent<Transform> ().position).normalized;
 			player.GetComponent<Rigidbody2D>().AddForce(direction * VORTEXFORCE);
 		}
 	}

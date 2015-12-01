@@ -16,7 +16,7 @@ public class Portal : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         linkedPortalPosition = linkedPortal.transform.position;
-        playerStatus = GameObject.FindGameObjectWithTag("Player");
+        playerStatus = GameObject.Find("Player");
         distanceThreshold = 0.1f;
         bodies = new List<Node>();
 	}
@@ -30,6 +30,7 @@ public class Portal : MonoBehaviour {
                 bodies[i].body.transform.position = new Vector3(Mathf.Lerp(bodies[i].body.transform.position.x, linkedPortalPosition.x, transitionSpeed * Time.deltaTime),
                                 Mathf.Lerp(bodies[i].body.transform.position.y, linkedPortalPosition.y, transitionSpeed * Time.deltaTime),
                                 0f);
+
                 if ((linkedPortalPosition - bodies[i].body.transform.position).magnitude <= distanceThreshold)
                 {
                     bodies[i].body.Sleep();
@@ -45,35 +46,34 @@ public class Portal : MonoBehaviour {
     {
         if (collisionInfo.gameObject.tag != "Water")
         {
+			bool isPlayer = collisionInfo.gameObject.name.Equals("Player");
+			if (isPlayer && playerComing)
+				return;
+
             Rigidbody2D tempBody = collisionInfo.rigidbody;
             Collider2D[] colliders = tempBody.GetComponents<Collider2D>();
-            bool isPlayer = collisionInfo.gameObject.tag.Equals("Player");
 
-            if (isPlayer && playerComing)
-                return;
-            if (isPlayer)
-            {
-                GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<Player>().InTransitionStatusOn();
+            if (isPlayer) {
+				playerStatus.GetComponent<Player>().InTransitionStatusOn();
                 linkedPortal.GetComponent<Portal>().PlayerComing();
+				playerStatus.GetComponent<Player>().ToggleRender();
+				playerStatus.GetComponent<Walk>().enabled = false;
+				playerStatus.GetComponent<SuctionWalk>().enabled = false;
             }
             tempBody.gravityScale = 0;
             tempBody.velocity = new Vector2(0, 0);
             tempBody.Sleep();
-            playerStatus.GetComponent<Player>().ToggleRender();
-            playerStatus.GetComponent<Walk>().enabled = false;
-            playerStatus.GetComponent<SuctionWalk>().enabled = false;
 
             for (int i = 0; i < colliders.Length; i++)
-            {
                 colliders[i].enabled = false;
-            }
+
             bodies.Add(new Node(tempBody, tempBody.transform.TransformVector(collisionInfo.relativeVelocity)));
         }
     }
 
     void OnTriggerExit2D(Collider2D collisionInfo)
     {
-        bool isPlayer = collisionInfo.gameObject.tag.Equals("Player");
+        bool isPlayer = collisionInfo.gameObject.name.Equals("Player");
         if (isPlayer)
             playerComing = false;
     }
@@ -87,21 +87,20 @@ public class Portal : MonoBehaviour {
         entity.body.transform.position = new Vector3(entity.body.transform.position.x,
                                            entity.body.transform.position.y,
                                            -2f);
-
-        entity.body.gravityScale = 1;
+		
         entity.velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * entity.velocity;
         entity.body.AddForce(entity.velocity * entity.velocity.magnitude * 5);
+		entity.body.gravityScale = 1;
 
         for (int i = 0; i < colliders.Length; i++)
-        {
             colliders[i].enabled = true;
-        }
 
-        if (playerStatus.GetComponent<Player>().IsSuctioned())
-            playerStatus.GetComponent<SuctionWalk>().enabled = true;
-        playerStatus.GetComponent<Player>().ToggleRender();
-        playerStatus.GetComponent<Walk>().enabled = true;
-        playerStatus.GetComponent<Player>().InTransitionStatusEnd(); 
+        if (playerStatus.GetComponent<Player>().IsSuctioned()) {
+			playerStatus.GetComponent<SuctionWalk>().enabled = true;
+			playerStatus.GetComponent<Player>().ToggleRender();
+			playerStatus.GetComponent<Walk>().enabled = true;
+			playerStatus.GetComponent<Player>().InTransitionStatusEnd(); 
+		}
     }
 
     public void PlayerComing()
@@ -115,8 +114,7 @@ class Node
     public Rigidbody2D body;
     public Vector2 velocity;
 
-    public Node(Rigidbody2D rb, Vector2 v)
-    {
+    public Node(Rigidbody2D rb, Vector2 v) {
         body = rb;
         velocity = v;
     }

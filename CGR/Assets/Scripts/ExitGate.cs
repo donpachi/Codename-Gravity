@@ -16,7 +16,7 @@ public class ExitGate : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collisionInfo)
     {
-        if (collisionInfo.gameObject.tag == "Player")
+        if (collisionInfo.gameObject.name == "Player")
             menuCanvas.GetComponent<MenuCanvas>().VictoryScreen();
     }
 }
