@@ -67,7 +67,7 @@ public class Portal : MonoBehaviour {
             for (int i = 0; i < colliders.Length; i++)
                 colliders[i].enabled = false;
 
-            bodies.Add(new Node(tempBody, tempBody.transform.TransformVector(collisionInfo.relativeVelocity)));
+            bodies.Add(new Node(tempBody, tempBody.transform.TransformVector(collisionInfo.relativeVelocity), isPlayer));
         }
     }
 
@@ -83,7 +83,7 @@ public class Portal : MonoBehaviour {
         yield return new WaitForSeconds(delayTime);
 
         Collider2D[] colliders = entity.body.GetComponents<Collider2D>();
-        float launchAngle = (this.transform.rotation.eulerAngles.z - linkedPortal.transform.rotation.eulerAngles.z);
+        float launchAngle = Mathf.Abs(this.transform.rotation.eulerAngles.z - linkedPortal.transform.rotation.eulerAngles.z);
         entity.body.transform.position = new Vector3(entity.body.transform.position.x,
                                            entity.body.transform.position.y,
                                            -2f);
@@ -95,11 +95,14 @@ public class Portal : MonoBehaviour {
         for (int i = 0; i < colliders.Length; i++)
             colliders[i].enabled = true;
 
-        if (playerStatus.GetComponent<Player>().IsSuctioned()) {
-			playerStatus.GetComponent<SuctionWalk>().enabled = true;
+		if (entity.isPlayer) {
 			playerStatus.GetComponent<Player>().ToggleRender();
-			playerStatus.GetComponent<Walk>().enabled = true;
 			playerStatus.GetComponent<Player>().InTransitionStatusEnd(); 
+
+			if (playerStatus.GetComponent<Player>().IsSuctioned())
+				playerStatus.GetComponent<SuctionWalk>().enabled = true;
+			else
+				playerStatus.GetComponent<Walk>().enabled = true;
 		}
     }
 
@@ -113,9 +116,11 @@ class Node
 {
     public Rigidbody2D body;
     public Vector2 velocity;
+	public bool isPlayer;
 
-    public Node(Rigidbody2D rb, Vector2 v) {
+    public Node(Rigidbody2D rb, Vector2 v, bool p) {
         body = rb;
         velocity = v;
+		isPlayer = p;
     }
 }
