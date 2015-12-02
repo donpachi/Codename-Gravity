@@ -51,10 +51,6 @@ public class Player : MonoBehaviour {
 
             if (groundCheckRay.collider != null)
             {
-                if (groundCheckRay.collider.gameObject.tag == "MovingPlatform")
-                {
-                    groundCheckRay.collider.gameObject.SendMessage("playerOn");
-                }
                 inAir = false;
             }
             else

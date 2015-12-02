@@ -21,8 +21,8 @@ public class Water : MonoBehaviour {
 
     public void checkToSpawn() {
 
-        RaycastHit2D leftsidedownhit;
-        RaycastHit2D rightsidedownhit;
+        //RaycastHit2D leftsidedownhit;
+        //RaycastHit2D rightsidedownhit;
         RaycastHit2D leftsidehit;
         RaycastHit2D rightsidehit;
 
