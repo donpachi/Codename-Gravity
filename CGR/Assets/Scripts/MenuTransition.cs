@@ -6,8 +6,10 @@ using System;
 
 public class MenuTransition : MonoBehaviour
 {
+	public float velocityThreshold;
 
     private bool released;
+	private int currentScreen = 0;
     private RectTransform contentViewer;
     private RectTransform closestScreenRect;
     private GameObject[] levelSelectScreens;
@@ -38,7 +40,7 @@ public class MenuTransition : MonoBehaviour
 
         if (released && Vector2.Distance(contentViewer.offsetMax, closestScreenRect.offsetMax * -1) < 0.005f)
         {
-            released = false;
+			this.GetComponentInParent<ScrollRect>().velocity = new Vector2(0,0);
             this.GetComponent<RectTransform>().offsetMax = closestScreenRect.offsetMax * -1; //center position: MAY BE REDUNDANT
             this.GetComponent<RectTransform>().offsetMin = closestScreenRect.offsetMax * -1;
         }
@@ -46,19 +48,34 @@ public class MenuTransition : MonoBehaviour
 
     public void EndDrag()
     {
-        float distance = float.MaxValue;
-        float tempDistance;
-        for (int i = 0; i < levelSelectScreens.Length; i++)
-        {
-            tempDistance = Vector2.Distance(contentViewer.offsetMax, levelSelectScreens[i].GetComponent<RectTransform>().offsetMax * -1);
+		float distance = float.MaxValue;
+		float tempDistance;
+		Vector2 speed = this.GetComponentInParent<ScrollRect> ().velocity;
 
-            if (distance > tempDistance)
-            {
-                distance = tempDistance;
-                closestScreenRect = levelSelectScreens[i].GetComponent<RectTransform>();
-            }
-        }
-        released = true;
+		if (speed.magnitude >= velocityThreshold) {
+			if (speed.x > 0 && currentScreen < levelSelectScreens.Length - 1)
+			{
+				closestScreenRect = levelSelectScreens[currentScreen+1].GetComponent<RectTransform> ();
+				currentScreen++;
+			}
+			else if (speed.x < 0 && currentScreen > 0)
+			{
+				closestScreenRect = levelSelectScreens[currentScreen-1].GetComponent<RectTransform> ();
+				currentScreen--;
+			}
+		}
+		else {
+			for (int i = 0; i < levelSelectScreens.Length; i++) 
+			{
+				tempDistance = Vector2.Distance (contentViewer.offsetMax, levelSelectScreens[i].GetComponent<RectTransform> ().offsetMax * -1);
+
+				if (distance > tempDistance) {
+					distance = tempDistance;
+					closestScreenRect = levelSelectScreens[i].GetComponent<RectTransform> ();
+				}
+			}
+		}
+		released = true;
     }
 
     public void BeginDrag()
