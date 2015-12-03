@@ -22,7 +22,6 @@ public class MenuTransition : MonoBehaviour
         contentViewer = this.GetComponent<RectTransform>();
         buttonImage = Resources.Load<Sprite>("unity_builtin_extra/UISprite");   //change to better image
         levelSelectScreens = GameObject.FindGameObjectsWithTag("Level Select");
-        Array.Reverse(levelSelectScreens);
         GenerateLevelList();
     }
 	
@@ -53,12 +52,12 @@ public class MenuTransition : MonoBehaviour
 		Vector2 speed = this.GetComponentInParent<ScrollRect> ().velocity;
 
 		if (speed.magnitude >= velocityThreshold) {
-			if (speed.x > 0 && currentScreen < levelSelectScreens.Length - 1)
+			if (speed.x < 0 && currentScreen < levelSelectScreens.Length - 1)
 			{
 				closestScreenRect = levelSelectScreens[currentScreen+1].GetComponent<RectTransform> ();
 				currentScreen++;
 			}
-			else if (speed.x < 0 && currentScreen > 0)
+			else if (speed.x > 0 && currentScreen > 0)
 			{
 				closestScreenRect = levelSelectScreens[currentScreen-1].GetComponent<RectTransform> ();
 				currentScreen--;
