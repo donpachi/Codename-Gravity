@@ -61,7 +61,7 @@ public class WindTunnel : MonoBehaviour {
                 windForce = 0;
             }
             obj.GetComponent<Rigidbody2D>().AddForce(Direction.normalized * MaxWindForce);
-            Debug.Log("Added Force to: " + obj.name);
+            Debug.Log("Added Force to: " + obj.name + " With Force: " + windForce);
         }
 
     }
@@ -74,7 +74,7 @@ public class WindTunnel : MonoBehaviour {
         windRayOrigins = new List<Vector3>();
         float width = gameObject.GetComponent<BoxCollider2D>().size.x;
         int rays = (int)(width / RayIntervals);
-        Vector3 rayOrigin = transform.position + transform.TransformDirection(Vector3.left) * width/2;
+        Vector3 rayOrigin = transform.position - (Vector3)transform.GetComponent<BoxCollider2D>().offset + transform.TransformDirection(Vector3.left) * width/2;
 
         for (int i = 0; i < rays; i++)
         {
