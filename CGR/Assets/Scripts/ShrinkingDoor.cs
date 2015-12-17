@@ -16,7 +16,7 @@ public class ShrinkingDoor : MonoBehaviour {
 	void Start () {
         originalScale = transform.localScale;
         parent = this.GetComponentInParent<Transform>().gameObject;
-        if (Mathf.Abs(gameObject.GetComponent<SpriteRenderer>().bounds.max.x) - Mathf.Abs(gameObject.GetComponent<SpriteRenderer>().bounds.min.x) > Mathf.Abs(gameObject.GetComponent<SpriteRenderer>().bounds.max.y) - Mathf.Abs(gameObject.GetComponent<SpriteRenderer>().bounds.min.y))
+        if (gameObject.transform.localScale.x > gameObject.transform.localScale.y)
         {
             originalOrientation = "widthwise";
         }
@@ -51,13 +51,14 @@ public class ShrinkingDoor : MonoBehaviour {
         Vector2 scale = transform.localScale;
         if (scale.x <= 0.1 || scale.y <= 0.1)
         {
+            this.GetComponent<SpriteRenderer>().enabled = false;
             shrinking = false;
             return;
         }
         if (originalOrientation == "widthwise")
         {
-            scale = new Vector2(scale.x - resizespeed, scale.y);
-            transform.position = new Vector2(transform.gameObject.transform.position.x - resizespeed, transform.gameObject.transform.position.y);
+            scale = new Vector2(scale.x - resizespeed * 5, scale.y);
+            transform.position = new Vector2(transform.gameObject.transform.position.x - resizespeed/5, transform.gameObject.transform.position.y);
         }
         else
         {
@@ -75,16 +76,18 @@ public class ShrinkingDoor : MonoBehaviour {
 
     void growDoor()
     {
+        this.GetComponent<SpriteRenderer>().enabled = true;
         Vector2 scale = transform.localScale;
         if (scale.x >= originalScale.x && scale.y >= originalScale.y)
         {
+            
             growing = false;
             return;
         }
         if (originalOrientation == "widthwise")
         {
-            scale = new Vector2(scale.x + resizespeed, scale.y);
-            transform.position = new Vector2(transform.gameObject.transform.position.x + resizespeed, transform.gameObject.transform.position.y);
+            scale = new Vector2(scale.x + resizespeed*5, scale.y);
+            transform.position = new Vector2(transform.gameObject.transform.position.x + resizespeed/5, transform.gameObject.transform.position.y);
         }
         else
         {
