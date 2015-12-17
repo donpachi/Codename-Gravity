@@ -94,6 +94,7 @@ public class MenuCanvas : MonoBehaviour {
 	
 	public void LoadMenu()
 	{
+        Time.timeScale = 1;
         continueButton.GetComponentInChildren<Text>().enabled = true;
         continueButton.GetComponent<Image>().enabled = true;
         continueButton.GetComponent<Button>().enabled = true;
