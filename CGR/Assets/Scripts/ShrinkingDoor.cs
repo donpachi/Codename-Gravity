@@ -58,12 +58,12 @@ public class ShrinkingDoor : MonoBehaviour {
         if (originalOrientation == "widthwise")
         {
             scale = new Vector2(scale.x - resizespeed * 5, scale.y);
-            transform.position = new Vector2(transform.gameObject.transform.position.x - resizespeed/5, transform.gameObject.transform.position.y);
+            //transform.position = new Vector2(transform.gameObject.transform.position.x - resizespeed/5, transform.gameObject.transform.position.y);
         }
         else
         {
             scale = new Vector2(scale.x, scale.y - resizespeed);
-            transform.position = new Vector2(transform.gameObject.transform.position.x, transform.gameObject.transform.position.y - resizespeed);
+            //transform.position = new Vector2(transform.gameObject.transform.position.x, transform.gameObject.transform.position.y - resizespeed);
         }
         transform.localScale = scale;
     }
@@ -87,12 +87,12 @@ public class ShrinkingDoor : MonoBehaviour {
         if (originalOrientation == "widthwise")
         {
             scale = new Vector2(scale.x + resizespeed*5, scale.y);
-            transform.position = new Vector2(transform.gameObject.transform.position.x + resizespeed/5, transform.gameObject.transform.position.y);
+            //transform.position = new Vector2(transform.gameObject.transform.position.x + resizespeed/5, transform.gameObject.transform.position.y);
         }
         else
         {
             scale = new Vector2(scale.x, scale.y + resizespeed);
-            transform.position = new Vector2(transform.gameObject.transform.position.x, transform.gameObject.transform.position.y + resizespeed);
+            //transform.position = new Vector2(transform.gameObject.transform.position.x, transform.gameObject.transform.position.y + resizespeed);
         }
         transform.localScale = scale;
     }
