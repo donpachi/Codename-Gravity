@@ -74,7 +74,7 @@ public class SuctionWalk : MonoBehaviour
                 this.GetComponent<Player>().SuctionStatusEnd();
                 this.GetComponent<PlayerJump>().enabled = true;
                 this.GetComponent<SuctionWalk>().enabled = false;
-                if (this.GetComponent<Player>().IsLaunched() && this.GetComponent<Player>().IsInTransition())
+                if (!this.GetComponent<Player>().IsLaunched() && !this.GetComponent<Player>().IsInTransition())
                 {
                     playerBody.gravityScale = 1.0f;
                     this.GetComponent<Walk>().enabled = true;

@@ -211,6 +211,7 @@ public class Player : MonoBehaviour {
         WorldGravity.GravityChanged -= gravitySpriteUpdate;
     }
 
+
     public void ToggleRender()
     {
         Renderer[] potatoParts = this.GetComponentsInChildren<Renderer>();
@@ -236,6 +237,7 @@ public class Player : MonoBehaviour {
     public void SuctionStatusEnd()
     {
         suctionStatus = false;
+        gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
     }
 
     public bool IsSuctioned()
