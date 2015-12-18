@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class WindTunnel : MonoBehaviour {
 
-	private float windForce;
 	private Animator anim;
     private List<GameObject> objectArray;
+    private List<float> forceValue;
     private GameObject closestObj;
     private List<Vector3> windRayOrigins;
 
@@ -17,12 +17,8 @@ public class WindTunnel : MonoBehaviour {
     public bool TurbineOn;
     public float RayIntervals; //the space between each ray
 
-
-    //TODO Ray cast instead of bounding box. design the prefab so that it is a game object with wind tunnel children, the main game object has this script and bounding box and each wind tunnel just has the sprite and animation
-
 	// Use this for initialization
 	void Start () {
-		windForce = 1;
 		Direction = gameObject.GetComponent<Transform> ().rotation * Direction;
 		anim = gameObject.GetComponent<Animator> ();
         objectArray = new List<GameObject>();
@@ -33,7 +29,7 @@ public class WindTunnel : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 
         if (TurbineOn)
         {
@@ -46,22 +42,12 @@ public class WindTunnel : MonoBehaviour {
     /// Adds wind force to all the pushable objects
     /// </summary>
     /// <param name="objList"></param>
-    void addWindForce(List<GameObject> objList)
+    void addWindForce(Dictionary<GameObject, float> objList)
     {
-        float distance;
-
-        foreach (GameObject obj in objList)
+        foreach (KeyValuePair<GameObject, float> entry in objList)
         {
-            distance = Vector2.Distance(obj.GetComponent<Transform>().position, transform.position);
-
-            windForce = (MaxWindDistance - distance) / MaxWindDistance * MaxWindForce;
-
-            if (windForce < 0)
-            {
-                windForce = 0;
-            }
-            obj.GetComponent<Rigidbody2D>().AddForce(Direction.normalized * MaxWindForce);
-            Debug.Log("Added Force to: " + obj.name + " With Force: " + windForce);
+            entry.Key.GetComponent<Rigidbody2D>().AddForce(Direction.normalized * entry.Value);
+            Debug.Log("Added Force to: " + entry.Key.name + " With Force: " + entry.Value);
         }
 
     }
@@ -88,9 +74,10 @@ public class WindTunnel : MonoBehaviour {
     /// Cast the wind rays to check for objects
     /// </summary>
     /// 
-    List<GameObject> castRays()
+    Dictionary<GameObject, float> castRays()
     {
-        List<GameObject> pushableObjects = new List<GameObject>();  //list of objects that were found
+        //List<WindForceData> pushableObjects = new List<WindForceData>();  //list of objects that were found
+        Dictionary<GameObject, float> pushableObjects = new Dictionary<GameObject, float>();
         
         foreach (Vector3 ray in windRayOrigins)
         {
@@ -100,9 +87,15 @@ public class WindTunnel : MonoBehaviour {
 
             if (windRay.collider != null)
             {
-                if (windRay.collider.gameObject.CompareTag("Pushable") && !pushableObjects.Contains(windRay.collider.gameObject))
+                if (windRay.collider.gameObject.CompareTag("Pushable") && !pushableObjects.ContainsKey(windRay.collider.gameObject))
                 {
-                    pushableObjects.Add(windRay.collider.gameObject);
+                    float distance = Vector2.Distance(ray, windRay.collider.gameObject.transform.position);
+                    float windForce = ((MaxWindDistance - distance) / MaxWindDistance) * MaxWindForce;
+                    if (windForce < 0)
+                    {
+                        windForce = 0;
+                    }
+                    pushableObjects.Add(windRay.collider.gameObject, windForce);
                 }
             }
         }
@@ -132,5 +125,30 @@ public class WindTunnel : MonoBehaviour {
     void plateReleased()
     {
 
+    }
+}
+
+class WindForceData
+{
+    private GameObject EffectedObject;
+    private float WindForce;
+    
+    public WindForceData()
+    {
+        WindForce = 0;
+    }
+
+    public bool Equals(WindForceData other)
+    {
+        if (other.EffectedObject == this.EffectedObject)
+            return true;
+        return false;
+    }
+
+    public bool Equals(GameObject other)    //this compares gameobject with windforce
+    {
+        if (other == this.EffectedObject)
+            return true;
+        return false;
     }
 }
