@@ -8,8 +8,8 @@ public class MovingPlatform : MonoBehaviour {
     public bool MoveDown;
     public int XDistance = -1;
     public int YDistance = -1;
-    private int XDistRemain;
-    private int YDistRemain;
+    private float XDistRemain;
+    private float YDistRemain;
     public float speed;
     public bool isActive;
     private float RAYCASTDISTANCE = 0.3f;
@@ -29,49 +29,56 @@ public class MovingPlatform : MonoBehaviour {
         {
             Vector2 vector = this.transform.position;
             Vector2 originalPosition = this.transform.position;
+
+            //Left
             if (MoveRight == false && XDistance != -1)
             {
-                if (XDistRemain == 0)
+                if (XDistRemain <= 0)
                 {
                     MoveRight = true;
                     XDistRemain = XDistance;
                 }
                 vector = new Vector2(vector.x - speed, vector.y);
-                XDistRemain--;
+                XDistRemain-=speed;
                 
             }
+
+            // Right
             else if (MoveRight == true && XDistance != -1)
             {
-                if (XDistRemain == 0)
+                if (XDistRemain <= 0)
                 {
                     MoveRight = false;
                     XDistRemain = XDistance;
                 }
                 vector = new Vector2(vector.x + speed, vector.y);
-                XDistRemain--;
+                XDistRemain-=speed;
                 
             }
 
+            // Down
             if (MoveDown == true && YDistance != -1)
             {
-                if (YDistRemain == 0)
+                if (YDistRemain <= 0)
                 {
                     MoveDown = false;
                     YDistRemain = YDistance;
                 }
                 vector = new Vector2(vector.x, vector.y - speed);
-                YDistRemain--;
+                YDistRemain-=speed;
                 
             }
+
+            // Up
             else if (MoveDown == false && YDistance != -1)
             {
-                if (YDistRemain == 0)
+                if (YDistRemain <= 0)
                 {
                     MoveDown = true;
                     YDistRemain = YDistance;
                 }
                 vector = new Vector2(vector.x, vector.y + speed);
-                YDistRemain--;
+                YDistRemain-=speed;
                 
             }
 
