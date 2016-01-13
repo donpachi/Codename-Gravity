@@ -93,7 +93,8 @@ public class DynamicParticle : MonoBehaviour {
 	void ScaleDown(){ 
 		float scaleValue = 1.0f-((Time.time-startTime)/particleLifeTime);
 		Vector2 particleScale=Vector2.one;
-		if (scaleValue <= 0) {         
+		if (scaleValue <= 0) {
+            spawnWaterBody();
             Destroy(gameObject);
 		} else{
 			particleScale.x=scaleValue;
@@ -109,7 +110,7 @@ public class DynamicParticle : MonoBehaviour {
     void spawnWaterBody()
     {
         // Logic here for creating a new waterbody
-
+        Debug.Log("Spawning Water Body");
 
         Vector2 leftRayOrigin = new Vector2(this.transform.position.x, this.transform.position.y);
         Vector2 rightRayOrigin = new Vector2(this.transform.position.x, this.transform.position.y);
