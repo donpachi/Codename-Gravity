@@ -13,6 +13,7 @@ public class MovingPlatform : MonoBehaviour {
     public float speed;
     public bool isActive;
     private float RAYCASTDISTANCE = 0.3f;
+    private float SPEEDMULTIPLIER = 10f;
     private bool playerOnTop = false;
     Vector2 moveDifference;
     
@@ -38,8 +39,8 @@ public class MovingPlatform : MonoBehaviour {
                     MoveRight = true;
                     XDistRemain = XDistance;
                 }
-                vector = new Vector2(vector.x - speed, vector.y);
-                XDistRemain-=speed;
+                vector = new Vector2(vector.x - speed/SPEEDMULTIPLIER, vector.y);
+                XDistRemain -= speed / SPEEDMULTIPLIER;
                 
             }
 
@@ -51,8 +52,8 @@ public class MovingPlatform : MonoBehaviour {
                     MoveRight = false;
                     XDistRemain = XDistance;
                 }
-                vector = new Vector2(vector.x + speed, vector.y);
-                XDistRemain-=speed;
+                vector = new Vector2(vector.x + speed / SPEEDMULTIPLIER, vector.y);
+                XDistRemain -= speed / SPEEDMULTIPLIER;
                 
             }
 
@@ -64,8 +65,8 @@ public class MovingPlatform : MonoBehaviour {
                     MoveDown = false;
                     YDistRemain = YDistance;
                 }
-                vector = new Vector2(vector.x, vector.y - speed);
-                YDistRemain-=speed;
+                vector = new Vector2(vector.x, vector.y - speed / SPEEDMULTIPLIER);
+                YDistRemain -= speed / SPEEDMULTIPLIER;
                 
             }
 
@@ -77,8 +78,8 @@ public class MovingPlatform : MonoBehaviour {
                     MoveDown = true;
                     YDistRemain = YDistance;
                 }
-                vector = new Vector2(vector.x, vector.y + speed);
-                YDistRemain-=speed;
+                vector = new Vector2(vector.x, vector.y + speed / SPEEDMULTIPLIER);
+                YDistRemain -= speed / SPEEDMULTIPLIER;
                 
             }
 
