@@ -17,11 +17,9 @@ public class BreakableWall : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
-		if (collisionInfo.gameObject.tag == "Boulder") {
-			this.GetComponent<Collider2D>().enabled = false;
-			if (collisionInfo.relativeVelocity.magnitude > breakThreshold) {
-				anima.SetTrigger("destroy");
-			}
+		if (collisionInfo.gameObject.tag == "Boulder" && collisionInfo.relativeVelocity.magnitude > breakThreshold) {
+            this.GetComponent<Collider2D>().enabled = false;
+            anima.SetTrigger("destroy");
 		}
 	}
 

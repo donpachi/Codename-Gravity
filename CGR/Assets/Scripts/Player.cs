@@ -10,6 +10,8 @@ public class Player : MonoBehaviour {
 
     private Rigidbody2D playerRigidBody;
     private LayerMask wallMask;
+    private const float drag = 0.5f;
+    private const float angularDrag = 0.05f;
     private bool facingRight;
     private bool suctionStatus;
     private bool inTransition;
@@ -25,6 +27,7 @@ public class Player : MonoBehaviour {
     void Awake () {
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
+        
         inAir = false;
         suctionStatus = false;
         inTransition = false;
@@ -182,6 +185,8 @@ public class Player : MonoBehaviour {
         {
             playerRigidBody.gravityScale = 1.0f;
             this.GetComponent<Walk>().enabled = true;
+            playerRigidBody.drag = drag;
+            playerRigidBody.angularDrag = angularDrag;
             launched = false;
         }
 	}
