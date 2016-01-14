@@ -6,8 +6,8 @@ public class MovingPlatform : MonoBehaviour {
 
     public bool MoveRight;
     public bool MoveDown;
-    public int XDistance = -1;
-    public int YDistance = -1;
+    public float XDistance = -1;
+    public float YDistance = -1;
     private float XDistRemain;
     private float YDistRemain;
     public float speed;
