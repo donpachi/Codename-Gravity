@@ -73,7 +73,8 @@ public class Portal : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D collisionInfo)
     {
-        waitForLeave.Dequeue();
+        if (waitForLeave.Count > 0)
+            waitForLeave.Dequeue();
     }
 
     public void SendObject(Rigidbody2D body, Vector2 velocity, float angle, bool isPlayer)

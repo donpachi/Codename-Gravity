@@ -52,19 +52,18 @@ public class GravityCannon : MonoBehaviour {
     void EnableFireButton()
     {
         cannonReady = true;
-		Debug.Log("LOL");
     }
 
 	public void FirePlayer() {
         Vector2 direction;
         player.GetComponent<Player>().ToggleRender();
         playerBody.GetComponent<Transform>().position = cannonTip.position;
-		playerBody.WakeUp();
 		player.GetComponent<Player>().LaunchStatusOn();
 		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform>().position).normalized;
         playerBody.AddForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
-
+        playerBody.angularDrag = 0;
+        playerBody.drag = 0;
+            
         anim.SetBool("activated", false);
-
 	}
 }
