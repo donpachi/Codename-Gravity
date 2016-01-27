@@ -1,50 +1,51 @@
 ﻿using System.Xml.Serialization;
 using System.Xml;
+using System.IO;
+using UnityEngine;
 using System.Collections;
 
 
 public class DialogueSerializer
 {
-    private string path = @"Resources";
     private string pathToResources;
-    private DialogueXML dialogueData;
+    private LevelCollection LevelsData;
     public DialogueSerializer()
-    {                   
-        pathToResources = System.IO.Path.GetPathRoot(path);
-        dialogueData = new DialogueXML();
+    {
+        pathToResources = Application.dataPath;
+        LevelsData = new LevelCollection();
     }
 
-    public void SerializeDialogueXML()
+    public void SerializeLevelDialogue()
     {
-        XmlSerializer serializer = new XmlSerializer(typeof(DialogueXML));
-        System.IO.StreamWriter streamWriter = System.IO.File.CreateText(pathToResources + "/data.xml");
-        serializer.Serialize(streamWriter, dialogueData);
+        XmlSerializer serializer = new XmlSerializer(typeof(LevelCollection));
+        StreamWriter streamWriter = new StreamWriter(File.Create(pathToResources + "/dialoguedata.xml"));
+        serializer.Serialize(streamWriter, LevelsData);
         streamWriter.Close();
         streamWriter.Dispose();
     }
 
-    public void DeserializeDialogueXML()
+    public LevelCollection DeserializeLevelDialogue()
     {
-        System.IO.FileStream filestream;
+        FileStream filestream;
         XmlReader reader;
-        XmlSerializer serializer = new XmlSerializer(typeof(DialogueXML));
+        XmlSerializer serializer = new XmlSerializer(typeof(LevelCollection));
 
-        if (!System.IO.File.Exists(pathToResources + "/data.xml"))
+        if (!System.IO.File.Exists(pathToResources + "/dialoguedata.xml"))
         {
-            filestream = System.IO.File.Create(pathToResources + "/dialogue.xml");
+            filestream = System.IO.File.Create(pathToResources + "/dialoguedata.xml");
             filestream.Close();
             filestream.Dispose();
-            SerializeDialogueXML();
+            SerializeLevelDialogue();
         }
         else
         {
-            filestream = new System.IO.FileStream(pathToResources + "/dialogue.xml", System.IO.FileMode.Open);
+            filestream = new System.IO.FileStream(pathToResources + "/dialoguedata.xml", System.IO.FileMode.Open);
             reader = new XmlTextReader(filestream);
             try
             {
                 if (serializer.CanDeserialize(reader))
                 {
-                    dialogueData = serializer.Deserialize(reader) as DialogueXML;
+                    LevelsData = (LevelCollection) serializer.Deserialize(reader);
                 }
             }
             finally
@@ -54,5 +55,6 @@ public class DialogueSerializer
                 filestream.Dispose();
             }
         }
+        return LevelsData;
     }
 }
