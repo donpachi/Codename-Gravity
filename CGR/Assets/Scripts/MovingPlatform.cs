@@ -8,6 +8,7 @@ public class MovingPlatform : MonoBehaviour {
     public bool MoveDown;
     public float XDistance = -1;
     public float YDistance = -1;
+    public int numberOfLoops = -1;
     private float XDistRemain;
     private float YDistRemain;
     public float speed;
@@ -31,56 +32,32 @@ public class MovingPlatform : MonoBehaviour {
             Vector2 vector = this.transform.position;
             Vector2 originalPosition = this.transform.position;
 
-            //Left
-            if (MoveRight == false && XDistance != -1)
+            // Left
+            if (MoveRight == false && XDistance != -1 && numberOfLoops != 0)
             {
-                if (XDistRemain <= 0)
-                {
-                    MoveRight = true;
-                    XDistRemain = XDistance;
-                }
                 vector = new Vector2(vector.x - speed/SPEEDMULTIPLIER, vector.y);
-                XDistRemain -= speed / SPEEDMULTIPLIER;
-                
+                movePlatform(vector, ref MoveRight, ref XDistance, ref XDistRemain);              
             }
 
             // Right
-            else if (MoveRight == true && XDistance != -1)
+            else if (MoveRight == true && XDistance != -1 && numberOfLoops != 0)
             {
-                if (XDistRemain <= 0)
-                {
-                    MoveRight = false;
-                    XDistRemain = XDistance;
-                }
                 vector = new Vector2(vector.x + speed / SPEEDMULTIPLIER, vector.y);
-                XDistRemain -= speed / SPEEDMULTIPLIER;
-                
+                movePlatform(vector, ref MoveRight, ref XDistance, ref XDistRemain);
             }
 
             // Down
-            if (MoveDown == true && YDistance != -1)
+            if (MoveDown == true && YDistance != -1 && numberOfLoops != 0)
             {
-                if (YDistRemain <= 0)
-                {
-                    MoveDown = false;
-                    YDistRemain = YDistance;
-                }
                 vector = new Vector2(vector.x, vector.y - speed / SPEEDMULTIPLIER);
-                YDistRemain -= speed / SPEEDMULTIPLIER;
-                
+                movePlatform(vector, ref MoveDown, ref YDistance, ref YDistRemain);
             }
 
             // Up
-            else if (MoveDown == false && YDistance != -1)
+            else if (MoveDown == false && YDistance != -1 && numberOfLoops != 0)
             {
-                if (YDistRemain <= 0)
-                {
-                    MoveDown = true;
-                    YDistRemain = YDistance;
-                }
                 vector = new Vector2(vector.x, vector.y + speed / SPEEDMULTIPLIER);
-                YDistRemain -= speed / SPEEDMULTIPLIER;
-                
+                movePlatform(vector, ref MoveDown, ref YDistance, ref YDistRemain);
             }
 
             moveDifference = new Vector2(originalPosition.x - vector.x, originalPosition.y - vector.y);
@@ -95,12 +72,21 @@ public class MovingPlatform : MonoBehaviour {
                     collidingObject.transform.position = new Vector2(collidingObject.transform.position.x - moveDifference.x, collidingObject.transform.position.y - moveDifference.y);
                 }
             }
-
-            this.transform.position = vector;
-
             
         }
 	}
+
+    void movePlatform(Vector2 newVector, ref bool direction, ref float originalDistance, ref float distanceRemaining)
+    {
+        if (distanceRemaining <= 0)
+        {
+            direction = !direction;
+            distanceRemaining = originalDistance;
+            numberOfLoops--;
+        }        
+        this.transform.position = newVector;
+        distanceRemaining -= speed / SPEEDMULTIPLIER;
+    }
 
     List<GameObject> raycastUp()
     {
@@ -152,5 +138,10 @@ public class MovingPlatform : MonoBehaviour {
     void plateDepressed()
     {
         isActive = true;
+    }
+
+    void plateReleased()
+    {
+        isActive = false;
     }
 }
