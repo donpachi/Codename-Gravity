@@ -8,7 +8,7 @@ public class MovingPlatform : MonoBehaviour {
     public bool MoveDown;
     public float XDistance = -1;
     public float YDistance = -1;
-    public int numberOfLoops = -1;
+    public int numberOfMovements = -1;
     private float XDistRemain;
     private float YDistRemain;
     public float speed;
@@ -33,31 +33,35 @@ public class MovingPlatform : MonoBehaviour {
             Vector2 originalPosition = this.transform.position;
 
             // Left
-            if (MoveRight == false && XDistance != -1 && numberOfLoops != 0)
-            {
-                vector = new Vector2(vector.x - speed/SPEEDMULTIPLIER, vector.y);
-                movePlatform(vector, ref MoveRight, ref XDistance, ref XDistRemain);              
+            if (MoveRight == false && XDistance != -1 && numberOfMovements != 0)
+            {               
+                float offset = changeDirection(ref MoveRight, ref XDistance, ref XDistRemain);
+                vector = new Vector2(vector.x - offset, vector.y);
+                this.transform.position = vector;
             }
 
             // Right
-            else if (MoveRight == true && XDistance != -1 && numberOfLoops != 0)
+            else if (MoveRight == true && XDistance != -1 && numberOfMovements != 0)
             {
-                vector = new Vector2(vector.x + speed / SPEEDMULTIPLIER, vector.y);
-                movePlatform(vector, ref MoveRight, ref XDistance, ref XDistRemain);
+                float offset = changeDirection(ref MoveRight, ref XDistance, ref XDistRemain);
+                vector = new Vector2(vector.x + offset, vector.y);
+                this.transform.position = vector;
             }
 
             // Down
-            if (MoveDown == true && YDistance != -1 && numberOfLoops != 0)
+            if (MoveDown == true && YDistance != -1 && numberOfMovements != 0)
             {
-                vector = new Vector2(vector.x, vector.y - speed / SPEEDMULTIPLIER);
-                movePlatform(vector, ref MoveDown, ref YDistance, ref YDistRemain);
+                float offset = changeDirection(ref MoveDown, ref YDistance, ref YDistRemain);
+                vector = new Vector2(vector.x, vector.y - offset);
+                this.transform.position = vector;
             }
 
             // Up
-            else if (MoveDown == false && YDistance != -1 && numberOfLoops != 0)
+            else if (MoveDown == false && YDistance != -1 && numberOfMovements != 0)
             {
-                vector = new Vector2(vector.x, vector.y + speed / SPEEDMULTIPLIER);
-                movePlatform(vector, ref MoveDown, ref YDistance, ref YDistRemain);
+                float offset = changeDirection(ref MoveDown, ref YDistance, ref YDistRemain);
+                vector = new Vector2(vector.x, vector.y + offset);
+                this.transform.position = vector;
             }
 
             moveDifference = new Vector2(originalPosition.x - vector.x, originalPosition.y - vector.y);
@@ -76,16 +80,20 @@ public class MovingPlatform : MonoBehaviour {
         }
 	}
 
-    void movePlatform(Vector2 newVector, ref bool direction, ref float originalDistance, ref float distanceRemaining)
+    float changeDirection(ref bool direction, ref float originalDistance, ref float distanceRemaining)
     {
-        if (distanceRemaining <= 0)
+        if (distanceRemaining - speed / SPEEDMULTIPLIER < 0 || distanceRemaining == 0)
         {
             direction = !direction;
+            numberOfMovements--;
             distanceRemaining = originalDistance;
-            numberOfLoops--;
-        }        
-        this.transform.position = newVector;
+            if (distanceRemaining - speed / SPEEDMULTIPLIER < 0)
+                return distanceRemaining;
+            else 
+                return 0;
+        }
         distanceRemaining -= speed / SPEEDMULTIPLIER;
+        return speed / SPEEDMULTIPLIER;        
     }
 
     List<GameObject> raycastUp()
