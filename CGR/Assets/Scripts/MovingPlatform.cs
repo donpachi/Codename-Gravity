@@ -8,7 +8,7 @@ public class MovingPlatform : MonoBehaviour {
     public bool MoveDown;
     public float XDistance = -1;
     public float YDistance = -1;
-    public int numberOfLoops = -1;
+    public int numberOfMovements = -1;
     private float XDistRemain;
     private float YDistRemain;
     public float speed;
@@ -33,7 +33,7 @@ public class MovingPlatform : MonoBehaviour {
             Vector2 originalPosition = this.transform.position;
 
             // Left
-            if (MoveRight == false && XDistance != -1 && numberOfLoops != 0)
+            if (MoveRight == false && XDistance != -1 && numberOfMovements != 0)
             {               
                 float offset = changeDirection(ref MoveRight, ref XDistance, ref XDistRemain);
                 vector = new Vector2(vector.x - offset, vector.y);
@@ -41,7 +41,7 @@ public class MovingPlatform : MonoBehaviour {
             }
 
             // Right
-            else if (MoveRight == true && XDistance != -1 && numberOfLoops != 0)
+            else if (MoveRight == true && XDistance != -1 && numberOfMovements != 0)
             {
                 float offset = changeDirection(ref MoveRight, ref XDistance, ref XDistRemain);
                 vector = new Vector2(vector.x + offset, vector.y);
@@ -49,7 +49,7 @@ public class MovingPlatform : MonoBehaviour {
             }
 
             // Down
-            if (MoveDown == true && YDistance != -1 && numberOfLoops != 0)
+            if (MoveDown == true && YDistance != -1 && numberOfMovements != 0)
             {
                 float offset = changeDirection(ref MoveDown, ref YDistance, ref YDistRemain);
                 vector = new Vector2(vector.x, vector.y - offset);
@@ -57,7 +57,7 @@ public class MovingPlatform : MonoBehaviour {
             }
 
             // Up
-            else if (MoveDown == false && YDistance != -1 && numberOfLoops != 0)
+            else if (MoveDown == false && YDistance != -1 && numberOfMovements != 0)
             {
                 float offset = changeDirection(ref MoveDown, ref YDistance, ref YDistRemain);
                 vector = new Vector2(vector.x, vector.y + offset);
@@ -85,7 +85,7 @@ public class MovingPlatform : MonoBehaviour {
         if (distanceRemaining - speed / SPEEDMULTIPLIER < 0 || distanceRemaining == 0)
         {
             direction = !direction;
-            numberOfLoops--;
+            numberOfMovements--;
             distanceRemaining = originalDistance;
             if (distanceRemaining - speed / SPEEDMULTIPLIER < 0)
                 return distanceRemaining;

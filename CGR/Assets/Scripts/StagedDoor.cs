@@ -78,10 +78,8 @@ public class StagedDoor : MonoBehaviour
 
     void resizeDoor(string growOrShrink)
     {
-        GameObject parent = null;
-        if (this.transform.parent != null)
-            parent = this.transform.parent.gameObject;
-        if (parent != null && (transform.childCount == 0 && this.GetComponent<SpriteRenderer>().enabled == true) || (!parent.GetComponent<StagedDoor>() && this.GetComponent<SpriteRenderer>().enabled == false))
+        GameObject parent = this.transform.parent.gameObject;
+        if ((transform.childCount == 0 && this.GetComponent<SpriteRenderer>().enabled == true) || (!parent.GetComponent<StagedDoor>() && this.GetComponent<SpriteRenderer>().enabled == false))
         {
             this.GetComponent<StagedDoor>().isActive = true;
             if (growOrShrink == "shrink")
@@ -96,9 +94,10 @@ public class StagedDoor : MonoBehaviour
             timer -= Time.deltaTime;
             if (timer <= 0)
             {
-                if (growOrShrink == "shrink" && parent.GetComponent<StagedDoor>())
+                if (growOrShrink == "shrink")
                 {
-                    parent.GetComponent<StagedDoor>().isActive = true;
+                    if (parent.GetComponent<StagedDoor>())
+                        parent.GetComponent<StagedDoor>().isActive = true;
                     this.GetComponent<SpriteRenderer>().enabled = false;//!this.GetComponent<SpriteRenderer>().enabled;
                     this.GetComponent<BoxCollider2D>().enabled = false;//!this.GetComponent<BoxCollider2D>().enabled;
                 }
