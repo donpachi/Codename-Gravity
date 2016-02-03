@@ -29,6 +29,12 @@ public class Dialogues
 //this is a container that holds all the blocks of dialogue for a given level
 public class Level
 {
+    [XmlElement("LevelName")]
+    public string levelname
+    {
+        get;
+        set;
+    }
     [XmlArray("Level")]
     [XmlArrayItem("Dialogues", typeof(Dialogues))]
     public Dialogues[] Dialogues { get; set; }
