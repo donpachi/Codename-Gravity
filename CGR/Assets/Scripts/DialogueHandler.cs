@@ -60,7 +60,7 @@ public class DialogueHandler : MonoBehaviour {
 
         if (drawText)
         {   //need to draw differently based on orientation of the screen
-            GUI.Label(new Rect()
+            //GUI.Label(new Rect()
         }
     }
 
