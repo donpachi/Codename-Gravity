@@ -12,7 +12,8 @@ public class DialogueHandler : MonoBehaviour {
     private Level leveldialogue;
     private float savedTimeScale;
     private float typeSpeed;
-    private bool resume;
+    private bool resume, drawText;
+
     // Use this for initialization
 
     //hitting a collider box for a dialogue trigger will call this function and pass it certain index node
@@ -50,11 +51,16 @@ public class DialogueHandler : MonoBehaviour {
         }
     }
 
-    void OnGUI()
+    void OnGUI()    //GUI elements have to react based on device orientation
     {
         if (resume == false)
         {
             GUI.Box(new Rect(0, 0, Screen.width, Screen.height / 2), speech);
+        }
+
+        if (drawText)
+        {   //need to draw differently based on orientation of the screen
+            GUI.Label(new Rect()
         }
     }
 
