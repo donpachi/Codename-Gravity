@@ -88,10 +88,6 @@ public class GameControl : MonoBehaviour {
         return levelHighScore;
     }
 
-    public DialogueHandler getDialogueHandler()
-    {
-        return dialogueHandler;
-    }
 }
 
 [Serializable]
