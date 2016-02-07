@@ -7,6 +7,7 @@ public class SimplifiedMovingPlatform : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
         GameObject[] pushableObjects = GameObject.FindGameObjectsWithTag("Untagged");
         foreach (GameObject pushableObject in pushableObjects)
         {
@@ -19,7 +20,7 @@ public class SimplifiedMovingPlatform : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
         if (GetComponent<SliderJoint2D>().jointTranslation >= GetComponent<SliderJoint2D>().limits.max || GetComponent<SliderJoint2D>().jointTranslation <= GetComponent<SliderJoint2D>().limits.min && numberOfMovements != 0) 
         {
             float newMotorSpeed = GetComponent<SliderJoint2D>().motor.motorSpeed * -1;
