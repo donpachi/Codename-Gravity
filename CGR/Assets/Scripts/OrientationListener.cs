@@ -2,8 +2,8 @@
 using System.Collections;
 
 public class OrientationListener : MonoBehaviour {
-    public Vector2 DEFAULT_ACCELEROMETER_VECTOR = new Vector2(0, -1);
-    public Vector2 DEFAULT_ACCELEROMETER_PERP_VECTOR = new Vector2(1, 0);
+    public Vector2 DEFAULT_ACCELEROMETER_VECTOR = new Vector2(1, 0);
+    public Vector2 DEFAULT_ACCELEROMETER_PERP_VECTOR = new Vector2(0, -1);
     public enum Orientation { PORTRAIT, LANDSCAPE_LEFT, INVERTED_PORTRAIT, LANDSCAPE_RIGHT }
 
     private float AccelerometerUpdateInterval;

@@ -10,6 +10,7 @@ public class DialogueHandler : MonoBehaviour {
     private DialogueSerializer dSerializer;
     private LevelCollection dialoguecontainer;
     private Level leveldialogue;
+    private Dialogues dialogueGroup;
     private float savedTimeScale;
     private float typeSpeed;
     private bool resume, drawText;
@@ -55,12 +56,32 @@ public class DialogueHandler : MonoBehaviour {
     {
         if (resume == false)
         {
-            GUI.Box(new Rect(0, 0, Screen.width, Screen.height / 2), speech);
-        }
+            Rect textboxConstraint;
+            switch (OrientationListener.instanceOf.currentOrientation())
+            {
+                case (OrientationListener.Orientation.PORTRAIT):
+                    textboxConstraint = new Rect(0, Screen.height*(0.75f), Screen.width, Screen.height / 4);
+                    break;
+                case (OrientationListener.Orientation.INVERTED_PORTRAIT):
+                    textboxConstraint = new Rect(0, 0, Screen.width, Screen.height / 4);
+                    break;
+                case (OrientationListener.Orientation.LANDSCAPE_LEFT):
+                    textboxConstraint = new Rect(Screen.width / 2, 0, Screen.width / 2, Screen.height);
+                    break;
+                case (OrientationListener.Orientation.LANDSCAPE_RIGHT):
+                    textboxConstraint = new Rect(0, 0, Screen.width / 2, Screen.height);
+                    break;
+                default:
+                    textboxConstraint = new Rect(0, 0, Screen.width / 2, Screen.height);
+                    break;
+            }
+            GUI.Box(textboxConstraint, speech);   //change this to drawTexture when implementing the drawn chatbox
+            if (drawText)
+            {   //need to draw differently based on orientation of the screen
+                //GUI.Label(new Rect()
 
-        if (drawText)
-        {   //need to draw differently based on orientation of the screen
-            //GUI.Label(new Rect()
+            }
+
         }
     }
 
@@ -72,7 +93,7 @@ public class DialogueHandler : MonoBehaviour {
     public void DisplayText(int index)
     {
         pauseGame();
-        Dialogues text2display = leveldialogue.Dialogues[index];    //text to display for that node. Each index corresponds to a new speaker (like a conversation)
+        dialogueGroup = leveldialogue.Dialogues[index];    //text to display for that node. Each index corresponds to a new speaker (like a conversation)
         DrawTextCanvas();
         //switch the speech function on (onGUI will constantly update so just set a trigger or boolean here, same in the generic display text)
         resumeGame();
