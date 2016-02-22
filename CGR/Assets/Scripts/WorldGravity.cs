@@ -6,7 +6,7 @@ public class WorldGravity : MonoBehaviour {
     public float GRAVITYCOOLDOWN = 5f;
     public Vector2 gVector;
 
-    private bool gravityOnCooldown;
+    private bool gravityOnCooldown, gShiftDisabled;
     private float elapsedTime;
     private OrientationListener.Orientation previousGravityDirection;
 
@@ -45,19 +45,22 @@ public class WorldGravity : MonoBehaviour {
         OrientationListener.instanceOf.saveGravityVector(gVector);
         Physics2D.gravity = OrientationListener.instanceOf.DEFAULT_ACCELEROMETER_VECTOR * GRAVITYVALUE; // modify so that this is modifiable when the level starts.
         elapsedTime = 0;
-        gravityOnCooldown = false;
+        gravityOnCooldown = false; gShiftDisabled = false;
         previousGravityDirection = (int)OrientationListener.Orientation.PORTRAIT;
     }
 
     public void updateGravity()
     {
-        previousGravityDirection = OrientationListener.instanceOf.currentOrientation();
-        float gx = OrientationListener.instanceOf.getRelativeDownVector().x;
-        float gy = OrientationListener.instanceOf.getRelativeDownVector().y;
-        gVector = new Vector2(gx, gy);
-        OrientationListener.instanceOf.saveGravityVector(gVector);
-        Physics2D.gravity = gVector * GRAVITYVALUE;
-        triggerGravityChange(OrientationListener.instanceOf.currentOrientation(), GRAVITYCOOLDOWN);
+        if (!gShiftDisabled)
+        {
+            previousGravityDirection = OrientationListener.instanceOf.currentOrientation();
+            float gx = OrientationListener.instanceOf.getRelativeDownVector().x;
+            float gy = OrientationListener.instanceOf.getRelativeDownVector().y;
+            gVector = new Vector2(gx, gy);
+            OrientationListener.instanceOf.saveGravityVector(gVector);
+            Physics2D.gravity = gVector * GRAVITYVALUE;
+            triggerGravityChange(OrientationListener.instanceOf.currentOrientation(), GRAVITYCOOLDOWN);
+        }
     }
 
     public void toggleCooldown()
@@ -73,6 +76,20 @@ public class WorldGravity : MonoBehaviour {
     public void enableCooldown()
     {
         gravityOnCooldown = true;
+    }
+
+    /// <summary>
+    /// Worker method that Enables/Disables gravity shift depending on the input parameter
+    /// </summary>
+    /// <param name="toggle">True disables gravity shift \nFalse enables gravity shift</param>
+    public void disableGravityShit(bool toggle)
+    {
+        if (toggle)
+            gShiftDisabled = true;
+        else if (!toggle)
+            gShiftDisabled = false;
+        else  // should never get here
+            Debug.Log("Invalid parameter specified for toggle");
     }
 
 }
