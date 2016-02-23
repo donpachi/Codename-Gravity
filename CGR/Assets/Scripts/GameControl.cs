@@ -8,7 +8,6 @@ using System.IO;
 public class GameControl : MonoBehaviour {
 
     public static GameControl Instance;
-    private DialogueHandler dialogueHandler;
 
     private bool[] levelUnlocked;
     private int[] levelHighScore;
@@ -19,7 +18,6 @@ public class GameControl : MonoBehaviour {
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-            dialogueHandler = new DialogueHandler();
         }
         else if (Instance != this)
         {
@@ -90,10 +88,6 @@ public class GameControl : MonoBehaviour {
         return levelHighScore;
     }
 
-    public DialogueHandler getDialogueHandler()
-    {
-        return dialogueHandler;
-    }
 }
 
 [Serializable]

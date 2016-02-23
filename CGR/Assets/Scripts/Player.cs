@@ -199,6 +199,11 @@ public class Player : MonoBehaviour {
         }
     }
 
+    void OnGUI()
+    {
+        GUI.Label(new Rect(0, 0, Screen.height, Screen.width / 2), "FUCK world");
+    }
+
 	public void TriggerDeath()
 	{
 		if(OnPlayerDeath != null)

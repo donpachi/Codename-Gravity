@@ -19,7 +19,6 @@ public class TextNode : MonoBehaviour {
             {
                 if (Input.GetTouch(i).tapCount >= 1)
                 {
-                    GameControl.Instance.getDialogueHandler().releaseGame();
                     inTextSequence = false;
                 }
             }
@@ -31,7 +30,6 @@ public class TextNode : MonoBehaviour {
         if (info.gameObject.name == "Player" && !visited)
         {
             inTextSequence = true;
-            GameControl.Instance.getDialogueHandler().DisplayText(dialogueIndex);
             visited = true;
         }
     }
