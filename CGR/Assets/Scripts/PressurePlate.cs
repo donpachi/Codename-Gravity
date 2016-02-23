@@ -25,7 +25,6 @@ public class PressurePlate : MonoBehaviour {
     {
         TimerCountingDown = false;
         timer = releaseDelay;
-        BroadcastMessage("plateDepressed");
     }
 
     void OnTriggerExit2D(Collider2D collider)
@@ -39,7 +38,6 @@ public class PressurePlate : MonoBehaviour {
         if (timer <= 0)
         {
             TimerCountingDown = false;
-            BroadcastMessage("plateReleased");
             timer = releaseDelay;
         }
     }

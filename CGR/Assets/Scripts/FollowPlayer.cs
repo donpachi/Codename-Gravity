@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class FollowPlayer : MonoBehaviour {
-    GameObject player;
+    public GameObject player;
     Vector3 position;
 
 	// Use this for initialization

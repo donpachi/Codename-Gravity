@@ -16,18 +16,20 @@ public class Player : MonoBehaviour {
     private bool suctionStatus;
     private bool inTransition;
     private bool launched;
-
+    
     public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
     public float deathSpeed = 10f;
     public bool inAir;
+    public bool inMinionArea;
     public float OnGroundRaySize;
     public float ForwardRaySize;
+    public bool isMinion = false;
 
     void Awake () {
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
-        
+        inMinionArea = false;
         inAir = false;
         suctionStatus = false;
         inTransition = false;
@@ -199,17 +201,20 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void OnGUI()
-    {
-        GUI.Label(new Rect(0, 0, Screen.height, Screen.width / 2), "FUCK world");
-    }
-
 	public void TriggerDeath()
 	{
-		if(OnPlayerDeath != null)
-		{
-			OnPlayerDeath();
-		}
+        if (OnPlayerDeath != null && isMinion == false)
+        {
+            OnPlayerDeath();
+        }
+        else if (isMinion == true)
+        {
+            GameObject potato = GameObject.Find("Player");
+            potato.GetComponent<Player>().enabled = true;
+            GameObject.Find("Main Camera").GetComponent<FollowPlayer>().player = potato;
+            potato.GetComponent<Walk>().enabled = true;
+            Destroy(gameObject);
+        }
 	}
 
     //Listeners for player
