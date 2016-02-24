@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+/// <summary>
+/// This script applieds the rail node behaviour to a transform.
+/// Once the script is attached to the transform, the node's neighbours must be manually defined through the Unity hierarchy
+/// </summary>
 public class RailNode : MonoBehaviour {
     public GameObject[] Neighbours;
     public Vector3[] vectorToNeighbour;

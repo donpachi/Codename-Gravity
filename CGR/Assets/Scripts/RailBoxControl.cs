@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Script that defines the Box movement behaviour.
+/// </summary>
 public class RailBoxControl : MonoBehaviour {
 
     //defined in unity
@@ -8,21 +11,22 @@ public class RailBoxControl : MonoBehaviour {
     public float MAXSPEED;
 
     Rigidbody2D objectRb;
-    bool entered;
-    bool active;
+    bool hasEntered;
 
 	// Use this for initialization
 	void Start () {
-        active = false;
-        entered = false;
+        hasEntered = false;
         objectRb = gameObject.GetComponent<Rigidbody2D>();
 	}
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if (active && entered && objectRb.velocity.magnitude < MAXSPEED)
-            applyMoveForce(THRUST);
+        if (hasEntered)
+        {
+            if (objectRb.velocity.magnitude < MAXSPEED)
+                applyMoveForce(THRUST);
+        }
     }
 
     void applyMoveForce(float force)
@@ -47,7 +51,7 @@ public class RailBoxControl : MonoBehaviour {
     {
         if(collisionEvent.gameObject.name == "Player")
         {
-            entered = true;
+            hasEntered = true;
         }
     }
 
