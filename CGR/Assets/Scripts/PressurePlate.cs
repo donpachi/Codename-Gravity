@@ -27,6 +27,7 @@ public class PressurePlate : MonoBehaviour {
         {
             TimerCountingDown = false;
             timer = releaseDelay;
+            BroadcastMessage("plateDepressed");
         }
     }
 
@@ -44,6 +45,7 @@ public class PressurePlate : MonoBehaviour {
         if (timer <= 0)
         {
             TimerCountingDown = false;
+            BroadcastMessage("plateReleased");
             timer = releaseDelay;
         }
     }
