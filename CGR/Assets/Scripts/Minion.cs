@@ -27,19 +27,7 @@ public class Minion : MonoBehaviour {
             }
         }
 
-        foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
-        {
-            minions.Add(minion);
-            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), minion.GetComponent<Collider2D>());
-        }
-
-        GameObject prev = null;
-        foreach (GameObject minion in minions)
-        {          
-            if (minion == gameObject)
-                parent = prev;
-            prev = minion;
-        }
+        updateList();
        
 	}
 	
@@ -53,31 +41,12 @@ public class Minion : MonoBehaviour {
 
     void swipeCheck(TouchController.SwipeDirection direction)
     {
-        minions = new List<GameObject>();
-        foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
+        if (direction == TouchController.SwipeDirection.UP && player.GetComponent<Player>().inMinionArea == true)
         {
-            minions.Add(minion);
-            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), minion.GetComponent<Collider2D>());
-        }
-
-        foreach (GameObject minion in minions)
-        {
-            GameObject prev = null;
-            if (minion == gameObject)
-                parent = prev;
-            prev = minion;
-        }
-
-        if (direction == TouchController.SwipeDirection.UP && player.GetComponent<Player>().inMinionArea == true && minions[0] == gameObject)
-        {
-            foreach (GameObject minion in minions)
-            {
-                GameObject prev = null;
-                if (minion == gameObject)
-                    parent = prev;
-                prev = minion;
-            }
-            switchControl();
+            this.GetComponent<Minion>().enabled = false;
+            updateList();
+            if (minions[0] == gameObject)           
+                switchControl();
         }
     }
 
@@ -93,6 +62,24 @@ public class Minion : MonoBehaviour {
         GameObject.Find("Main Camera").GetComponent<FollowPlayer>().player = this.gameObject;
 
         this.GetComponent<Minion>().enabled = false;
+    }
+
+    void updateList()
+    {
+        minions = new List<GameObject>();
+        foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
+        {
+            minions.Add(minion);
+            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), minion.GetComponent<Collider2D>());
+        }
+        GameObject prev = null;
+        foreach (GameObject minion in minions)
+        {
+            
+            if (minion == gameObject)
+                parent = prev;
+            prev = minion;
+        }
     }
 
     //Event handling for swipe events

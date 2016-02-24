@@ -23,14 +23,20 @@ public class PressurePlate : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        TimerCountingDown = false;
-        timer = releaseDelay;
+        if (collider.tag == "Pushable")
+        {
+            TimerCountingDown = false;
+            timer = releaseDelay;
+        }
     }
 
     void OnTriggerExit2D(Collider2D collider)
     {
-        if (canBeUntriggered == true)
-            TimerCountingDown = true;           
+        if (collider.tag == "Pushable")
+        {
+            if (canBeUntriggered == true)
+                TimerCountingDown = true;
+        }
     }
 
     void checkIfRelease()

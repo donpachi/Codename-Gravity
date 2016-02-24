@@ -213,9 +213,23 @@ public class Player : MonoBehaviour {
             potato.GetComponent<Player>().enabled = true;
             GameObject.Find("Main Camera").GetComponent<FollowPlayer>().player = potato;
             potato.GetComponent<Walk>().enabled = true;
+            switchControl();
             Destroy(gameObject);
         }
 	}
+
+    void switchControl()
+    {
+        foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
+        {
+            this.GetComponent<Player>().enabled = false;
+            this.GetComponent<Rigidbody2D>().gravityScale = 0;
+            this.GetComponent<Player>().isMinion = false;
+            this.GetComponent<PlayerJump>().enabled = false;
+            this.GetComponent<Walk>().enabled = false;
+            minion.GetComponent<Minion>().enabled = true;
+        }
+    }
 
     //Listeners for player
     void OnEnable()
