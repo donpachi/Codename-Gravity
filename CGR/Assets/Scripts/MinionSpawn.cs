@@ -4,7 +4,6 @@ using System.Collections;
 public class MinionSpawn : MonoBehaviour {
 
     public int maxMinions = 1;
-    int spawnedMinions = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -18,9 +17,8 @@ public class MinionSpawn : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (spawnedMinions < maxMinions && collider.name == "Player")
+        if (GameObject.FindGameObjectsWithTag("Minion").Length < maxMinions && collider.name == "Player")
         {
-            spawnedMinions++;
             GameObject newMinion = (GameObject)Instantiate(Resources.Load("Prefabs/Minion"));
             newMinion.transform.position = transform.position;
             foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
