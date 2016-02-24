@@ -18,7 +18,8 @@ public class PressurePlate : MonoBehaviour {
 	void FixedUpdate () {
         if (TimerCountingDown == true)
             timer -= Time.deltaTime;
-        checkIfRelease();
+        if (canBeUntriggered == true)
+            checkIfRelease();
 	}
 
     void OnTriggerEnter2D(Collider2D collider)
