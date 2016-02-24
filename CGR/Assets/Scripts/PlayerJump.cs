@@ -6,8 +6,6 @@ public class PlayerJump : MonoBehaviour {
 
     private Rigidbody2D playerBody;
     private bool canJump;
-    public int numberOfJumps = 0;
-    public bool limitedJumps = false;
 
     int singlejumpCount = 0;    //used to debug double jumps
     public float jumpForce = 10;
@@ -15,29 +13,25 @@ public class PlayerJump : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         playerBody = GetComponent<Rigidbody2D>();
-        canJump = false;
-        if (limitedJumps == true)
-            foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
-            {
-                numberOfJumps++;
-            }          
+        canJump = false;     
 	}
 	
 	// Update is called once per frame
     void FixedUpdate()
     {
-        if (canJump && numberOfJumps != 0)
-        {
+        if (canJump)
+        {         
             playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
             ++singlejumpCount;
             canJump = false;
-            numberOfJumps--;
         }
     }
 
     void jumpCheck(TouchController.SwipeDirection direction)
     {
-        if(direction == TouchController.SwipeDirection.UP && !gameObject.GetComponent<Player>().inAir)
+
+        
+        if (direction == TouchController.SwipeDirection.UP && !gameObject.GetComponent<Player>().inAir)
         {
             canJump = true;
         }
