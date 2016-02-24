@@ -36,7 +36,10 @@ public class Minion : MonoBehaviour {
             if (parent == null)
                 transform.position = Vector2.Lerp(transform.position, minionAnchor.transform.position, 0.1f);
             else if (Vector2.Distance(transform.position, parent.transform.position) > 0.5f)
+            {
+                //this.GetComponent<Rigidbody2D>().gravityScale = 1;
                 transform.position = Vector2.Lerp(transform.position, parent.transform.position, 0.1f);
+            }
 	}
 
     void swipeCheck(TouchController.SwipeDirection direction)
