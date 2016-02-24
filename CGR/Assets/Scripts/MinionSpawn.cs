@@ -3,11 +3,11 @@ using System.Collections;
 
 public class MinionSpawn : MonoBehaviour {
 
-    public int maxMinions = 1;
+    public int minionsSpawned;
 
 	// Use this for initialization
 	void Start () {
-	
+        minionsSpawned = 0;
 	}
 	
 	// Update is called once per frame
@@ -17,13 +17,18 @@ public class MinionSpawn : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (GameObject.FindGameObjectsWithTag("Minion").Length < maxMinions && collider.name == "Player")
+        if (collider.name == "Player" && minionsSpawned < 1)
         {
-            GameObject newMinion = (GameObject)Instantiate(Resources.Load("Prefabs/Minion"));
-            newMinion.transform.position = transform.position;
-            foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
+                GameObject newMinion = (GameObject)Instantiate(Resources.Load("Prefabs/Minion"));
+                newMinion.transform.position = transform.position;
+                foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
+                {
+                    minion.SendMessage("updateList");
+                }
+                
+            foreach (GameObject minionSpawner in GameObject.FindGameObjectsWithTag("MinionSpawner"))
             {
-                minion.SendMessage("updateList");
+                minionSpawner.GetComponent<MinionSpawn>().minionsSpawned++;
             }
         }
     }
