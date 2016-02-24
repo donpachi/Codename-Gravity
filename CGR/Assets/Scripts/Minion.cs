@@ -34,14 +34,32 @@ public class Minion : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-            if (parent == null)
-                transform.position = Vector2.Lerp(transform.position, minionAnchor.transform.position, 0.1f);
-            else if (Vector2.Distance(transform.position, parent.transform.position) > 0.5f)
-            {
-                //this.GetComponent<Rigidbody2D>().gravityScale = 1;
-                transform.position = Vector2.Lerp(transform.position, parent.transform.position, 0.1f);
-            }
+        lerpToPlayer();
+        if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT) && transform.position.y > player.transform.position.y - 0.25f)
+        {
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
+        }
+        else if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT) && transform.position.y <= player.transform.position.y - 0.25f)
+        {
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+        }
+        else if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT) && transform.position.x == player.transform.position.x)
+        {
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+        }
+        else if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT) && transform.position.x != player.transform.position.x)
+        {
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
+        }
 	}
+
+    void lerpToPlayer()
+    {
+        if (parent == null)
+            transform.position = Vector2.Lerp(transform.position, player.transform.position, 0.1f);
+        else if (Vector2.Distance(transform.position, parent.transform.position) > 0.5f)
+            transform.position = Vector2.Lerp(transform.position, parent.transform.position, 0.1f);
+    }
 
     void swipeCheck(TouchController.SwipeDirection direction)
     {
