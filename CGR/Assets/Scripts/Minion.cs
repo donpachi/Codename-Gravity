@@ -8,7 +8,8 @@ public class Minion : MonoBehaviour {
     GameObject minionAnchor;
     List<GameObject> minions = new List<GameObject>();
     GameObject parent;
-    float timer = 0.1f; 
+    float timer = 0.1f;
+    public bool isFollowing = true;
 
 	// Use this for initialization
 	void Start () {
@@ -55,6 +56,7 @@ public class Minion : MonoBehaviour {
 
     void switchControl()
     {
+        //gameObject.tag = "Pushable";
         player.GetComponent<Walk>().enabled = false;
         player.GetComponent<Player>().enabled = false;
         this.GetComponent<Player>().enabled = true;
@@ -63,7 +65,7 @@ public class Minion : MonoBehaviour {
         this.GetComponent<PlayerJump>().enabled = true;
         this.GetComponent<Walk>().enabled = true;
         GameObject.Find("Main Camera").GetComponent<FollowPlayer>().player = this.gameObject;
-
+        isFollowing = false;
         this.GetComponent<Minion>().enabled = false;
     }
 

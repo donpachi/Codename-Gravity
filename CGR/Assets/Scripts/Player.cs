@@ -213,6 +213,11 @@ public class Player : MonoBehaviour {
             potato.GetComponent<Player>().enabled = true;
             GameObject.Find("Main Camera").GetComponent<FollowPlayer>().player = potato;
             potato.GetComponent<Walk>().enabled = true;
+            foreach (GameObject minionSpawner in GameObject.FindGameObjectsWithTag("MinionSpawner")) 
+            {
+                if (GameObject.FindGameObjectsWithTag("Minion").Length == 1)
+                    minionSpawner.GetComponent<MinionSpawn>().minionsSpawned--;
+            }
             switchControl();
             Destroy(gameObject);
         }
@@ -228,6 +233,7 @@ public class Player : MonoBehaviour {
             this.GetComponent<PlayerJump>().enabled = false;
             this.GetComponent<Walk>().enabled = false;
             minion.GetComponent<Minion>().enabled = true;
+            //minion.tag = "Minion";
         }
     }
 

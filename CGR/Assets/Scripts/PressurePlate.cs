@@ -23,7 +23,7 @@ public class PressurePlate : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.tag == "Pushable" || collider.tag == "Minion")
+        if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().isFollowing == false))
         {
             TimerCountingDown = false;
             timer = releaseDelay;
@@ -32,7 +32,7 @@ public class PressurePlate : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D collider)
     {
-        if (collider.tag == "Pushable" || collider.tag == "Minion")
+        if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().isFollowing == false))
         {
             if (canBeUntriggered == true)
                 TimerCountingDown = true;
