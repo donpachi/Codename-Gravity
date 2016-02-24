@@ -1,11 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// The script for a block travesing nodes.
+/// The origin and target nodes need to be defined in unity before use
+/// </summary>
 public class RailBlock : MonoBehaviour {
     public GameObject Origin;
     public GameObject Target;
+    public bool isActive;
 
     private SliderJoint2D joint;
+    private Animator anim;
 
 	// Find 2 Nodes to start from, mby define in unity
     // Set where the box originates, set the definition of rail it rides on
@@ -17,14 +23,23 @@ public class RailBlock : MonoBehaviour {
         joint = gameObject.GetComponent<SliderJoint2D>();
         transform.position = Origin.transform.position;
         setJointParam();
+        anim = gameObject.GetComponent<Animator>();
+        anim.SetBool("BoxActive", isActive);
+        if (!isActive)
+        {
+            gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+        }
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (joint.limitState == JointLimitState2D.UpperLimit)
-            findNextNode(Target);
-        else if (joint.limitState == JointLimitState2D.LowerLimit)
-            findNextNode(Origin);
+        if (isActive)
+        {
+            if (joint.limitState == JointLimitState2D.UpperLimit)
+                findNextNode(Target);
+            else if (joint.limitState == JointLimitState2D.LowerLimit)
+                findNextNode(Origin);
+        }
 	}
 
     //Sets the rail definition according to nodes
@@ -63,5 +78,21 @@ public class RailBlock : MonoBehaviour {
         Origin = node;
         Target = nextNode;
         setJointParam();
+    }
+
+    //For Switches
+    void plateDepressed()
+    {
+        isActive = true;
+        gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
+        anim.SetBool("BoxActive", isActive);
+
+    }
+
+    void plateReleased()
+    {
+        isActive = false;
+        gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+        anim.SetBool("BoxActive", isActive);
     }
 }
