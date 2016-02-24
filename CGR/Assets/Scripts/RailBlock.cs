@@ -10,14 +10,13 @@ public class RailBlock : MonoBehaviour {
 	// Find 2 Nodes to start from, mby define in unity
     // Set where the box originates, set the definition of rail it rides on
 	void Start () {
-        //if (((Target.transform.position - Origin.transform.position).normalized == Vector3.down)
-        //        || ((Target.transform.position - Origin.transform.position).normalized == Vector3.up))
-        //    gameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePositionX;
+        if (Origin == null || Target == null)
+        {
+            Debug.LogError("Rail Block does not have start or end node defined", gameObject);
+        }
         joint = gameObject.GetComponent<SliderJoint2D>();
         transform.position = Origin.transform.position;
         setJointParam();
-        
-
 	}
 	
 	// Update is called once per frame
@@ -31,10 +30,15 @@ public class RailBlock : MonoBehaviour {
     //Sets the rail definition according to nodes
     void setJointParam()
     {
-        Vector3 railVector = Target.transform.position - Origin.transform.position;
+        Vector3 railVector = Origin.transform.position - Target.transform.position;
         
         //set the angle
-        joint.angle = Vector3.Angle(Vector3.right, railVector);
+        if(Vector3.Cross(Vector3.right, railVector).z < 0)
+            joint.angle = -Vector3.Angle(Vector3.right, railVector);
+        else
+            joint.angle = Vector3.Angle(Vector3.right, railVector);
+
+        Vector3.Cross(Vector3.right, railVector);
         //set the new anchor
         joint.connectedAnchor = Origin.transform.position;
         //set the new limits
@@ -46,7 +50,18 @@ public class RailBlock : MonoBehaviour {
     //finds the next applicable node
     void findNextNode(GameObject node)
     {
-        
-        //if(gameObject.GetComponent<Rigidbody2D>().velocity.normalized != )
+        GameObject nextNode = node.GetComponent<RailNode>().PathToTake();
+        if (nextNode == node && node == Target)
+        {
+            Target = Origin;
+            Origin = node;
+            setJointParam();
+            return;
+        }
+        else if (nextNode == node && node == Origin)
+            return;
+        Origin = node;
+        Target = nextNode;
+        setJointParam();
     }
 }
