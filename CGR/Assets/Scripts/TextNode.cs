@@ -11,26 +11,13 @@ public class TextNode : MonoBehaviour {
         inTextSequence = false; visited = false;
     }
 
-    void Update()
-    {
-        if (inTextSequence)
-        {
-            for (int i = 0; i < Input.touchCount; i++)
-            {
-                if (Input.GetTouch(i).tapCount >= 1)
-                {
-                    inTextSequence = false;
-                }
-            }
-        }
-    }
-
     void OnCollisionEnter2D(Collision2D info)
     {
         if (info.gameObject.name == "Player" && !visited)
         {
             inTextSequence = true;
             visited = true;
+            GameObject.Find("GameController").GetComponent<DialogueHandler>().DisplayText(dialogueIndex);
         }
     }
 }
