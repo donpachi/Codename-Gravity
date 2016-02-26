@@ -15,6 +15,7 @@ public class TouchController : MonoBehaviour {
     public static TouchController Instance;
     public float SwipeTime = 1.0f;     //Max time for movement check of a swipe.
     public float DeadZoneMagnitude = 20;      //DeadZone of swipe movement calculated as ratio between this value and screen height
+    public float TapTimeAllowance = 0.75f;      //delta time allowance that will determine if the screen was tapped
     public enum SwipeDirection {UP, DOWN, LEFT, RIGHT}
     public enum TouchLocation {LEFT, RIGHT, NONE}
 
@@ -29,14 +30,33 @@ public class TouchController : MonoBehaviour {
     private float deadZone;
 
 
+
     //Event Stuff
     public delegate void SwipeEvent(SwipeDirection direction);
     public static event SwipeEvent OnSwipe;
-    
+
+    public delegate void TapEvent();
+    public static event TapEvent OnTap;
+
+    public delegate void TouchEvent();
+    public static event TouchEvent ScreenTouched;
+
     void triggerSwipe(SwipeDirection direction)
     {
         if (OnSwipe != null)
             OnSwipe(direction);
+    }
+
+    void screenTapped()
+    {
+        if (OnTap != null)
+            OnTap();
+    }
+
+    void screenTouched()
+    {
+        if (ScreenTouched != null)
+            ScreenTouched();
     }
 
 	void Awake () {
@@ -87,6 +107,7 @@ public class TouchController : MonoBehaviour {
             case TouchPhase.Began:
                 resetTouchData(touch, touchDataArray[touch.fingerId]);
                 updateTouchLocation(touch, touchDataArray[touch.fingerId]);
+                screenTouched();    //fire event for a screen touch
                 break;
             //Midpoint of a touch, need to see how far it moved, how fast it moved that distance and react accordingly
             case TouchPhase.Moved:
@@ -104,10 +125,20 @@ public class TouchController : MonoBehaviour {
                 updateTouchLocation(touch, touchDataArray[touch.fingerId]);
                 break;
             case TouchPhase.Ended:
+                if (touchDataArray[touch.fingerId].totalTime <= TapTimeAllowance)
+                {
+                    screenTapped();             //fire event for a screen tap given the touch has been short enough
+                }
+                resetTouchData(touch, touchDataArray[touch.fingerId]);
+                break;
+            case TouchPhase.Canceled:
+                if (touchDataArray[touch.fingerId].totalTime <= TapTimeAllowance)
+                {
+                    screenTapped();
+                }
                 resetTouchData(touch, touchDataArray[touch.fingerId]);
                 break;
         }
-
     }
 
     //update the touch location in realation to orientation and screen position

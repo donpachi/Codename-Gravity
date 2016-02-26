@@ -12,21 +12,20 @@ public class RailBoxControl : MonoBehaviour {
 
     Rigidbody2D objectRb;
     bool hasEntered;
+    private Animator anim;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         hasEntered = false;
         objectRb = gameObject.GetComponent<Rigidbody2D>();
-	}
+        anim = gameObject.GetComponent<Animator>();
+    }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (hasEntered)
-        {
-            if (objectRb.velocity.magnitude < MAXSPEED)
-                applyMoveForce(THRUST);
-        }
+        if (objectRb.velocity.magnitude < MAXSPEED)
+            applyMoveForce(THRUST);
     }
 
     void applyMoveForce(float force)
@@ -46,15 +45,4 @@ public class RailBoxControl : MonoBehaviour {
         }
 
     }
-
-    void OnCollisionEnter2D(Collision2D collisionEvent)
-    {
-        if(collisionEvent.gameObject.name == "Player")
-        {
-            hasEntered = true;
-        }
-    }
-
-
-
 }

@@ -9,9 +9,12 @@ public class RailBlock : MonoBehaviour {
     public GameObject Origin;
     public GameObject Target;
     public bool isActive;
+    public bool PlayerControlled;
 
     private SliderJoint2D joint;
     private Animator anim;
+    private GameObject player;
+    private GameObject mainCamera;
 
 	// Find 2 Nodes to start from, mby define in unity
     // Set where the box originates, set the definition of rail it rides on
@@ -29,6 +32,10 @@ public class RailBlock : MonoBehaviour {
         {
             gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
         }
+        gameObject.GetComponent<RailBoxControl>().enabled = false;
+        player = GameObject.Find("Player");
+        mainCamera = GameObject.Find("Main Camera");
+        PlayerControlled = false;
 	}
 	
 	// Update is called once per frame
@@ -80,19 +87,68 @@ public class RailBlock : MonoBehaviour {
         setJointParam();
     }
 
+    void activateControl()
+    {
+        gameObject.GetComponent<RailBoxControl>().enabled = true;
+    }
+
+    void deactivateControl()
+    {
+        gameObject.GetComponent<RailBoxControl>().enabled = false;
+    }
+
+    void activateBox()
+    {
+        gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
+    }
+
+    void deactivateBox()
+    {
+        gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+    }
+
+    void OnCollisionEnter2D(Collision2D collisionEvent)
+    {
+        if (collisionEvent.gameObject.name == "Player")
+        {
+            anim.SetBool("HasEntered", true);
+            PlayerControlled = true;
+            collisionEvent.gameObject.SetActive(false);
+            mainCamera.GetComponent<FollowPlayer>().setFollowObject(gameObject);
+        }
+    }
+
     //For Switches
     void plateDepressed()
     {
         isActive = true;
-        gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
         anim.SetBool("BoxActive", isActive);
 
     }
 
     void plateReleased()
     {
-        isActive = false;
-        gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
-        anim.SetBool("BoxActive", isActive);
     }
+
+    //Event handling for swipe events
+    void swipeCheck(TouchController.SwipeDirection direction)
+    {
+        if (PlayerControlled && direction == TouchController.SwipeDirection.UP)
+        {
+            player.SetActive(true);
+            player.transform.position = transform.position + (Vector3)OrientationListener.instanceOf.getRelativeUpVector();
+            player.GetComponent<Rigidbody2D>().AddForce(OrientationListener.instanceOf.getRelativeUpVector() * 200);
+            mainCamera.GetComponent<FollowPlayer>().setFollowObject(player);
+        }
+    }
+
+    void OnEnable()
+    {
+        TouchController.OnSwipe += swipeCheck;
+    }
+    void OnDisable()
+    {
+        TouchController.OnSwipe -= swipeCheck;
+    }
+
 }
