@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Basic Camera script.
+/// Camera will lerp toward spcified game object
+/// </summary>
 public class FollowPlayer : MonoBehaviour {
     public GameObject player;
+    public float CameraSpeed = 0.5f;
     Vector3 position;
 
 	// Use this for initialization
@@ -14,7 +19,7 @@ public class FollowPlayer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Vector2 newPostion = Vector2.Lerp(transform.position, player.transform.position, 0.5f);
+        Vector2 newPostion = Vector2.Lerp(transform.position, player.transform.position, CameraSpeed);
 
         position.x = newPostion.x;
         position.y = newPostion.y;
