@@ -45,7 +45,30 @@ public class Player : MonoBehaviour {
             ForwardCheck();
         }
         faceDirectionCheck();
-    
+    }
+
+    public float getPlayerFeet()
+    {
+        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT)
+            return transform.position.y - 0.25f;
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
+            return transform.position.y + 0.25f;
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT)
+            return transform.position.x - 0.25f;
+        else 
+            return transform.position.x + 0.25f;
+    }
+
+    public Vector2 getPlayerFeetVector()
+    {
+        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT)
+            return new Vector2(transform.position.x, transform.position.y - 0.25f);
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
+            return new Vector2(transform.position.x, transform.position.y + 0.25f);
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT)
+            return new Vector2(transform.position.x - 0.25f, transform.position.y);
+        else
+            return new Vector2(transform.position.x + 0.25f, transform.position.y);
     }
 
     //Raycasts down to check for a floor
@@ -76,7 +99,6 @@ public class Player : MonoBehaviour {
             {
                 inAir = true;
                 gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
-                playerRigidBody.gravityScale = 1.0f;
                 playerRigidBody.GetComponent<ConstantForce2D>().enabled = false;
                 playerRigidBody.GetComponent<ConstantForce2D>().force = Physics2D.gravity * 3;
                 this.GetComponent<SuctionWalk>().GetVectors(OrientationListener.instanceOf.getRelativeDownVector());

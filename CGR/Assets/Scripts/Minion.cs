@@ -10,6 +10,8 @@ public class Minion : MonoBehaviour {
     GameObject parent;
     float timer = 0.1f;
     public bool isFollowing = true;
+    float playerPosDiff;
+    Vector2 prevPlayerLocation;
 
 	// Use this for initialization
 	void Start () {
@@ -34,29 +36,68 @@ public class Minion : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        lerpToPlayer();
-        if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT) && transform.position.y > player.transform.position.y - 0.25f)
+
+        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getWorldDownVector(), 0.5f);
+        if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle") && checkIfSameHeight() && groundCheckRay.collider != null && groundCheckRay.collider.name.Contains("MovingPlatform"))
         {
-            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
+            if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
+            {
+                playerPosDiff = Mathf.Abs(prevPlayerLocation.x - player.transform.position.x);
+                if (prevPlayerLocation.x > player.transform.position.x)
+                    transform.position = new Vector2(transform.position.x - playerPosDiff, transform.position.y);
+                else
+                    transform.position = new Vector2(transform.position.x + playerPosDiff, transform.position.y);
+            }
+            else
+            {
+                playerPosDiff = Mathf.Abs(prevPlayerLocation.y - player.transform.position.y);
+                if (prevPlayerLocation.y > player.transform.position.y)
+                    transform.position = new Vector2(transform.position.x, transform.position.y + playerPosDiff);
+                else
+                    transform.position = new Vector2(transform.position.x, transform.position.y - playerPosDiff);
+            }
         }
-        else if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT) && transform.position.y <= player.transform.position.y - 0.25f)
-        {
-            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
-        }
-        else if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT) && transform.position.x == player.transform.position.x)
-        {
-            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
-        }
-        else if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT) && transform.position.x != player.transform.position.x)
-        {
-            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
-        }
+        else
+            lerpToPlayer();
+
+        checkGravityScale();
+        prevPlayerLocation = player.transform.position;
 	}
+
+    void checkGravityScale()
+    {
+        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT && transform.position.y > player.GetComponent<Player>().getPlayerFeet())
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT && transform.position.y <= player.GetComponent<Player>().getPlayerFeet())
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT && transform.position.y > player.GetComponent<Player>().getPlayerFeet())
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT && transform.position.y <= player.GetComponent<Player>().getPlayerFeet())
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
+
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT && transform.position.x > player.GetComponent<Player>().getPlayerFeet())
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT && transform.position.x <= player.GetComponent<Player>().getPlayerFeet())
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT && transform.position.x > player.GetComponent<Player>().getPlayerFeet())
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT && transform.position.x <= player.GetComponent<Player>().getPlayerFeet())
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
+    }
+
+    bool checkIfSameHeight()
+    {
+        if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT) && Mathf.Abs((player.transform.position.y - 0.25f) - transform.position.y) > 0.01f)
+            return false;
+        if ((OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT) && Mathf.Abs((player.transform.position.y - 0.25f) - transform.position.y) > 0.01f)
+            return false;
+        return true;
+    }
 
     void lerpToPlayer()
     {
         if (parent == null)
-            transform.position = Vector2.Lerp(transform.position, player.transform.position, 0.1f);
+            transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetVector(), 0.1f);
         else if (Vector2.Distance(transform.position, parent.transform.position) > 0.5f)
             transform.position = Vector2.Lerp(transform.position, parent.transform.position, 0.1f);
     }
