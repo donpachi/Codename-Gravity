@@ -26,6 +26,7 @@ public class PressurePlate : MonoBehaviour {
     {
         if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().isFollowing == false))
         {
+            
             TimerCountingDown = false;
             timer = releaseDelay;
             BroadcastMessage("plateDepressed");
