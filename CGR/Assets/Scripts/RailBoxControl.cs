@@ -2,29 +2,32 @@
 using System.Collections;
 
 /// <summary>
-/// Script that defines the Box movement behaviour.
+/// Script that defines the Box movement and player box interaction.
 /// </summary>
 public class RailBoxControl : MonoBehaviour {
 
     //defined in unity
     public float THRUST;
     public float MAXSPEED;
+    public bool PlayerControlled;
 
     Rigidbody2D objectRb;
-    bool hasEntered;
     private Animator anim;
+    GameObject player;
+    GameObject mainCamera;
 
     // Use this for initialization
     void Start () {
-        hasEntered = false;
-        objectRb = gameObject.GetComponent<Rigidbody2D>();
+        objectRb = gameObject.GetComponentInParent<Rigidbody2D>();
         anim = gameObject.GetComponent<Animator>();
+        player = GameObject.Find("Player");
+        mainCamera = GameObject.Find("Main Camera");
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (objectRb.velocity.magnitude < MAXSPEED)
+        if (PlayerControlled && objectRb.velocity.magnitude < MAXSPEED)
             applyMoveForce(THRUST);
     }
 
@@ -43,6 +46,58 @@ public class RailBoxControl : MonoBehaviour {
             case TouchController.TouchLocation.NONE:
                 break;
         }
-
     }
+
+    void activateBox()
+    {
+        objectRb.isKinematic = false;
+    }
+
+    void deactivateBox()
+    {
+        objectRb.isKinematic = true;
+    }
+
+    void OnTriggerEnter2D(Collider2D colliderEvent)
+    {
+        if (anim.GetBool("BoxActive") == true && colliderEvent.gameObject.name == "Player")
+        {
+            anim.SetBool("HasEntered", true);
+            colliderEvent.gameObject.SetActive(false);
+            mainCamera.GetComponent<FollowPlayer>().setFollowObject(gameObject);
+        }
+    }
+
+    void activateControl()
+    {
+        PlayerControlled = true;
+    }
+
+    void deactivateControl()
+    {
+        player.SetActive(true);
+        player.transform.position = transform.position + (Vector3)OrientationListener.instanceOf.getRelativeUpVector();
+        player.GetComponent<Rigidbody2D>().AddForce(OrientationListener.instanceOf.getRelativeUpVector() * 200);
+        mainCamera.GetComponent<FollowPlayer>().setFollowObject(player);
+    }
+
+    //Event handling
+    void swipeCheck(TouchController.SwipeDirection direction)
+    {
+        if (PlayerControlled && direction == TouchController.SwipeDirection.UP)
+        {
+            anim.SetBool("HasEntered", false);
+            PlayerControlled = false;
+        }
+    }
+
+    void OnEnable()
+    {
+        TouchController.OnSwipe += swipeCheck;
+    }
+    void OnDisable()
+    {
+        TouchController.OnSwipe -= swipeCheck;
+    }
+
 }
