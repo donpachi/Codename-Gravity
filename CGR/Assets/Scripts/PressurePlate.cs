@@ -6,8 +6,9 @@ public class PressurePlate : MonoBehaviour {
 
     public bool canBeUntriggered = false;
     public float releaseDelay = 0;
-    public float timer = 0;
+    float timer = 0;
     bool TimerCountingDown = false;
+    public Animator anim;
 
 	// Use this for initialization
 	void Start () {
@@ -26,10 +27,7 @@ public class PressurePlate : MonoBehaviour {
     {
         if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().isFollowing == false))
         {
-            
-            TimerCountingDown = false;
-            timer = releaseDelay;
-            BroadcastMessage("plateDepressed");
+            anim.SetInteger("State", 1);         
         }
     }
 
@@ -46,10 +44,25 @@ public class PressurePlate : MonoBehaviour {
     {
         if (timer <= 0)
         {
-            TimerCountingDown = false;
-            BroadcastMessage("plateReleased");
-            timer = releaseDelay;
+            anim.SetInteger("State", 2);
         }
+    }
+
+    void broadcastDepress()
+    {
+        TimerCountingDown = false;
+        timer = releaseDelay;
+        BroadcastMessage("plateDepressed");
+        anim.SetInteger("State", 0);
+        Debug.Log("adsf");
+    }
+
+    void broadcastRelease()
+    {
+        anim.SetInteger("State", 0);
+        TimerCountingDown = false;
+        BroadcastMessage("plateReleased");
+        timer = releaseDelay;
     }
 
 }
