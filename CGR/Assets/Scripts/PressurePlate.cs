@@ -54,7 +54,6 @@ public class PressurePlate : MonoBehaviour {
         timer = releaseDelay;
         BroadcastMessage("plateDepressed");
         anim.SetInteger("State", 0);
-        Debug.Log("adsf");
     }
 
     void broadcastRelease()
