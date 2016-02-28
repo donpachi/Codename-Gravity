@@ -20,6 +20,7 @@ public class SpringBoard : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
+        player.GetComponent<Animator>().Play("Spring");
         player.GetComponent<Rigidbody2D>().AddForce(Direction.normalized * SpringForce);
     }
 }
