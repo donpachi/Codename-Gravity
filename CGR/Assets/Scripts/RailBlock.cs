@@ -12,6 +12,7 @@ public class RailBlock : MonoBehaviour {
 
     private SliderJoint2D joint;
     private Animator childAnim;
+    private Animator anim;
 
 	// Find 2 Nodes to start from, mby define in unity
     // Set where the box originates, set the definition of rail it rides on
@@ -23,6 +24,7 @@ public class RailBlock : MonoBehaviour {
         joint = gameObject.GetComponent<SliderJoint2D>();
         transform.position = Origin.transform.position;
         setJointParam();
+        anim = gameObject.GetComponent<Animator>();
         childAnim = gameObject.GetComponentsInChildren<Animator>()[1];
         childAnim.SetBool("BoxActive", isActive);
 	}
@@ -87,5 +89,41 @@ public class RailBlock : MonoBehaviour {
     void plateReleased()
     {
     }
+
+    /// <summary>
+    /// Updates the orientation value for the animator when the orienation changes
+    /// </summary>
+    /// <param name="orientation"></param>
+    /// <param name="timer"></param>
+    void gravitySpriteUpdate(OrientationListener.Orientation orientation, float timer)
+    {
+        switch (orientation)
+        {
+            case OrientationListener.Orientation.PORTRAIT:
+                anim.SetInteger("Orientation", 0);
+                break;
+            case OrientationListener.Orientation.LANDSCAPE_RIGHT:
+                anim.SetInteger("Orientation", 1);
+                break;
+            case OrientationListener.Orientation.LANDSCAPE_LEFT:
+                anim.SetInteger("Orientation", 3);
+                break;
+            case OrientationListener.Orientation.INVERTED_PORTRAIT:
+                anim.SetInteger("Orientation", 2);
+                break;
+        }
+    }
+
+    //Listeners for player
+    void OnEnable()
+    {
+        WorldGravity.GravityChanged += gravitySpriteUpdate;
+    }
+
+    void OnDisable()
+    {
+        WorldGravity.GravityChanged -= gravitySpriteUpdate;
+    }
+
 
 }
