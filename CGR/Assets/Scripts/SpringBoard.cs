@@ -7,6 +7,7 @@ public class SpringBoard : MonoBehaviour {
 
     public float SpringForce;
     public Vector2 Direction;
+    public Animator anim;
 
 	// Use this for initialization
 	void Start () {
@@ -20,7 +21,19 @@ public class SpringBoard : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        player.GetComponent<Animator>().Play("Spring");
-        player.GetComponent<Rigidbody2D>().AddForce(Direction.normalized * SpringForce);
+        if (collider.name == "Player")
+        {
+            anim.SetBool("Activated", true);
+            if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
+                player.GetComponent<Rigidbody2D>().velocity = new Vector2(player.GetComponent<Rigidbody2D>().velocity.x, 0);
+            else
+                player.GetComponent<Rigidbody2D>().velocity = new Vector2(0, player.GetComponent<Rigidbody2D>().velocity.y);
+            player.GetComponent<Rigidbody2D>().AddForce(Direction.normalized * SpringForce);
+        }
+    }
+
+    private void AnimateSpring()
+    {
+        anim.SetBool("Activated", false);
     }
 }
