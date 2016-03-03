@@ -11,6 +11,7 @@ public class SpringBoard : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        anim.GetComponent<Animator>();
         player = GameObject.Find("Player");
         Direction = gameObject.GetComponent<Transform>().rotation * Direction;
 	}
