@@ -7,11 +7,11 @@ public class SpringBoard : MonoBehaviour {
 
     public float SpringForce;
     public Vector2 Direction;
-    public Animator anim;
+    private Animator anim;
 
 	// Use this for initialization
 	void Start () {
-        anim.GetComponent<Animator>();
+        anim = gameObject.GetComponent<Animator>();
         player = GameObject.Find("Player");
         Direction = gameObject.GetComponent<Transform>().rotation * Direction;
 	}
