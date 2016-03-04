@@ -14,9 +14,11 @@ public class WallTurret : MonoBehaviour {
 	public Vector3 SpawnOffset;
 	public Vector2 LaunchForce;
 	public Quaternion LaunchAngle;
+    public Animator anim;
 
 	// Use this for initialization
 	void Start () {
+        anim = gameObject.GetComponent<Animator>();
 		timer = InitialDelay;
 		spawnLocation = gameObject.transform.position + SpawnOffset;
 	}
@@ -25,9 +27,11 @@ public class WallTurret : MonoBehaviour {
 	void Update () {
 		timer -= Time.deltaTime;
 		if (timer < 0) {
+            anim.SetBool("isFiring", true);
 			GameObject newMissile = (GameObject) Instantiate(projectile, spawnLocation, Quaternion.identity);
 			newMissile.GetComponent<Rigidbody2D>().AddForce(LaunchForce);
 			timer = FireRate;
+            anim.SetBool("isFiring", false);
 		}
 	}
 }
