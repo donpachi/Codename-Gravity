@@ -87,7 +87,7 @@ public class RailBlock : MonoBehaviour {
     //For Switches
     void plateDepressed()
     {
-        isActive = true;
+        isActive = !isActive;
         childAnim.SetBool("BoxActive", isActive);
     }
 
