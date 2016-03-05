@@ -27,11 +27,15 @@ public class WallTurret : MonoBehaviour {
 	void Update () {
 		timer -= Time.deltaTime;
 		if (timer < 0) {
-            anim.SetBool("isFiring", true);
-			GameObject newMissile = (GameObject) Instantiate(projectile, spawnLocation, Quaternion.identity);
-			newMissile.GetComponent<Rigidbody2D>().AddForce(LaunchForce);
-			timer = FireRate;
-            anim.SetBool("isFiring", false);
+            anim.SetBool("isFiring", true);        
 		}
 	}
+
+    void fireTurret()
+    {
+        GameObject newMissile = (GameObject)Instantiate(projectile, spawnLocation, Quaternion.identity);
+        newMissile.GetComponent<Rigidbody2D>().AddForce(LaunchForce);
+        timer = FireRate;
+        anim.SetBool("isFiring", false);
+    }
 }
