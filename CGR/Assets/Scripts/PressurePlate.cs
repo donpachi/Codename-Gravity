@@ -10,6 +10,7 @@ public class PressurePlate : MonoBehaviour
     float timer = 0;
     bool TimerCountingDown = false;
     public Animator anim;
+    public GameObject[] list;
 
     // Use this for initialization
     void Start()
@@ -52,16 +53,18 @@ public class PressurePlate : MonoBehaviour
     {
         TimerCountingDown = false;
         timer = releaseDelay;
-        BroadcastMessage("plateDepressed");
+        foreach (GameObject item in list)
+            item.SendMessage("plateDepressed");
         anim.SetInteger("State", 0);
     }
 
     void broadcastRelease()
-    {
-        anim.SetInteger("State", 0);
+    {       
         TimerCountingDown = false;
-        BroadcastMessage("plateReleased");
         timer = releaseDelay;
+        foreach (GameObject item in list)
+            item.SendMessage("plateReleased");        
+        anim.SetInteger("State", 0);
     }
 
 }

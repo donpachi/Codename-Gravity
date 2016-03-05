@@ -4,16 +4,19 @@ using System.Collections;
 public class StagedDoor : MonoBehaviour
 {
 
-    bool collapsing = false;
-    bool growing = false;
-    public float timer = 0.2f;
+    public bool collapsing = false;
+    public bool growing = false;
+    public float doorSpeed = 0.1f;
+    private float timer = 0;
     int currentDoor = 0;
     public bool isActive = false;
 
     // Use this for initialization
     void Start()
     {
-
+        timer = doorSpeed;
+        foreach (Transform child in transform)
+            child.GetComponent<StagedDoor>().doorSpeed = this.doorSpeed;
     }
 
     // Update is called once per frame
@@ -27,96 +30,88 @@ public class StagedDoor : MonoBehaviour
 
     void collapseDoor()
     {
-        GameObject parent = this.transform.parent.gameObject;
-        if (transform.childCount == 0 && this.GetComponent<SpriteRenderer>().enabled == true)
+        Transform parent = this.transform.parent;
+        if (parent == null && this.GetComponent<SpriteRenderer>().enabled == true)
         {
-            this.GetComponent<StagedDoor>().isActive = true;
-            parent.GetComponent<StagedDoor>().isActive = true;
             this.GetComponent<SpriteRenderer>().enabled = false;
             this.GetComponent<BoxCollider2D>().enabled = false;
+            foreach (Transform child in transform)
+            {
+                if (child.parent == transform && child.gameObject != gameObject)
+                {
+                    child.GetComponent<StagedDoor>().isActive = true;
+                    child.gameObject.GetComponent<StagedDoor>().collapsing = true;
+                    child.gameObject.GetComponent<StagedDoor>().growing = false;
+                }
+            }
+            collapsing = false;
+            isActive = false;
         }
 
         else if (isActive == true)
         {
             timer -= Time.deltaTime;
+            growing = false;
+            collapsing = true;
             if (timer <= 0)
             {
-                if (parent.GetComponent<StagedDoor>())
-                    parent.GetComponent<StagedDoor>().isActive = true;
-                isActive = false;
-                timer = 0.2f;
+                foreach (Transform child in transform)
+                {
+                    if (child != null && child.parent == transform)
+                    {
+                        child.gameObject.GetComponent<StagedDoor>().isActive = true;
+                        child.gameObject.GetComponent<StagedDoor>().collapsing = true;
+                        child.gameObject.GetComponent<StagedDoor>().growing = false;
+                    }
+                }
                 this.GetComponent<SpriteRenderer>().enabled = false;
                 this.GetComponent<BoxCollider2D>().enabled = false;
+                collapsing = false;
+                isActive = false;
+                timer = doorSpeed;
             }
         }
     }
 
     void growDoor()
     {
-        GameObject parent = this.transform.parent.gameObject;
-        if (!parent.GetComponent<StagedDoor>() && this.GetComponent<SpriteRenderer>().enabled == false)
+        Transform parent = this.transform.parent;
+
+        if (this.GetComponent<SpriteRenderer>().enabled == false)
         {
-            this.GetComponent<StagedDoor>().isActive = true;
-            this.transform.GetChild(0).GetComponent<StagedDoor>().isActive = true;
-            this.GetComponent<SpriteRenderer>().enabled = true;
-            this.GetComponent<BoxCollider2D>().enabled = true;
-        }
-        else if (isActive == true)
-        {
-            timer -= Time.deltaTime;
-            if (timer <= 0)
+            foreach (Transform child in transform)
             {
-                if (this.transform.childCount != 0)
-                    this.transform.GetChild(0).GetComponent<StagedDoor>().isActive = true;
-                isActive = false;
-                timer = 0.2f;
-                this.GetComponent<SpriteRenderer>().enabled = true;
-                this.GetComponent<BoxCollider2D>().enabled = true;
+                child.GetComponent<StagedDoor>().collapsing = false;
+                child.GetComponent<StagedDoor>().growing = true;
+                if (child.childCount == 0)
+                {
+                    child.GetComponent<StagedDoor>().isActive = true;
+                    //child.GetComponent<StagedDoor>().timer = 0;
+                }
             }
         }
-    }
 
-    void resizeDoor(string growOrShrink)
-    {
-        GameObject parent = this.transform.parent.gameObject;
-        if ((transform.childCount == 0 && this.GetComponent<SpriteRenderer>().enabled == true) || (!parent.GetComponent<StagedDoor>() && this.GetComponent<SpriteRenderer>().enabled == false))
-        {
-            this.GetComponent<StagedDoor>().isActive = true;
-            if (growOrShrink == "shrink")
-                parent.GetComponent<StagedDoor>().isActive = true;
-            else if (growOrShrink == "grow")
-                this.transform.GetChild(0).GetComponent<StagedDoor>().isActive = true;
-            this.GetComponent<SpriteRenderer>().enabled = false;//= !this.GetComponent<SpriteRenderer>().enabled;
-            this.GetComponent<BoxCollider2D>().enabled = false;//= !this.GetComponent<BoxCollider2D>().enabled;
-        }
-        else if (isActive == true)
+
+        if (isActive == true)
         {
             timer -= Time.deltaTime;
             if (timer <= 0)
             {
-                if (growOrShrink == "shrink")
-                {
-                    if (parent.GetComponent<StagedDoor>())
-                        parent.GetComponent<StagedDoor>().isActive = true;
-                    this.GetComponent<SpriteRenderer>().enabled = false;//!this.GetComponent<SpriteRenderer>().enabled;
-                    this.GetComponent<BoxCollider2D>().enabled = false;//!this.GetComponent<BoxCollider2D>().enabled;
-                }
-                else if (growOrShrink == "grow" && this.transform.childCount != 0)
-                {
-                    this.transform.GetChild(0).GetComponent<StagedDoor>().isActive = true;
-                    this.GetComponent<SpriteRenderer>().enabled = true;//!this.GetComponent<SpriteRenderer>().enabled;
-                    this.GetComponent<BoxCollider2D>().enabled = true;//!this.GetComponent<BoxCollider2D>().enabled;
-                }
+                if (transform.parent != null)
+                    transform.parent.GetComponent<StagedDoor>().isActive = true;
+                timer = doorSpeed;
+                this.GetComponent<SpriteRenderer>().enabled = true;
+                this.GetComponent<BoxCollider2D>().enabled = true;
+                collapsing = false;
+                growing = false;
                 isActive = false;
-                timer = 0.2f;
-                
             }
         }
     }
 
     void plateDepressed()
     {
-        timer = 0.2f;
+        //timer = doorSpeed;
         collapsing = true;
         growing = false;
 
@@ -124,7 +119,7 @@ public class StagedDoor : MonoBehaviour
 
     void plateReleased()
     {
-        timer = 0.2f;
+        //timer = doorSpeed;
         collapsing = false;
         growing = true;
     }
