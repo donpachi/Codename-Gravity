@@ -94,19 +94,19 @@ public class Minion : MonoBehaviour {
             if (Vector2.Distance(transform.position, player.GetComponent<Player>().getPlayerFeetVector()) > 0.5f)
             {
                 transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetVector(), 0.1f);
-                //anim.SetBool("Moving", true);
+                anim.SetBool("Moving", true);
             }
-            //else
-                //anim.SetBool("Moving", false);
+            else
+                anim.SetBool("Moving", false);
 
         }
         else if (Vector2.Distance(transform.position, parent.transform.position) > 0.5f)
         {
-            //anim.SetBool("Moving", true);
+            anim.SetBool("Moving", true);
             transform.position = Vector2.Lerp(transform.position, parent.transform.position, 0.1f);
         }
-        //else
-            //anim.SetBool("Moving", false);
+        else
+            anim.SetBool("Moving", false);
             
     }
 
