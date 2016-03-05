@@ -12,9 +12,11 @@ public class Minion : MonoBehaviour {
     public bool isFollowing = true;
     float playerPosDiff;
     Vector2 prevPlayerLocation;
+    private Animator anim;
 
 	// Use this for initialization
 	void Start () {
+        anim = gameObject.GetComponent<Animator>();
         player = GameObject.Find("Player");
         minionAnchor = GameObject.Find("MinionAnchor");
         this.GetComponent<Player>().enabled = false;
@@ -97,9 +99,24 @@ public class Minion : MonoBehaviour {
     void lerpToPlayer()
     {
         if (parent == null)
-            transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetVector(), 0.1f);
+        {
+            if (Vector2.Distance(transform.position, player.GetComponent<Player>().getPlayerFeetVector()) > 0.5f)
+            {
+                transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetVector(), 0.1f);
+                //anim.SetBool("Moving", true);
+            }
+            //else
+                //anim.SetBool("Moving", false);
+
+        }
         else if (Vector2.Distance(transform.position, parent.transform.position) > 0.5f)
+        {
+            //anim.SetBool("Moving", true);
             transform.position = Vector2.Lerp(transform.position, parent.transform.position, 0.1f);
+        }
+        //else
+            //anim.SetBool("Moving", false);
+            
     }
 
     void swipeCheck(TouchController.SwipeDirection direction)
