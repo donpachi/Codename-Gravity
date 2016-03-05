@@ -25,9 +25,14 @@ public class RailBlock : MonoBehaviour {
         transform.position = Origin.transform.position;
         setJointParam();
         anim = gameObject.GetComponent<Animator>();
-        childAnim = gameObject.GetComponentsInChildren<Animator>()[1];
-        childAnim.SetBool("BoxActive", isActive);
-	}
+        if(anim != null)
+        {
+            childAnim = gameObject.GetComponentsInChildren<Animator>()[1];
+            childAnim.SetBool("BoxActive", isActive);
+        }
+        else
+            Debug.LogError("Rail Block does not have a proper animator", gameObject);
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
@@ -82,7 +87,7 @@ public class RailBlock : MonoBehaviour {
     //For Switches
     void plateDepressed()
     {
-        isActive = true;
+        isActive = !isActive;
         childAnim.SetBool("BoxActive", isActive);
     }
 

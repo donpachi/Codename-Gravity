@@ -117,7 +117,7 @@ public class Player : MonoBehaviour {
 
     //updates sprite to correct orientation
     //might have to update constant force while suction cups are on
-    void gravitySpriteUpdate(OrientationListener.Orientation orientation, float timer)
+    public void gravitySpriteUpdate(OrientationListener.Orientation orientation, float timer)
     {
         Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
         Quaternion playerRotation = transform.localRotation;

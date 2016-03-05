@@ -12,23 +12,16 @@ public class Minion : MonoBehaviour {
     public bool isFollowing = true;
     float playerPosDiff;
     Vector2 prevPlayerLocation;
+    private Animator anim;
 
 	// Use this for initialization
 	void Start () {
+        anim = gameObject.GetComponent<Animator>();
         player = GameObject.Find("Player");
         minionAnchor = GameObject.Find("MinionAnchor");
         this.GetComponent<Player>().enabled = false;
         this.GetComponent<PlayerJump>().enabled = false;
         this.GetComponent<Walk>().enabled = false;
-
-        foreach (GameObject pushableObject in GameObject.FindGameObjectsWithTag("Pushable"))
-        {
-            if (pushableObject.GetComponent<Collider2D>())
-            {
-                foreach (Collider2D collider in pushableObject.GetComponents<Collider2D>())
-                    Physics2D.IgnoreCollision(GetComponent<Collider2D>(), collider);
-            }
-        }
 
         updateList();
        
@@ -97,9 +90,24 @@ public class Minion : MonoBehaviour {
     void lerpToPlayer()
     {
         if (parent == null)
-            transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetVector(), 0.1f);
+        {
+            if (Vector2.Distance(transform.position, player.GetComponent<Player>().getPlayerFeetVector()) > 0.5f)
+            {
+                transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetVector(), 0.1f);
+                anim.SetBool("Moving", true);
+            }
+            else
+                anim.SetBool("Moving", false);
+
+        }
         else if (Vector2.Distance(transform.position, parent.transform.position) > 0.5f)
+        {
+            anim.SetBool("Moving", true);
             transform.position = Vector2.Lerp(transform.position, parent.transform.position, 0.1f);
+        }
+        else
+            anim.SetBool("Moving", false);
+            
     }
 
     void swipeCheck(TouchController.SwipeDirection direction)
@@ -134,7 +142,6 @@ public class Minion : MonoBehaviour {
         foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
         {
             minions.Add(minion);
-            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), minion.GetComponent<Collider2D>());
         }
         GameObject prev = null;
         foreach (GameObject minion in minions)

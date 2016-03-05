@@ -10,20 +10,25 @@ public class PlayerJump : MonoBehaviour {
     int singlejumpCount = 0;    //used to debug double jumps
     public float jumpForce = 10;
 
+    private Animator anim;
+
 	// Use this for initialization
 	void Start () {
         playerBody = GetComponent<Rigidbody2D>();
-        canJump = false;     
+        canJump = false;
+        anim = gameObject.GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
     void FixedUpdate()
     {
         if (canJump)
-        {         
+        {
+            anim.SetBool("Jumping", true);
             playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
             ++singlejumpCount;
             canJump = false;
+            anim.SetBool("Jumping", false);
         }
     }
 
