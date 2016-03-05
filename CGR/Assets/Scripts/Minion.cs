@@ -23,15 +23,6 @@ public class Minion : MonoBehaviour {
         this.GetComponent<PlayerJump>().enabled = false;
         this.GetComponent<Walk>().enabled = false;
 
-        foreach (GameObject pushableObject in GameObject.FindGameObjectsWithTag("Pushable"))
-        {
-            if (pushableObject.GetComponent<Collider2D>())
-            {
-                foreach (Collider2D collider in pushableObject.GetComponents<Collider2D>())
-                    Physics2D.IgnoreCollision(GetComponent<Collider2D>(), collider);
-            }
-        }
-
         updateList();
        
 	}
@@ -151,7 +142,6 @@ public class Minion : MonoBehaviour {
         foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
         {
             minions.Add(minion);
-            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), minion.GetComponent<Collider2D>());
         }
         GameObject prev = null;
         foreach (GameObject minion in minions)
