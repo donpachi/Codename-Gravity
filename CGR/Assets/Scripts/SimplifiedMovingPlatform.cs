@@ -33,9 +33,9 @@ public class SimplifiedMovingPlatform : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (timer > 0)
-            timer -= Time.deltaTime;
-        if (GetComponent<SliderJoint2D>().jointTranslation >= GetComponent<SliderJoint2D>().limits.max || GetComponent<SliderJoint2D>().jointTranslation <= GetComponent<SliderJoint2D>().limits.min && numberOfMovements != 0 && timer <= 0) 
+        //if (timer > 0)
+            //timer -= Time.deltaTime;
+        if (GetComponent<SliderJoint2D>().jointTranslation >= GetComponent<SliderJoint2D>().limits.max || GetComponent<SliderJoint2D>().jointTranslation <= GetComponent<SliderJoint2D>().limits.min && numberOfMovements != 0)// && timer <= 0) 
         {
                 float newMotorSpeed = GetComponent<SliderJoint2D>().motor.motorSpeed * -1;
                 JointMotor2D newMotor = new JointMotor2D();
@@ -43,7 +43,7 @@ public class SimplifiedMovingPlatform : MonoBehaviour {
                 newMotor.maxMotorTorque = GetComponent<SliderJoint2D>().motor.maxMotorTorque;
                 GetComponent<SliderJoint2D>().motor = newMotor;
                 numberOfMovements--;
-                timer = 0.5f;
+                //timer = 0.5f;
         }
 	}
 }
