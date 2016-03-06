@@ -253,12 +253,12 @@ public class Player : MonoBehaviour {
                 if (GameObject.FindGameObjectsWithTag("Minion").Length == 1)
                     minionSpawner.GetComponent<MinionSpawn>().minionsSpawned--;
             }
-            switchControl();
+            switchControlToMinion();
             Destroy(gameObject);
         }
 	}
 
-    void switchControl()
+    void switchControlToMinion()
     {
         foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
         {

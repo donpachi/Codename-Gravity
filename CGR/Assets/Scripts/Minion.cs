@@ -116,14 +116,16 @@ public class Minion : MonoBehaviour {
         {
             this.GetComponent<Minion>().enabled = false;
             updateList();
-            if (minions[0] == gameObject)           
-                switchControl();
+            if (minions[0] == gameObject)
+            {
+                anim.SetBool("SwitchingToMinion", true);
+            }
         }
     }
 
-    void switchControl()
+    void switchControlToPlayer()
     {
-        //gameObject.tag = "Pushable";
+        
         player.GetComponent<Walk>().enabled = false;
         player.GetComponent<Player>().enabled = false;
         this.GetComponent<Player>().enabled = true;
@@ -134,6 +136,7 @@ public class Minion : MonoBehaviour {
         GameObject.Find("Main Camera").GetComponent<FollowPlayer>().player = this.gameObject;
         isFollowing = false;
         this.GetComponent<Minion>().enabled = false;
+        anim.SetBool("SwitchingToMinion", false);
     }
 
     void updateList()
