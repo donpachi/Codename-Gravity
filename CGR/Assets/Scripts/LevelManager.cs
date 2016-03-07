@@ -74,6 +74,8 @@ public class LevelManager : MonoBehaviour
             _startPosition.SpawnPlayer(Player);
         else
             _currentCheckpoint.SpawnPlayer(Player);
+        Player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
     }
 
     private void SetNewCheckpoint(TouchController.SwipeDirection direction)

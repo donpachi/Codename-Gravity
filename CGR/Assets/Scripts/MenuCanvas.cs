@@ -97,6 +97,7 @@ public class MenuCanvas : MonoBehaviour {
         LevelManager.Instance.SpawnPlayer();
         Time.timeScale = 1;
         this.GetComponent<Canvas>().enabled = false;
+
     }
 	
 	public void LoadMenu()
