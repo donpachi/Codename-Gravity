@@ -91,6 +91,14 @@ public class MenuCanvas : MonoBehaviour {
         continueButton.GetComponent<Button>().enabled = true;
 		Application.LoadLevel(Application.loadedLevel);
 	}
+
+    public void RestartFromCheckpoint()
+    {
+        LevelManager.Instance.SpawnPlayer();
+        Time.timeScale = 1;
+        this.GetComponent<Canvas>().enabled = false;
+
+    }
 	
 	public void LoadMenu()
 	{

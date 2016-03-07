@@ -25,6 +25,7 @@ public class Player : MonoBehaviour {
     public float OnGroundRaySize;
     public float ForwardRaySize;
     public bool isMinion = false;
+    public bool IsDead { get; private set; }
 
     void Awake () {
         playerRigidBody = GetComponent<Rigidbody2D>();
@@ -45,6 +46,18 @@ public class Player : MonoBehaviour {
             ForwardCheck();
         }
         faceDirectionCheck();
+    }
+
+    public void RespawnAt(Transform spawnPoint)
+    {
+        IsDead = false;
+
+        transform.position = spawnPoint.position;
+    }
+
+    public void Kill()
+    {
+        IsDead = true;
     }
 
     public float getPlayerFeet()
