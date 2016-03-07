@@ -117,15 +117,13 @@ public class Minion : MonoBehaviour {
             this.GetComponent<Minion>().enabled = false;
             updateList();
             if (minions[0] == gameObject)
-            {
                 anim.SetBool("SwitchingToMinion", true);
-            }
         }
     }
 
     void switchControlToPlayer()
     {
-        
+        Debug.Log("asdfkljtr");
         player.GetComponent<Walk>().enabled = false;
         player.GetComponent<Player>().enabled = false;
         this.GetComponent<Player>().enabled = true;
