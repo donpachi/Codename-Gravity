@@ -6,7 +6,6 @@ public class Portal : MonoBehaviour {
 
     public GameObject linkedPortal;
     public float transitionSpeed;
-    public Animator anim;
 
     private List<Node> bodies;
     private Queue<Rigidbody2D> waitForLeave;
@@ -14,11 +13,8 @@ public class Portal : MonoBehaviour {
     private GameObject playerStatus;
     private bool playerComing;
 
-
-
 	// Use this for initialization
 	void Start () {
-        anim = gameObject.GetComponent<Animator>();
         playerStatus = GameObject.Find("Player");
         distanceThreshold = 0.1f;
         bodies = new List<Node>();
