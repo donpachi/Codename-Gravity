@@ -20,8 +20,7 @@ public class OscillatingObject : MonoBehaviour {
         lastLimit = JointLimitState2D.LowerLimit;
         if (!IsActive)
             gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
-        if(IgnoreWalls)
-            setCollisionsToIgnore();
+        setCollisions();
 	}
 	
 	// Update is called once per frame
@@ -41,16 +40,20 @@ public class OscillatingObject : MonoBehaviour {
         }
 	}
 
-    void setCollisionsToIgnore()
+    void setCollisions()
     {
-        GameObject[] immovableObjects = GameObject.FindObjectsOfType<GameObject>();
-
-        foreach (var obj in immovableObjects)
+        if (IgnoreWalls)
         {
-            if(obj.layer != LayerMask.NameToLayer("Walls") && obj.GetComponent<Collider2D>())
+            foreach (var gObject in gameObject.GetComponentsInChildren<Transform>())
             {
-                foreach (Collider2D collider in obj.GetComponents<Collider2D>())
-                    Physics2D.IgnoreCollision(GetComponent<Collider2D>(), collider);
+                gObject.gameObject.layer = LayerMask.NameToLayer("ThroughWalls");
+            }
+        }
+        else
+        {
+            foreach (var gObject in gameObject.GetComponentsInChildren<Transform>())
+            {
+                gObject.gameObject.layer = LayerMask.NameToLayer("Walls");
             }
         }
     }
