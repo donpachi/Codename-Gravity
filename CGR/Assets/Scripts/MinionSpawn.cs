@@ -22,7 +22,7 @@ public class MinionSpawn : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.name == "Player" && minionsSpawned < 1) 
+        if (collider.name == "Player" && minionsSpawned < 1 && !LevelManager.Instance.MinionLimitReached()) 
             anim.SetBool("Spawning", true);
     }
 
@@ -41,5 +41,14 @@ public class MinionSpawn : MonoBehaviour
                 minionSpawner.GetComponent<MinionSpawn>().minionsSpawned++;
         }
         anim.SetBool("Spawning", false);
-    } 
+    }
+
+    void newMinion()
+    {
+        GameObject newMinion = (GameObject)Instantiate(Resources.Load("Prefabs/Minion"));
+        newMinion.transform.position = transform.position;
+        LevelManager.Instance.AddMinion(newMinion);
+        anim.SetBool("Spawning", false);
+
+    }
 }
