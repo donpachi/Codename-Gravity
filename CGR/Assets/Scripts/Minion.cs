@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+//TODO: Minions get stuck on wall
 public class Minion : MonoBehaviour {
 
     public float MinionDistance;
@@ -129,12 +130,11 @@ public class Minion : MonoBehaviour {
         }
     }
 
-    void switchControlToPlayer()
+    void switchControlToMinion()
     {
-        Debug.Log("asdfkljtr");
         player.GetComponent<Walk>().enabled = false;
         player.GetComponent<Player>().enabled = false;
-        player.GetComponent<Rigidbody2D>().isKinematic = false;
+        player.GetComponent<Rigidbody2D>().isKinematic = true;
         this.GetComponent<Player>().enabled = true;
         this.GetComponent<Rigidbody2D>().gravityScale = 1;
         this.GetComponent<Player>().isMinion = true;

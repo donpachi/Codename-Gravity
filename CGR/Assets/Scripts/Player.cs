@@ -263,20 +263,21 @@ public class Player : MonoBehaviour {
                     minionSpawner.GetComponent<MinionSpawn>().minionsSpawned--;
             }
             switchControlToPlayer();
+            LevelManager.Instance.RemoveMinion(gameObject);
             Destroy(gameObject);
         }
     }
 
     void switchControlToPlayer()
     {
+        this.GetComponent<Rigidbody2D>().isKinematic = false;
+        this.GetComponent<Player>().enabled = true;
+        this.GetComponent<Rigidbody2D>().gravityScale = 1;
+        this.GetComponent<Player>().isMinion = false;
+        this.GetComponent<PlayerJump>().enabled = false;
+        this.GetComponent<Walk>().enabled = true;
         foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
         {
-            this.GetComponent<Rigidbody2D>().isKinematic = false;
-            this.GetComponent<Player>().enabled = true;
-            this.GetComponent<Rigidbody2D>().gravityScale = 1;
-            this.GetComponent<Player>().isMinion = false;
-            this.GetComponent<PlayerJump>().enabled = false;
-            this.GetComponent<Walk>().enabled = true;
             minion.GetComponent<Minion>().enabled = true;
         }
     }
