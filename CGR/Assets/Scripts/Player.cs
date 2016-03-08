@@ -270,16 +270,13 @@ public class Player : MonoBehaviour {
     {
         foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
         {
-            anim.SetBool("Moving", false);
-            this.GetComponent<Rigidbody2D>().isKinematic = true;
-            this.GetComponent<Player>().enabled = false;
-            this.GetComponent<Rigidbody2D>().gravityScale = 0;
+            this.GetComponent<Rigidbody2D>().isKinematic = false;
+            this.GetComponent<Player>().enabled = true;
+            this.GetComponent<Rigidbody2D>().gravityScale = 1;
             this.GetComponent<Player>().isMinion = false;
             this.GetComponent<PlayerJump>().enabled = false;
-            this.GetComponent<Walk>().enabled = false;
+            this.GetComponent<Walk>().enabled = true;
             minion.GetComponent<Minion>().enabled = true;
-            
-            //minion.tag = "Minion";
         }
     }
 
