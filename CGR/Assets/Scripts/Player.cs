@@ -16,6 +16,7 @@ public class Player : MonoBehaviour {
     private bool suctionStatus;
     private bool inTransition;
     private bool launched;
+    private Animator anim;
     
     public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
@@ -28,6 +29,7 @@ public class Player : MonoBehaviour {
     public bool IsDead { get; private set; }
 
     void Awake () {
+        anim = this.GetComponent<Animator>();
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         inMinionArea = false;
@@ -238,6 +240,12 @@ public class Player : MonoBehaviour {
 
 	public void TriggerDeath()
 	{
+        anim.SetBool("Dying", true);
+        
+	}
+
+    public void killPlayer()
+    {
         if (OnPlayerDeath != null && isMinion == false)
         {
             OnPlayerDeath();
@@ -248,7 +256,7 @@ public class Player : MonoBehaviour {
             potato.GetComponent<Player>().enabled = true;
             GameObject.Find("Main Camera").GetComponent<FollowPlayer>().player = potato;
             potato.GetComponent<Walk>().enabled = true;
-            foreach (GameObject minionSpawner in GameObject.FindGameObjectsWithTag("MinionSpawner")) 
+            foreach (GameObject minionSpawner in GameObject.FindGameObjectsWithTag("MinionSpawner"))
             {
                 if (GameObject.FindGameObjectsWithTag("Minion").Length == 1)
                     minionSpawner.GetComponent<MinionSpawn>().minionsSpawned--;
@@ -256,18 +264,21 @@ public class Player : MonoBehaviour {
             switchControlToMinion();
             Destroy(gameObject);
         }
-	}
+    }
 
     void switchControlToMinion()
     {
         foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
         {
+            anim.SetBool("Moving", false);
+            this.GetComponent<Rigidbody2D>().isKinematic = true;
             this.GetComponent<Player>().enabled = false;
             this.GetComponent<Rigidbody2D>().gravityScale = 0;
             this.GetComponent<Player>().isMinion = false;
             this.GetComponent<PlayerJump>().enabled = false;
             this.GetComponent<Walk>().enabled = false;
             minion.GetComponent<Minion>().enabled = true;
+            
             //minion.tag = "Minion";
         }
     }
