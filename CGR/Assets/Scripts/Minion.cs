@@ -2,7 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
+//TODO: Minions get stuck on wall
 public class Minion : MonoBehaviour {
+
+    public float MinionDistance;
+    public float MinionFollowSpeed;
 
     GameObject player;
     GameObject minionAnchor;
@@ -57,6 +61,11 @@ public class Minion : MonoBehaviour {
         prevPlayerLocation = player.transform.position;
 	}
 
+    public void SetParent(GameObject parentObj)
+    {
+        parent = parentObj;
+    }
+
     void checkGravityScale()
     {
         if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT && transform.position.y > player.GetComponent<Player>().getPlayerFeet())
@@ -91,19 +100,19 @@ public class Minion : MonoBehaviour {
     {
         if (parent == null)
         {
-            if (Vector2.Distance(transform.position, player.GetComponent<Player>().getPlayerFeetVector()) > 0.5f)
+            if (Vector2.Distance(transform.position, player.GetComponent<Player>().getPlayerFeetVector()) > MinionDistance)
             {
-                transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetVector(), 0.1f);
+                transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetVector(), MinionFollowSpeed);
                 anim.SetBool("Moving", true);
             }
             else
                 anim.SetBool("Moving", false);
 
         }
-        else if (Vector2.Distance(transform.position, parent.transform.position) > 0.5f)
+        else if (Vector2.Distance(transform.position, parent.transform.position) > MinionDistance)
         {
             anim.SetBool("Moving", true);
-            transform.position = Vector2.Lerp(transform.position, parent.transform.position, 0.1f);
+            transform.position = Vector2.Lerp(transform.position, parent.transform.position, MinionFollowSpeed);
         }
         else
             anim.SetBool("Moving", false);
@@ -121,11 +130,11 @@ public class Minion : MonoBehaviour {
         }
     }
 
-    void switchControlToPlayer()
+    void switchControlToMinion()
     {
-        Debug.Log("asdfkljtr");
         player.GetComponent<Walk>().enabled = false;
         player.GetComponent<Player>().enabled = false;
+        player.GetComponent<Rigidbody2D>().isKinematic = true;
         this.GetComponent<Player>().enabled = true;
         this.GetComponent<Rigidbody2D>().gravityScale = 1;
         this.GetComponent<Player>().isMinion = true;

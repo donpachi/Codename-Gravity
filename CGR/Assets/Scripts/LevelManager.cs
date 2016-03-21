@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Keeps track of the number of minions in a level
+/// Keeps track of the minions in a level
 /// Also keeps track of where the player should spawn and where a checkpoint placed by the player might be
 /// </summary>
 public class LevelManager : MonoBehaviour
@@ -13,13 +13,13 @@ public class LevelManager : MonoBehaviour
 
     public Player Player { get; private set; }
     public FollowPlayer Camera { get; private set; }
-    public int MinionCount;
-    public int MinionLimit;
+    public int MinionCount { get; private set; }
     
     private List<Checkpoint> _checkpoints;
     private int _currentCheckpointIndex;
     private Checkpoint _startPosition;
     private Checkpoint _currentCheckpoint;
+    private List<GameObject> _minionList;
 
     public Checkpoint DebugSpawn;
 
@@ -33,6 +33,7 @@ public class LevelManager : MonoBehaviour
         _startPosition = FindObjectOfType<Checkpoint>();
         _checkpoints = FindObjectsOfType<Checkpoint>().ToList();
         _currentCheckpointIndex = _checkpoints.Count > 0 ? 0 : -1;
+        _minionList = new List<GameObject>();
 
         Player = FindObjectOfType<Player>();
         Camera = FindObjectOfType<FollowPlayer>();
@@ -46,7 +47,6 @@ public class LevelManager : MonoBehaviour
         {
             _checkpoints[_currentCheckpointIndex].SpawnPlayer(Player);
         }
-
 #else
         if (_currentCheckpointIndex != -1)
             _checkpoints[_currentCheckpointIndex].SpawnPlayer(Player);
@@ -57,6 +57,30 @@ public class LevelManager : MonoBehaviour
     {
         var isAtLastCheckPoint = _currentCheckpointIndex + 1 >= _checkpoints.Count;
 
+    }
+
+    /// <summary>
+    /// Adds a minion to the minion list
+    /// Function sets the parent of the minion to the last in this list
+    /// If no minions exist, sets parent to null 
+    /// </summary>
+    /// <param name="minion"></param>
+    public void AddMinion(GameObject minion)
+    {
+        if (_minionList.Count == 0)
+            minion.GetComponent<Minion>().SetParent(null);
+        else
+        {
+            minion.GetComponent<Minion>().SetParent(_minionList.Last());
+            _minionList.Add(minion);
+        }
+        MinionCount++;
+    }
+
+    public void RemoveMinion(GameObject minion)
+    {
+        _minionList.Remove(minion);
+        MinionCount--;
     }
 
     public void KillPlayer()
@@ -80,7 +104,7 @@ public class LevelManager : MonoBehaviour
 
     private void SetNewCheckpoint(TouchController.SwipeDirection direction)
     {
-        if(direction == TouchController.SwipeDirection.DOWN)
+        if(direction == TouchController.SwipeDirection.DOWN && MinionCount != 0)
         {
             if (_currentCheckpoint == null)
             {
@@ -93,6 +117,7 @@ public class LevelManager : MonoBehaviour
             {
                 _currentCheckpoint.transform.position = Player.transform.position;
             }
+            //RemoveMinion();
         }
     }
 

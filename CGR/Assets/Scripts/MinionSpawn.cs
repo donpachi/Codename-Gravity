@@ -7,6 +7,8 @@ public class MinionSpawn : MonoBehaviour
     public int minionsSpawned;
     public Animator anim;
 
+    private int _bonusMinion = 1;
+
     // Use this for initialization
     void Start()
     {
@@ -22,8 +24,16 @@ public class MinionSpawn : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.name == "Player" && minionsSpawned < 1) 
-            anim.SetBool("Spawning", true);
+        if (collider.name == "Player" && (_bonusMinion > 0 || LevelManager.Instance.MinionCount == 0))
+        {
+            if(_bonusMinion > 0)
+            {
+                anim.SetBool("Spawning", true);
+                _bonusMinion--;
+            }
+            else if(LevelManager.Instance.MinionCount == 0)
+                anim.SetBool("Spawning", true);
+        }            
     }
 
     void spawnMinion()
@@ -41,5 +51,14 @@ public class MinionSpawn : MonoBehaviour
                 minionSpawner.GetComponent<MinionSpawn>().minionsSpawned++;
         }
         anim.SetBool("Spawning", false);
-    } 
+    }
+
+    void newMinion()
+    {
+
+        GameObject newMinion = (GameObject)Instantiate(Resources.Load("Prefabs/Minion"));
+        newMinion.transform.position = transform.position;
+        LevelManager.Instance.AddMinion(newMinion);
+        anim.SetBool("Spawning", false);
+    }
 }
