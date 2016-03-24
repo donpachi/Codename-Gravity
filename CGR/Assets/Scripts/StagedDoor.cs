@@ -31,7 +31,7 @@ public class StagedDoor : MonoBehaviour
     void collapseDoor()
     {
         Transform parent = this.transform.parent;
-        if (parent == null && this.GetComponent<SpriteRenderer>().enabled == true)
+        if (parent == null || !parent.name.Contains("StagedDoor") && this.GetComponent<SpriteRenderer>().enabled == true)
         {
             this.GetComponent<SpriteRenderer>().enabled = false;
             this.GetComponent<BoxCollider2D>().enabled = false;
@@ -97,7 +97,7 @@ public class StagedDoor : MonoBehaviour
             timer -= Time.deltaTime;
             if (timer <= 0)
             {
-                if (transform.parent != null)
+                if (transform.parent != null && transform.parent.name.Contains("StagedDoor"))
                     transform.parent.GetComponent<StagedDoor>().isActive = true;
                 timer = doorSpeed;
                 this.GetComponent<SpriteRenderer>().enabled = true;

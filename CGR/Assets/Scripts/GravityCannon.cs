@@ -42,6 +42,7 @@ public class GravityCannon : MonoBehaviour {
             playerBody = collisionInfo.rigidbody;
             playerBody.gravityScale = 0f;
 			playerBody.Sleep();
+            playerBody.GetComponent<Collider2D>().enabled = false;
             playerBody.GetComponent<Transform>().position = launchPosition.position;
             player.GetComponent<Player>().ToggleRender();
 
@@ -58,7 +59,8 @@ public class GravityCannon : MonoBehaviour {
         Vector2 direction;
         player.GetComponent<Player>().ToggleRender();
         playerBody.GetComponent<Transform>().position = cannonTip.position;
-		player.GetComponent<Player>().LaunchStatusOn();
+        playerBody.GetComponent<Collider2D>().enabled = true;
+        player.GetComponent<Player>().LaunchStatusOn();
 		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform>().position).normalized;
         playerBody.AddForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
         playerBody.angularDrag = 0;
