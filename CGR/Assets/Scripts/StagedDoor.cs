@@ -3,10 +3,10 @@ using System.Collections;
 
 public class StagedDoor : MonoBehaviour
 {
-
-    public bool collapsing = false;
-    public bool growing = false;
+    public bool inverted;
     public float doorSpeed = 0.1f;
+    private bool collapsing = false;
+    private bool growing = false;
     private float timer = 0;
     int currentDoor = 0;
     public bool isActive = false;
@@ -15,6 +15,8 @@ public class StagedDoor : MonoBehaviour
     void Start()
     {
         timer = doorSpeed;
+        if (inverted)
+            collapseDoor();
         foreach (Transform child in transform)
             child.GetComponent<StagedDoor>().doorSpeed = this.doorSpeed;
     }
@@ -112,15 +114,28 @@ public class StagedDoor : MonoBehaviour
     void plateDepressed()
     {
         //timer = doorSpeed;
-        collapsing = true;
-        growing = false;
+        if (inverted) {
+            collapsing = false;
+            growing = true;
+        }
+        else {
+            collapsing = true;
+            growing = false;
+        }
 
     }
 
     void plateReleased()
     {
         //timer = doorSpeed;
-        collapsing = false;
-        growing = true;
+
+        if (inverted) {
+            collapsing = true;
+            growing = false;
+        }
+        else {
+            collapsing = false;
+            growing = true;
+        }
     }
 }
