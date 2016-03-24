@@ -28,11 +28,13 @@ public class OrientationListener : MonoBehaviour {
         {
             Destroy(gameObject);
         }
+        initialize();
     }
 
     // Use this for initialization
     void Start () {
-        initialize();
+        //initialize();
+        PolarizeAccelerometerValues(ApplyLowPassFilterAccelerometer(LowPassFilterFactor));
     }
 	
 	// Update is called once per frame

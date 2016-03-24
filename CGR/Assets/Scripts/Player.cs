@@ -38,8 +38,7 @@ public class Player : MonoBehaviour {
         inTransition = false;
         facingRight = true;
 	}
-	
-	
+
 	void FixedUpdate () {
 
         if (!inTransition)
@@ -119,7 +118,6 @@ public class Player : MonoBehaviour {
                 this.GetComponent<SuctionWalk>().GetVectors(OrientationListener.instanceOf.getRelativeDownVector());
             }
         }
-
     }
 
     void faceDirectionCheck()
@@ -268,29 +266,53 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void switchControlToPlayer()
+    void swipeCheck(TouchController.SwipeDirection direction)
     {
-        this.GetComponent<Rigidbody2D>().isKinematic = false;
-        this.GetComponent<Player>().enabled = true;
-        this.GetComponent<Rigidbody2D>().gravityScale = 1;
-        this.GetComponent<Player>().isMinion = false;
-        this.GetComponent<PlayerJump>().enabled = false;
-        this.GetComponent<Walk>().enabled = true;
-        foreach (GameObject minion in GameObject.FindGameObjectsWithTag("Minion"))
+        if (direction == TouchController.SwipeDirection.UP)
         {
-            minion.GetComponent<Minion>().enabled = true;
+            if (inMinionArea == true && LevelManager.Instance.GetMinionCount() != 0 && !isMinion)
+            {
+                isMinion = true;
+                switchControlToMinion();
+            }
         }
+        else if(direction == TouchController.SwipeDirection.DOWN && !isMinion)
+        {
+            if (!GetComponent<GroundCheck>().InAir)
+            {
+                LevelManager.Instance.NewCheckpointRequest(gameObject);
+            }
+        }
+    }
+
+    void switchControlToMinion()
+    {
+        GameObject controllingMinion = LevelManager.Instance.GetMinion();
+        GetComponent<Walk>().enabled = false;
+        GetComponent<Rigidbody2D>().isKinematic = true;
+        GetComponent<Animator>().SetBool("Moving", false);
+        controllingMinion.GetComponent<Animator>().SetBool("SwitchingToMinion", true);
+    }
+
+    public void switchControlToPlayer()
+    {
+        GetComponent<Rigidbody2D>().isKinematic = false;
+        GetComponent<Rigidbody2D>().gravityScale = 1;
+        GetComponent<Walk>().enabled = true;
+        isMinion = false;
     }
 
     //Listeners for player
     void OnEnable()
     {
         WorldGravity.GravityChanged += gravitySpriteUpdate;
+        TouchController.OnSwipe += swipeCheck;
     }
 
     void OnDisable()
     {
         WorldGravity.GravityChanged -= gravitySpriteUpdate;
+        TouchController.OnSwipe -= swipeCheck;
     }
 
 

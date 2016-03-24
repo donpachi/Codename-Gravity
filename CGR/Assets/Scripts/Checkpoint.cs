@@ -1,34 +1,23 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Checkpoint : MonoBehaviour 
 {
-    public void Start()
-    {
-
-    }
-
-    private void PlayerHitCheckpoint()
-    {
-
-    }
-
-    private IEnumerator PlayerHitCheckpointCo()
-    {
-        yield break;
-    }
-
-    public void PlayerLeftCheckpoint()
-    {
-    }
+    private GameObject _checkpointIndicator;
 
     public void SpawnPlayer(Player player)
     {
         player.RespawnAt(transform);
     }
 
-    public void AssignObjectToCheckpoint()
+    /// <summary>
+    /// Assign the indicator obj.
+    /// If old one exist, it will destroy it
+    /// </summary>
+    /// <param name="indicator"></param>
+    public void AssignObjectToCheckpoint(GameObject indicator)
     {
-
+        if (_checkpointIndicator != null)
+            _checkpointIndicator.GetComponent<Animator>().SetTrigger("DestroySpirit");
+        _checkpointIndicator = indicator;
     }
 }

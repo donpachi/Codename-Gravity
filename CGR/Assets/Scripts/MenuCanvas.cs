@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class MenuCanvas : MonoBehaviour {
@@ -18,13 +19,7 @@ public class MenuCanvas : MonoBehaviour {
     {
         if (Input.GetKeyDown(KeyCode.Escape) && !this.GetComponent<Canvas>().enabled)
         {
-            Time.timeScale = 0;
-            this.GetComponent<Canvas>().enabled = true;
-            this.GetComponentInChildren<Text>().text = "Paused";
-            this.GetComponentInChildren<Text>().color = Color.yellow;
-            continueButton.GetComponentInChildren<Text>().text = "Continue";
-            continueButton.GetComponent<Button>().onClick.RemoveAllListeners();
-            continueButton.GetComponent<Button>().onClick.AddListener(delegate { Continue(); });
+            pauseScreen();
         }
     }
 
@@ -57,13 +52,30 @@ public class MenuCanvas : MonoBehaviour {
         }
     }
 
+    private void pauseScreen()
+    {
+        Time.timeScale = 0;
+        this.GetComponent<Canvas>().enabled = true;
+        this.GetComponentInChildren<Text>().text = "Paused";
+        this.GetComponentInChildren<Text>().color = Color.yellow;
+        continueButton.GetComponentInChildren<Text>().enabled = true;
+        continueButton.GetComponent<Image>().enabled = true;
+        continueButton.GetComponent<Button>().enabled = true;
+        continueButton.GetComponentInChildren<Text>().text = "Continue";
+        continueButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        continueButton.GetComponent<Button>().onClick.AddListener(delegate { Continue(); });
+    }
+
     public void VictoryScreen()
     {
         Time.timeScale = 0;
         this.GetComponent<Canvas>().enabled = true;
         this.GetComponentInChildren<Text>().text = "You Win";
         this.GetComponentInChildren<Text>().color = Color.green;
-        GameObject.Find("GameController").GetComponent<GameControl>().SetLevelComplete(100);
+        GameControl.Instance.SetLevelComplete(100);
+        continueButton.GetComponentInChildren<Text>().enabled = true;
+        continueButton.GetComponent<Image>().enabled = true;
+        continueButton.GetComponent<Button>().enabled = true;
         continueButton.GetComponentInChildren<Text>().text = "Next Level";
         continueButton.GetComponent<Button>().onClick.RemoveAllListeners();
         continueButton.GetComponent<Button>().onClick.AddListener(delegate { NextLevel(); });
@@ -71,9 +83,16 @@ public class MenuCanvas : MonoBehaviour {
 
     public void NextLevel()
     {
+        if (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCount - 1)
+            SceneManager.LoadScene(0);
+        else
+        {
+            LevelManager.Instance.GotoNextLevel(SceneManager.GetActiveScene().buildIndex + 1);
+            this.GetComponent<Canvas>().enabled = false;
+        }
         Time.timeScale = 1;
-        Application.LoadLevel(Application.loadedLevel + 1);
-        this.GetComponent<Canvas>().enabled = false;
+        
+        //Application.LoadLevel(Application.loadedLevel + 1);
     }
 
     public void Continue()
@@ -86,10 +105,8 @@ public class MenuCanvas : MonoBehaviour {
 	{
 		Time.timeScale = 1;
 		this.GetComponent<Canvas>().enabled = false;
-        continueButton.GetComponentInChildren<Text>().enabled = true;
-        continueButton.GetComponent<Image>().enabled = true;
-        continueButton.GetComponent<Button>().enabled = true;
-		Application.LoadLevel(Application.loadedLevel);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+		//Application.LoadLevel(Application.loadedLevel);
 	}
 
     public void RestartFromCheckpoint()
@@ -103,9 +120,7 @@ public class MenuCanvas : MonoBehaviour {
 	public void LoadMenu()
 	{
         Time.timeScale = 1;
-        continueButton.GetComponentInChildren<Text>().enabled = true;
-        continueButton.GetComponent<Image>().enabled = true;
-        continueButton.GetComponent<Button>().enabled = true;
-		Application.LoadLevel(0);
+        SceneManager.LoadScene(0);
+		//Application.LoadLevel(0);
 	}
 }

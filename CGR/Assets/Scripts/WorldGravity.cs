@@ -17,7 +17,7 @@ public class WorldGravity : MonoBehaviour {
     void triggerGravityChange(OrientationListener.Orientation orientation, float timer)
     {
         if (GravityChanged != null)
-            GravityChanged(orientation, timer);           
+            GravityChanged(orientation, timer);
     }
 
     // Use this for initialization
@@ -36,7 +36,6 @@ public class WorldGravity : MonoBehaviour {
                 gravityOnCooldown = true;
                 elapsedTime = 0;
             }
-        
 	}
 
     void initialize()

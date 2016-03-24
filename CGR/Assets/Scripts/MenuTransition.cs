@@ -89,8 +89,8 @@ public class MenuTransition : MonoBehaviour
 
     private void GenerateLevelList()
     {
-        bool[] levelUnlocked = GameObject.Find("GameController").GetComponent<GameControl>().GetLevelUnlock();
-        int[] levelHighScore = GameObject.Find("GameController").GetComponent<GameControl>().GetLevelHighScore();
+        bool[] levelUnlocked = GameControl.Instance.GetLevelUnlock();
+        int[] levelHighScore = GameControl.Instance.GetLevelHighScore();
 
         ColorBlock color;
         Selectable[] levelButtons;

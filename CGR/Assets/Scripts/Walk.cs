@@ -9,42 +9,33 @@ public class Walk : MonoBehaviour {
     public float MAXSPEED = 10f;
     public float MAXFLOATSPEED = 2f;
 
-    private Rigidbody2D playerBody;
+    private Rigidbody2D rBody;
     private Animator anim;
-    private bool atTopSpeed;
-    private Player playerState;
+    private float minWalkSpeed = 0.1f;
 
 	// Use this for initialization
-	void Start () {
-        atTopSpeed = false;
-        playerBody = GetComponent<Rigidbody2D>();
+	void Start ()
+    {
+        rBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        playerState = gameObject.GetComponent<Player>();
-	}
+        //playerState = gameObject.GetComponent<Player>();
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (playerBody.velocity.magnitude < MAXSPEED)
-            atTopSpeed = false;
-        else
-            atTopSpeed = true;
-
-        if (playerState.inAir && playerBody.velocity.magnitude < MAXFLOATSPEED)
+        if (GetComponent<GroundCheck>().InAir && rBody.velocity.magnitude < MAXFLOATSPEED)
         {
             applyMoveForce(INAIRTHRUST);
         }
-        else if (!atTopSpeed && !playerState.inAir)
+        else if (rBody.velocity.magnitude < MAXSPEED && !GetComponent<GroundCheck>().InAir)
         {
             applyMoveForce(THRUST);
             if (TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
                 anim.SetBool("Moving", true);
         }
 
-        if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.NONE)
+        if (rBody.velocity.magnitude < minWalkSpeed)
             anim.SetBool("Moving", false);
-
-
-
 	}
 
     void applyMoveForce(float force)
@@ -54,10 +45,10 @@ public class Walk : MonoBehaviour {
         switch (movementDirection)
         {
             case TouchController.TouchLocation.LEFT:
-                playerBody.AddForce(OrientationListener.instanceOf.getWorldLeftVector() * force, ForceMode2D.Impulse);
+                rBody.AddForce(OrientationListener.instanceOf.getWorldLeftVector() * force, ForceMode2D.Impulse);
                 break;
             case TouchController.TouchLocation.RIGHT:
-                playerBody.AddForce(OrientationListener.instanceOf.getWorldRightVector() * force, ForceMode2D.Impulse);
+                rBody.AddForce(OrientationListener.instanceOf.getWorldRightVector() * force, ForceMode2D.Impulse);
                 break;
             case TouchController.TouchLocation.NONE:
                 break;

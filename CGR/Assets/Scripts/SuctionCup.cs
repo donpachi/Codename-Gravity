@@ -48,7 +48,7 @@ public class SuctionCup : MonoBehaviour {
             playerBody.GetComponent<ConstantForce2D>().force = Physics2D.gravity * 3;
             player.GetComponent<Player>().SuctionStatusOn();
             player.GetComponent<Walk>().enabled = false;
-            player.GetComponent<PlayerJump>().enabled = false;
+            //player.GetComponent<PlayerJump>().enabled = false;
             player.GetComponent<SuctionWalk>().enabled = true;
             player.GetComponent<SuctionWalk>().GetVectors(OrientationListener.instanceOf.getRelativeDownVector());
 

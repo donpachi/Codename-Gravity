@@ -16,22 +16,16 @@ public class MinionSpawn : MonoBehaviour
         anim = gameObject.GetComponent<Animator>();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-
-    }
-
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.name == "Player" && (_bonusMinion > 0 || LevelManager.Instance.MinionCount == 0))
+        if (collider.name == "Player" && (_bonusMinion > 0 || LevelManager.Instance.GetMinionCount() == 0))
         {
             if(_bonusMinion > 0)
             {
                 anim.SetBool("Spawning", true);
                 _bonusMinion--;
             }
-            else if(LevelManager.Instance.MinionCount == 0)
+            else if(LevelManager.Instance.GetMinionCount() == 0)
                 anim.SetBool("Spawning", true);
         }            
     }

@@ -5,25 +5,16 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 //Singleton Game Control class
-public class GameControl : MonoBehaviour {
-
-    public static GameControl Instance;
+public class GameControl : MonoBehaviour
+{
+    private static GameControl _instance;
+    public static GameControl Instance { get { return _instance ?? (_instance = new GameControl()); } }
 
     private bool[] levelUnlocked;
     private int[] levelHighScore;
 
-    void Awake()
+    private GameControl()
     {
-        if (Instance == null)
-        {
-            DontDestroyOnLoad(gameObject);
-            Instance = this;
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
-
         if (!File.Exists(Application.persistentDataPath + "/gameSave.dat"))
         {
             NewGame();
@@ -33,6 +24,28 @@ public class GameControl : MonoBehaviour {
             Load();
         }
     }
+    
+    //void Awake()
+    //{
+    //    if (Instance == null)
+    //    {
+    //        DontDestroyOnLoad(gameObject);
+    //        Instance = this;
+    //    }
+    //    else if (Instance != this)
+    //    {
+    //        Destroy(gameObject);
+    //    }
+
+    //    if (!File.Exists(Application.persistentDataPath + "/gameSave.dat"))
+    //    {
+    //        NewGame();
+    //    }
+    //    else
+    //    {
+    //        Load();
+    //    }
+    //}
 
     public void Save()
     {
