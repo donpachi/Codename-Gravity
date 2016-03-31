@@ -40,11 +40,11 @@ public class WorldGravity : MonoBehaviour {
 
     void initialize()
     {
-        gVector = OrientationListener.instanceOf.DEFAULT_ACCELEROMETER_VECTOR;
+        //gVector = OrientationListener.instanceOf.DEFAULT_ACCELEROMETER_VECTOR;
         OrientationListener.instanceOf.saveGravityVector(gVector);
-        Physics2D.gravity = OrientationListener.instanceOf.DEFAULT_ACCELEROMETER_VECTOR * GRAVITYVALUE; // modify so that this is modifiable when the level starts.
+        Physics2D.gravity = gVector * GRAVITYVALUE; // modify so that this is modifiable when the level starts.
         elapsedTime = 0;
-        gravityOnCooldown = false; gShiftDisabled = false;
+        gravityOnCooldown = true; gShiftDisabled = false;
         previousGravityDirection = (int)OrientationListener.Orientation.PORTRAIT;
     }
 
