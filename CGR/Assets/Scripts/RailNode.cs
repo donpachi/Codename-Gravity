@@ -11,9 +11,13 @@ public class RailNode : MonoBehaviour {
     public Vector3[] vectorToNeighbour;
     public Vector3 down;
 
+    private TouchController.TouchLocation _touchLocation; //determines which path node takes, may be a frame late
+
     void Start()
     {
-        if(Neighbours == null || Neighbours.Length == 0)
+        _touchLocation = TouchController.TouchLocation.NONE;
+
+        if (Neighbours == null || Neighbours.Length == 0)
         {
             Debug.LogError("Rail Node does not have any neighbours", gameObject);
         }
@@ -35,12 +39,11 @@ public class RailNode : MonoBehaviour {
         down = OrientationListener.instanceOf.getRelativeDownVector();
 
         GameObject nextNode = gameObject;
-        TouchController.TouchLocation direction = TouchController.Instance.getTouchDirection();
         Vector3 movementVector;
 
-        if (direction == TouchController.TouchLocation.LEFT)
+        if (_touchLocation == TouchController.TouchLocation.LEFT)
             movementVector = OrientationListener.instanceOf.getRelativeLeftVector();
-        else if (direction == TouchController.TouchLocation.RIGHT)
+        else if (_touchLocation == TouchController.TouchLocation.RIGHT)
             movementVector = OrientationListener.instanceOf.getRelativeRightVector();
         else
             movementVector = Vector3.zero;
@@ -67,5 +70,20 @@ public class RailNode : MonoBehaviour {
             Vector3 boxOffset = ((Neighbours[i].transform.position - transform.position).normalized) / 10;
             Gizmos.DrawWireCube(transform.position + boxOffset, new Vector3(0.1f,0.1f,0));
         }
+    }
+
+    void screenTouched(TouchInstanceData data)
+    {
+        _touchLocation = data.touchLocation;
+    }
+
+    void OnEnable()
+    {
+        TouchController.ScreenTouched += screenTouched;
+    }
+
+    void OnDisable()
+    {
+        TouchController.ScreenTouched -= screenTouched;
     }
 }

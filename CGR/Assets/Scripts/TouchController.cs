@@ -16,6 +16,7 @@ public class TouchController : MonoBehaviour {
     public float SwipeTime = 1.0f;     //Max time for movement check of a swipe.
     public float DeadZoneMagnitude = 20;      //DeadZone of swipe movement calculated as ratio between this value and screen height
     public float TapTimeAllowance = 0.75f;      //delta time allowance that will determine if the screen was tapped
+    public float stationaryTouchGrace = 0.1f;   //Time allowed for a touch to be stationary
     public enum SwipeDirection {UP, DOWN, LEFT, RIGHT}
     public enum TouchLocation {LEFT, RIGHT, NONE}
 
@@ -28,6 +29,7 @@ public class TouchController : MonoBehaviour {
     private TouchInstanceData[] touchDataArray;
     //Deadzone of swipe move, calculated as a ratio of the screen height
     private float deadZone;
+    private Dictionary<int, TouchInstanceData> touchDataDictionary;
 
 
 
@@ -38,7 +40,7 @@ public class TouchController : MonoBehaviour {
     public delegate void TapEvent();
     public static event TapEvent OnTap;
 
-    public delegate void TouchEvent();
+    public delegate void TouchEvent(TouchInstanceData data);
     public static event TouchEvent ScreenTouched;
 
     void triggerSwipe(SwipeDirection direction)
@@ -53,10 +55,10 @@ public class TouchController : MonoBehaviour {
             OnTap();
     }
 
-    void screenTouched()
+    void screenTouched(TouchInstanceData data)
     {
         if (ScreenTouched != null)
-            ScreenTouched();
+            ScreenTouched(data);
     }
 
 	void Awake () {
@@ -73,6 +75,8 @@ public class TouchController : MonoBehaviour {
         width = Screen.width;
         initTouchDataArray();
         deadZone = height / DeadZoneMagnitude;
+
+        touchDataDictionary = new Dictionary<int, TouchInstanceData>();
 	}
 
     void initTouchDataArray()
@@ -92,12 +96,88 @@ public class TouchController : MonoBehaviour {
             {
                 //GameObject.Find("ScreenText").GetComponent<Text>().text += "Key and Index Of Key: \n Key: " + Input.touches[i].fingerId + "    i: " + i + "\n";
                 if (Input.touches[i].fingerId < MAXTOUCHES)
-                    processATouch(Input.touches[i], i);
+                {
+                    //processATouch(Input.touches[i], i);
+                    processATouch2(Input.GetTouch(i));
+                }
                 //GameObject.Find("ScreenText").GetComponent<Text>().text += "TouchLocation: " + touchDataArray[Input.touches[i].fingerId].touchLocation + " touchposition: " + Input.touches[i].position + "\n";
             }
 
         }
 	}
+
+    void processATouch2(Touch touch)
+    {
+        TouchInstanceData data;
+        switch (touch.phase)
+        {
+            //Beginning of a touch, need start position, set delta time to 0
+            case TouchPhase.Began:
+                data = new TouchInstanceData();
+                resetTouchData(touch, data);
+                updateTouchLocation(touch, data);
+                data.phase = touch.phase;
+                screenTouched(data);
+                touchDataDictionary.Add(touch.fingerId, data);
+                break;
+            //Midpoint of a touch, need to see how far it moved, how fast it moved that distance and react accordingly
+            case TouchPhase.Moved:
+                processMovePhase(touch);
+                updateTouchLocation(touch, touchDataDictionary[touch.fingerId]);
+                screenTouched(touchDataDictionary[touch.fingerId]);
+                break;
+            //Finger stopped, if long enough stop swipe state ends
+            case TouchPhase.Stationary:
+                processStationaryPhase(touch);
+                updateTouchLocation(touch, touchDataDictionary[touch.fingerId]);
+                screenTouched(touchDataDictionary[touch.fingerId]);
+                break;
+            //End of a touch, finger has lifted
+            case TouchPhase.Ended:
+                if (touchDataDictionary[touch.fingerId].totalTime <= TapTimeAllowance)
+                {
+                    screenTapped();             //fire event for a screen tap given the touch has been short enough
+                }
+                touchDataDictionary.Remove(touch.fingerId);
+                break;
+            case TouchPhase.Canceled:
+                if (touchDataDictionary[touch.fingerId].totalTime <= TapTimeAllowance)
+                {
+                    screenTapped();
+                }
+                touchDataDictionary.Remove(touch.fingerId);
+                break;
+        }
+    }
+
+    void processMovePhase(Touch touch)
+    {
+        TouchInstanceData data = touchDataDictionary[touch.fingerId];
+        data.moveTime += touch.deltaTime;
+        data.totalTime += touch.deltaTime;
+        if(data.phase == TouchPhase.Stationary)
+        {
+            data.stopTime = 0;
+        }
+        checkSwipe(touch, data);
+        data.phase = touch.phase;
+    }
+
+    void processStationaryPhase(Touch touch)
+    {
+        TouchInstanceData data = touchDataDictionary[touch.fingerId];
+        data.totalTime += touch.deltaTime;
+        if (data.stopTime > stationaryTouchGrace)
+        {
+            resetSwipeData(touch, data);
+            data.swipeTriggered = false;
+        }
+        else
+        {
+            data.stopTime += touch.deltaTime;
+        }
+        data.phase = touch.phase;
+    }
 
     void processATouch(Touch touch, int touchOrder)
     {
@@ -107,7 +187,7 @@ public class TouchController : MonoBehaviour {
             case TouchPhase.Began:
                 resetTouchData(touch, touchDataArray[touch.fingerId]);
                 updateTouchLocation(touch, touchDataArray[touch.fingerId]);
-                screenTouched();    //fire event for a screen touch
+                screenTouched(touchDataArray[touch.fingerId]);    //fire event for a screen touch
                 break;
             //Midpoint of a touch, need to see how far it moved, how fast it moved that distance and react accordingly
             case TouchPhase.Moved:
@@ -141,7 +221,11 @@ public class TouchController : MonoBehaviour {
         }
     }
 
-    //update the touch location in realation to orientation and screen position
+    /// <summary>
+    /// Updates the touch location in realation to orientation and screen position
+    /// </summary>
+    /// <param name="touch"></param>
+    /// <param name="data"></param>
     void updateTouchLocation(Touch touch, TouchInstanceData data)
     {
         switch (OrientationListener.instanceOf.currentOrientation())
@@ -285,35 +369,41 @@ public class TouchController : MonoBehaviour {
         data.swipeOriginPosition = touch.position;
         data.touchLocation = TouchLocation.NONE;
         data.moveTime = 0;
+        data.stopTime = 0;
         data.totalTime = 0;
         data.swipeTriggered = false;
     }
 
     //returns the touch direction
-    public TouchLocation getTouchDirection()
-    {
-        if (Input.touchCount == 1 && Input.touches[0].fingerId < MAXTOUCHES)
-        {
-            return touchDataArray[Input.touches[0].fingerId].touchLocation;
-        }
-        return TouchLocation.NONE;
-    }
+    //public TouchLocation getTouchDirection()
+    //{
+    //    if (Input.touchCount == 1 && Input.touches[0].fingerId < MAXTOUCHES)
+    //    {
+    //        //return touchDataArray[Input.touches[0].fingerId].touchLocation;
+    //        return touchDataDictionary[0].touchLocation;
+    //    }
+    //    return TouchLocation.NONE;
+    //}
 
 }
 
-class TouchInstanceData
+public class TouchInstanceData
 {
     public Vector2 StartPosition;   //the origin of the touch
     public Vector2 DeltaFromSwipe;  //the movement vector from where the swipe started
     public Vector2 swipeOriginPosition;    //The point where the swipe starts
     public float moveTime;          //how long the swipe has been moving
+    public float stopTime;          //length how long a touch is 'stationary'
     public float totalTime;         //total life of touch
     public bool swipeTriggered;    //flag to prevent one swipe firing multiple events
-    public TouchController.TouchLocation touchLocation; //Touch location in relation to orientation 
+    public TouchController.TouchLocation touchLocation; //Touch location in relation to orientation
+    public TouchPhase phase;        //Phase of touch from last frame
+    
 
     public TouchInstanceData()
     {
         moveTime = 0;
+        stopTime = 0;
         totalTime = 0;
         swipeTriggered = false;
         touchLocation = TouchController.TouchLocation.NONE;

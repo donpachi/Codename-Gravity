@@ -29,11 +29,11 @@ public class GravityCannon : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update() {
-        if (cannonReady && TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
-        {
-            cannonReady = false;
-            FirePlayer();
-        }
+        //if (cannonReady && TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
+        //{
+        //    cannonReady = false;
+        //    FirePlayer();
+        //}
     }
 
 	void OnCollisionEnter2D(Collision2D collisionInfo) {
@@ -68,4 +68,23 @@ public class GravityCannon : MonoBehaviour {
             
         anim.SetBool("activated", false);
 	}
+
+    void screenTouched(TouchInstanceData data)
+    {
+        if (cannonReady && data.touchLocation != TouchController.TouchLocation.NONE)
+        {
+            cannonReady = false;
+            FirePlayer();
+        }
+    }
+
+    void OnEnable()
+    {
+        TouchController.ScreenTouched += screenTouched;
+    }
+
+    void OnDisable()
+    {
+        TouchController.ScreenTouched -= screenTouched;
+    }
 }

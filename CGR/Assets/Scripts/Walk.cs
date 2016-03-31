@@ -12,27 +12,29 @@ public class Walk : MonoBehaviour {
     private Rigidbody2D rBody;
     private Animator anim;
     private float minWalkSpeed = 0.1f;
+    private TouchController.TouchLocation _touchLocation;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
         rBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        _touchLocation = TouchController.TouchLocation.NONE;
         //playerState = gameObject.GetComponent<Player>();
     }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (GetComponent<GroundCheck>().InAir && rBody.velocity.magnitude < MAXFLOATSPEED)
-        {
-            applyMoveForce(INAIRTHRUST);
-        }
-        else if (rBody.velocity.magnitude < MAXSPEED && !GetComponent<GroundCheck>().InAir)
-        {
-            applyMoveForce(THRUST);
-            if (TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
-                anim.SetBool("Moving", true);
-        }
+        //if (GetComponent<GroundCheck>().InAir && rBody.velocity.magnitude < MAXFLOATSPEED)
+        //{
+        //    applyMoveForce(INAIRTHRUST);
+        //}
+        //else if (rBody.velocity.magnitude < MAXSPEED && !GetComponent<GroundCheck>().InAir)
+        //{
+        //    applyMoveForce(THRUST);
+        //    if (_touchLocation != TouchController.TouchLocation.NONE)
+        //        anim.SetBool("Moving", true);
+        //}
 
         if (rBody.velocity.magnitude < minWalkSpeed)
             anim.SetBool("Moving", false);
@@ -40,9 +42,7 @@ public class Walk : MonoBehaviour {
 
     void applyMoveForce(float force)
     {
-        TouchController.TouchLocation movementDirection = TouchController.Instance.getTouchDirection();
-
-        switch (movementDirection)
+        switch (_touchLocation)
         {
             case TouchController.TouchLocation.LEFT:
                 rBody.AddForce(OrientationListener.instanceOf.getWorldLeftVector() * force, ForceMode2D.Impulse);
@@ -53,7 +53,32 @@ public class Walk : MonoBehaviour {
             case TouchController.TouchLocation.NONE:
                 break;
         }
+    }
 
+    void screenTouched(TouchInstanceData data)
+    {
+        _touchLocation = data.touchLocation;
+
+        if (GetComponent<GroundCheck>().InAir && rBody.velocity.magnitude < MAXFLOATSPEED)
+        {
+            applyMoveForce(INAIRTHRUST);
+        }
+        else if (rBody.velocity.magnitude < MAXSPEED && !GetComponent<GroundCheck>().InAir)
+        {
+            applyMoveForce(THRUST);
+            if (_touchLocation != TouchController.TouchLocation.NONE)
+                anim.SetBool("Moving", true);
+        }
+    }
+
+    void OnEnable()
+    {
+        TouchController.ScreenTouched += screenTouched;
+    }
+
+    void OnDisable()
+    {
+        TouchController.ScreenTouched -= screenTouched;
     }
 
 }

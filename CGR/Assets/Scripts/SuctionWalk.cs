@@ -21,6 +21,7 @@ public class SuctionWalk : MonoBehaviour
     private Vector3 landscapeRight = new Vector3(-220, 435, 0);
     private Vector3 portraitUpsideDown = new Vector3(-220, -435, 0);
     private Vector3 landscapeLeft = new Vector3(220, -435, 0);
+    private TouchController.TouchLocation _touchLocation;
 
     // Use this for initialization
     void Start()
@@ -30,6 +31,7 @@ public class SuctionWalk : MonoBehaviour
         anim = GetComponent<Animator>();
         suctionText = GameObject.Find("SuctionText");
         suctionText.GetComponent<Text>().enabled = true;
+        _touchLocation = TouchController.TouchLocation.NONE;
     }
 
     // Update is called once per frame
@@ -39,28 +41,6 @@ public class SuctionWalk : MonoBehaviour
             atTopSpeed = false;
         else
             atTopSpeed = true;
-
-        if (!atTopSpeed)
-        {
-            TouchController.TouchLocation movementDirection = TouchController.Instance.getTouchDirection();
-
-            switch (movementDirection)
-            {
-                case TouchController.TouchLocation.LEFT:
-                    playerBody.AddForce(leftVector * THRUST, ForceMode2D.Impulse);
-                    break;
-                case TouchController.TouchLocation.RIGHT:
-                    playerBody.AddForce(rightVector * THRUST, ForceMode2D.Impulse);
-                    break;
-                case TouchController.TouchLocation.NONE:
-                    break;
-            }
-        }
-
-        if (TouchController.Instance.getTouchDirection() != TouchController.TouchLocation.NONE)
-            anim.SetBool("Moving", true);
-        else
-            anim.SetBool("Moving", false);
 
         if (timer != 0)
         {
@@ -104,5 +84,39 @@ public class SuctionWalk : MonoBehaviour
         timer = t;
         if (suctionText != null)
             suctionText.GetComponent<Text>().enabled = true;
+    }
+
+    void screenTouched(TouchInstanceData data)
+    {
+        _touchLocation = data.touchLocation;
+
+        if (!atTopSpeed)
+        {
+            switch (_touchLocation)
+            {
+                case TouchController.TouchLocation.LEFT:
+                    playerBody.AddForce(leftVector * THRUST, ForceMode2D.Impulse);
+                    break;
+                case TouchController.TouchLocation.RIGHT:
+                    playerBody.AddForce(rightVector * THRUST, ForceMode2D.Impulse);
+                    break;
+                case TouchController.TouchLocation.NONE:
+                    break;
+            }
+        }
+        if (_touchLocation != TouchController.TouchLocation.NONE)
+            anim.SetBool("Moving", true);
+        else
+            anim.SetBool("Moving", false);
+    }
+
+    void OnEnable()
+    {
+        TouchController.ScreenTouched += screenTouched;
+    }
+
+    void OnDisable()
+    {
+        TouchController.ScreenTouched -= screenTouched;
     }
 }
