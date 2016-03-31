@@ -46,7 +46,7 @@ public class Player : MonoBehaviour {
             groundCheck();
             ForwardCheck();
         }
-        faceDirectionCheck();
+        //faceDirectionCheck();
     }
 
     public void RespawnAt(Transform spawnPoint)
@@ -120,13 +120,13 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void faceDirectionCheck()
-    {
-        if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.RIGHT && !facingRight)
-            flipSprite();
-        else if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.LEFT && facingRight)
-            flipSprite();
-    }
+    //void faceDirectionCheck()
+    //{
+    //    if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.RIGHT && !facingRight)
+    //        flipSprite();
+    //    else if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.LEFT && facingRight)
+    //        flipSprite();
+    //}
 
     //updates sprite to correct orientation
     //might have to update constant force while suction cups are on
@@ -265,7 +265,6 @@ public class Player : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-
     void swipeCheck(TouchController.SwipeDirection direction)
     {
         if (direction == TouchController.SwipeDirection.UP)
@@ -302,17 +301,27 @@ public class Player : MonoBehaviour {
         isMinion = false;
     }
 
+    void screenTouched(TouchInstanceData data)
+    {
+        if (data.touchLocation == TouchController.TouchLocation.RIGHT && !facingRight)
+            flipSprite();
+        else if (data.touchLocation == TouchController.TouchLocation.LEFT && facingRight)
+            flipSprite();
+    }
+
     //Listeners for player
     void OnEnable()
     {
         WorldGravity.GravityChanged += gravitySpriteUpdate;
         TouchController.OnSwipe += swipeCheck;
+        TouchController.ScreenTouched += screenTouched;
     }
 
     void OnDisable()
     {
         WorldGravity.GravityChanged -= gravitySpriteUpdate;
         TouchController.OnSwipe -= swipeCheck;
+        TouchController.ScreenTouched -= screenTouched;
     }
 
 

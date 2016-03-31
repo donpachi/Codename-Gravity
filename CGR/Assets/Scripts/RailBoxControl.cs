@@ -27,21 +27,25 @@ public class RailBoxControl : MonoBehaviour {
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (PlayerControlled && objectRb.velocity.magnitude < MAXSPEED)
-            applyMoveForce(THRUST);
     }
 
-    void applyMoveForce(float force)
+    /// <summary>
+    /// Listener Function called only when screen touch happens
+    /// </summary>
+    /// <param name="data"></param>
+    void applyMoveForce(TouchInstanceData data)
     {
-        TouchController.TouchLocation movementDirection = TouchController.Instance.getTouchDirection();
+        if (!PlayerControlled || objectRb.velocity.magnitude > MAXSPEED)
+            return;
 
+        TouchController.TouchLocation movementDirection = data.touchLocation;
         switch (movementDirection)
         {
             case TouchController.TouchLocation.LEFT:
-                objectRb.AddForce(OrientationListener.instanceOf.getWorldLeftVector() * force, ForceMode2D.Impulse);
+                objectRb.AddForce(OrientationListener.instanceOf.getWorldLeftVector() * THRUST, ForceMode2D.Impulse);
                 break;
             case TouchController.TouchLocation.RIGHT:
-                objectRb.AddForce(OrientationListener.instanceOf.getWorldRightVector() * force, ForceMode2D.Impulse);
+                objectRb.AddForce(OrientationListener.instanceOf.getWorldRightVector() * THRUST, ForceMode2D.Impulse);
                 break;
             case TouchController.TouchLocation.NONE:
                 break;
@@ -92,13 +96,16 @@ public class RailBoxControl : MonoBehaviour {
         }
     }
 
+
     void OnEnable()
     {
         TouchController.OnSwipe += swipeCheck;
+        TouchController.ScreenTouched += applyMoveForce;
     }
     void OnDisable()
     {
         TouchController.OnSwipe -= swipeCheck;
+        TouchController.ScreenTouched -= applyMoveForce;
     }
 
 }

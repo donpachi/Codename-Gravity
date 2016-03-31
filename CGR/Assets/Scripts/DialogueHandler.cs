@@ -192,7 +192,7 @@ public class DialogueHandler : MonoBehaviour {
         }
     }
 
-    void screenTapped()
+    void screenTapped(TouchInstanceData data)
     {
         waitingfortap = false;
     }
