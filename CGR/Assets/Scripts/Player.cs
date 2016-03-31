@@ -218,7 +218,7 @@ public class Player : MonoBehaviour {
             TriggerDeath();
 		}        
 
-        else if (launched == true)
+        else if (launched == true && collisionEvent.gameObject.tag == "Wall")
         {
             playerRigidBody.gravityScale = 1.0f;
             this.GetComponent<Walk>().enabled = true;
