@@ -156,8 +156,11 @@ public class LevelManager : MonoBehaviour
     {
         GameObject minion = _minionList[0]; //get the minion at the head of the line
         _minionList.RemoveAt(0);        //remove him from the list
-        _minionList[0].GetComponent<Minion>().SetParent(null); //set the new front minion parent to null
-        _minionList[0].GetComponent<Minion>().MinionDistance = MinionLeaderDist;
+        if (_minionList.Count > 0)
+        {
+            _minionList[0].GetComponent<Minion>().SetParent(null); //set the new front minion parent to null
+            _minionList[0].GetComponent<Minion>().MinionDistance = MinionLeaderDist;
+        }
         return minion;
     }
 

@@ -34,6 +34,8 @@ public class PlayerJump : MonoBehaviour {
     public void JumpFinished()
     {
         _jumping = false;
+        anim.SetBool("Jumping", false);
+        _jumpRequest = false;
     }
 
     void jumpCheck(TouchController.SwipeDirection direction)
