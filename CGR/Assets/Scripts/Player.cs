@@ -21,7 +21,6 @@ public class Player : MonoBehaviour {
     public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
     public float deathSpeed = 10f;
-    public bool inAir;
     public bool inMinionArea;
     public float OnGroundRaySize;
     public float ForwardRaySize;
@@ -33,7 +32,6 @@ public class Player : MonoBehaviour {
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         inMinionArea = false;
-        inAir = false;
         suctionStatus = false;
         inTransition = false;
         facingRight = true;
@@ -43,7 +41,6 @@ public class Player : MonoBehaviour {
 
         if (!inTransition)
         {
-            groundCheck();
             ForwardCheck();
         }
         //faceDirectionCheck();
@@ -85,41 +82,6 @@ public class Player : MonoBehaviour {
             return new Vector2(transform.position.x + 0.25f, transform.position.y);
     }
 
-    //Raycasts down to check for a floor
-    void groundCheck()
-    {
-        if (suctionStatus == false){
-            Vector3 rayOffset = new Vector3(0.1f, 0, 0);
-            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position + rayOffset, OrientationListener.instanceOf.getWorldDownVector(), OnGroundRaySize, wallMask);
-            RaycastHit2D groundCheckRay1 = Physics2D.Raycast(transform.position - rayOffset, OrientationListener.instanceOf.getWorldDownVector(), OnGroundRaySize, wallMask);
-
-            if (groundCheckRay.collider != null || groundCheckRay1.collider != null)
-            {
-                inAir = false;
-            }
-            else
-                inAir = true;
-        }
-        else {
-            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, playerRigidBody.GetComponent<ConstantForce2D>().force.normalized, OnGroundRaySize, wallMask);
-
-            if (groundCheckRay.collider != null)
-            {
-                inAir = false;
-                playerRigidBody.gravityScale = 0.0f;
-                playerRigidBody.GetComponent<ConstantForce2D>().enabled = true;
-            }
-            else
-            {
-                inAir = true;
-                gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
-                playerRigidBody.GetComponent<ConstantForce2D>().enabled = false;
-                playerRigidBody.GetComponent<ConstantForce2D>().force = Physics2D.gravity * 3;
-                this.GetComponent<SuctionWalk>().GetVectors(OrientationListener.instanceOf.getRelativeDownVector());
-            }
-        }
-    }
-
     //void faceDirectionCheck()
     //{
     //    if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.RIGHT && !facingRight)
@@ -135,7 +97,7 @@ public class Player : MonoBehaviour {
         Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
         Quaternion playerRotation = transform.localRotation;
         //playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
-        if (suctionStatus == false || inAir == true)
+        if (suctionStatus == false || this.GetComponent<GroundCheck>().InAir == true)
         {
             switch (orientation)
             {
@@ -179,25 +141,14 @@ public class Player : MonoBehaviour {
         Vector2 currentDownVector = playerRigidBody.GetComponent<ConstantForce2D>().force.normalized;
         float degrees;
         
-        if (facingRight)
-        {
-            degrees = 90;
-            float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
-            float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
-            forwardVector.x = Mathf.Round( (cos * currentDownVector.x) - (sin * currentDownVector.y) );
-            forwardVector.y = Mathf.Round( (sin * currentDownVector.x) + (cos * currentDownVector.y) );
-        }
+        if (facingRight) degrees = 90;
 
-        else
-        {
-            degrees = -90;
-            float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
-            float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
-            forwardVector.x = Mathf.Round( (cos * currentDownVector.x) - (sin * currentDownVector.y) );
-            forwardVector.y = Mathf.Round( (sin * currentDownVector.x) + (cos * currentDownVector.y) );
-        }
+        else degrees = -90;
 
-        //print(forwardVector.ToString());
+        float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
+        float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
+        forwardVector.x = Mathf.Round((cos * currentDownVector.x) - (sin * currentDownVector.y));
+        forwardVector.y = Mathf.Round((sin * currentDownVector.x) + (cos * currentDownVector.y));
 
         RaycastHit2D forwardCheckRay = Physics2D.Raycast(transform.position, forwardVector, ForwardRaySize, wallMask);
         if (forwardCheckRay.collider != null)

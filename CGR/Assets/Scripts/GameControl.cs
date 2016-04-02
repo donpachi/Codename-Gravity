@@ -12,6 +12,7 @@ public class GameControl : MonoBehaviour
 
     private bool[] levelUnlocked;
     private int[] levelHighScore;
+    private int latestLevel;
 
     private GameControl()
     {
@@ -55,6 +56,7 @@ public class GameControl : MonoBehaviour
         PlayerData data = new PlayerData();
         data.levelUnlocked = levelUnlocked;
         data.levelHighScore = levelHighScore;
+        data.latestLevel = latestLevel;
         
         bf.Serialize(file, data);
         file.Close();
@@ -71,6 +73,7 @@ public class GameControl : MonoBehaviour
 
             levelUnlocked = data.levelUnlocked;
             levelHighScore = data.levelHighScore;
+            latestLevel = data.latestLevel;
         }
     }
 
@@ -79,6 +82,7 @@ public class GameControl : MonoBehaviour
         levelUnlocked = new Boolean[Application.levelCount-1];
         levelUnlocked[0] = true; // Unlock First Level
         levelHighScore = new Int32[Application.levelCount-1];
+        latestLevel = 1;
         Save();
     }
 
@@ -86,6 +90,9 @@ public class GameControl : MonoBehaviour
     {
         if (score > levelHighScore[Application.loadedLevel])
             levelHighScore[Application.loadedLevel] = score;
+
+        if (latestLevel <= Application.loadedLevel)
+            latestLevel = Application.loadedLevel+1;
 
         levelUnlocked[Application.loadedLevel] = true;
         Save();
@@ -101,6 +108,11 @@ public class GameControl : MonoBehaviour
         return levelHighScore;
     }
 
+    public int GetLatestLevel()
+    {
+        return latestLevel;
+    }
+
 }
 
 [Serializable]
@@ -108,4 +120,5 @@ class PlayerData
 {
     public bool[] levelUnlocked;
     public int[] levelHighScore;
+    public int latestLevel;
 }
