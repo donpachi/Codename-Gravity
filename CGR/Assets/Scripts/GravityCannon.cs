@@ -4,7 +4,7 @@ using System.Collections;
 
 public class GravityCannon : MonoBehaviour {
 
-	public Animator anim;
+	private Animator anim;
 
     private Transform cannonTip;
     private Transform launchPosition;
@@ -25,6 +25,8 @@ public class GravityCannon : MonoBehaviour {
             else if (i.name == "LaunchPosition")
                 launchPosition = i;
         }
+
+        anim = GetComponentInParent<Animator>();
 	}
 	
 	// Update is called once per frame
@@ -47,10 +49,10 @@ public class GravityCannon : MonoBehaviour {
             player.GetComponent<Player>().ToggleRender();
 
             anim.SetBool("activated", true);
-		}
+        }
 	}
 
-    void EnableFireButton()
+    public void EnableFireButton()
     {
         cannonReady = true;
     }

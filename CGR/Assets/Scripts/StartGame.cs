@@ -19,10 +19,11 @@ public class StartGame : MonoBehaviour {
 			Application.Quit();
 	}
 	
-	public void LoadScene(int level)
+	public void LoadScene()
 	{
-		Time.timeScale = 1;
-		Application.LoadLevel(level);
+        int latestLevel = GameControl.Instance.GetLatestLevel();
+        Debug.Log(latestLevel);
+        Application.LoadLevel(latestLevel);
 	}
 
     public void LevelSelect()
@@ -58,7 +59,7 @@ public class StartGame : MonoBehaviour {
 
     public void ClearSaveData()
     {
-        GameObject.Find("GameController").GetComponent<GameControl>().NewGame();
+        GameControl.Instance.NewGame();
         Back();
     }
 
