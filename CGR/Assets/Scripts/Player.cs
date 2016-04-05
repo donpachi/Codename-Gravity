@@ -187,7 +187,15 @@ public class Player : MonoBehaviour {
         }
     }
 
-	public void TriggerDeath()
+    void OnTriggerExit2D(Collider2D colliderEvent)
+    {
+        if (colliderEvent.gameObject.tag == "Hazard")
+        {
+            TriggerDeath();
+        }
+    }
+
+    public void TriggerDeath()
 	{
         anim.SetBool("Dying", true);
         
