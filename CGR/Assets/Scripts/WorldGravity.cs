@@ -2,13 +2,13 @@
 using System.Collections;
 
 public class WorldGravity : MonoBehaviour {
-    public float GRAVITYVALUE = 25f;
+    public float GRAVITYVALUE = 25f ;
     public float GRAVITYCOOLDOWN = 5f;
     public Vector2 gVector;
+    public OrientationListener.Orientation CurrentGravityDirection { get; private set; }
 
     private bool gravityOnCooldown, gShiftDisabled;
     private float elapsedTime;
-    private OrientationListener.Orientation previousGravityDirection;
 
     //Event for gravity change
     public delegate void GravityEvent(OrientationListener.Orientation orientation, float timer);
@@ -23,7 +23,7 @@ public class WorldGravity : MonoBehaviour {
     // Use this for initialization
     void Start () {
         initialize();
-	}
+    }
 	
 	// FixedUpdate is called once per synchronized frame
 	void FixedUpdate () {
@@ -31,7 +31,7 @@ public class WorldGravity : MonoBehaviour {
         if (elapsedTime > GRAVITYCOOLDOWN) {
             gravityOnCooldown = false;
         }
-        if (!gravityOnCooldown && (previousGravityDirection != OrientationListener.instanceOf.currentOrientation())){
+        if (!gravityOnCooldown && validUpdateState()){
                 updateGravity();
                 gravityOnCooldown = true;
                 elapsedTime = 0;
@@ -45,14 +45,25 @@ public class WorldGravity : MonoBehaviour {
         Physics2D.gravity = gVector * GRAVITYVALUE; // modify so that this is modifiable when the level starts.
         elapsedTime = 0;
         gravityOnCooldown = true; gShiftDisabled = false;
-        previousGravityDirection = (int)OrientationListener.Orientation.PORTRAIT;
+        CurrentGravityDirection = OrientationListener.Orientation.PORTRAIT;
+    }
+
+    bool validUpdateState()
+    {
+        int diff = CurrentGravityDirection - OrientationListener.instanceOf.currentOrientation();
+        if (diff == 2 || diff == -2 || CurrentGravityDirection == OrientationListener.instanceOf.currentOrientation())
+        {
+            return false;
+        }
+        
+        return true;
     }
 
     public void updateGravity()
     {
         if (!gShiftDisabled)
         {
-            previousGravityDirection = OrientationListener.instanceOf.currentOrientation();
+            CurrentGravityDirection = OrientationListener.instanceOf.currentOrientation();
             float gx = OrientationListener.instanceOf.getRelativeDownVector().x;
             float gy = OrientationListener.instanceOf.getRelativeDownVector().y;
             gVector = new Vector2(gx, gy);

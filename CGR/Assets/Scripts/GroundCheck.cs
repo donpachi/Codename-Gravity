@@ -40,12 +40,12 @@ public class GroundCheck : MonoBehaviour
         }
         else
         {
-            Vector3 rayOffset = OrientationListener.instanceOf.getRelativeRightVector() * RayOffsetWidth;
-            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position + rayOffset, player.GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().force.normalized, OnGroundRaySize, wallMask);
-            RaycastHit2D groundCheckRay1 = Physics2D.Raycast(transform.position - rayOffset, player.GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().force.normalized, OnGroundRaySize, wallMask);
+            Vector3 rayOffset = transform.right * RayOffsetWidth;
+            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position + rayOffset, transform.up * -1, OnGroundRaySize, wallMask);
+            RaycastHit2D groundCheckRay1 = Physics2D.Raycast(transform.position - rayOffset, transform.up * -1, OnGroundRaySize, wallMask);
 
-            Debug.DrawRay(transform.position + rayOffset, player.GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().force.normalized * OnGroundRaySize, Color.green, 1);
-            Debug.DrawRay(transform.position - rayOffset, player.GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().force.normalized * OnGroundRaySize, Color.red, 1);
+            Debug.DrawRay(transform.position + rayOffset, transform.up * -OnGroundRaySize, Color.green, 0.5f);
+            Debug.DrawRay(transform.position - rayOffset, transform.up * -OnGroundRaySize, Color.red, 0.5f);
 
             if (groundCheckRay.collider != null || groundCheckRay1.collider != null)
             {
@@ -55,11 +55,9 @@ public class GroundCheck : MonoBehaviour
             }
             else
             {
-                player.GetComponent<Player>().gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
+                player.GetComponent<Player>().gravitySpriteUpdate(GetComponent<WorldGravity>().CurrentGravityDirection, 0);
                 player.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
                 player.GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().enabled = false;
-                player.GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().force = Physics2D.gravity * 3;
-                this.GetComponent<SuctionWalk>().SetVectors(OrientationListener.instanceOf.getRelativeDownVector());
                 InAir = true;
             }
         }

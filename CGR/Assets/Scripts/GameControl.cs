@@ -5,7 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 //Singleton Game Control class
-public class GameControl : MonoBehaviour
+public class GameControl
 {
     private static GameControl _instance;
     public static GameControl Instance { get { return _instance ?? (_instance = new GameControl()); } }
@@ -24,6 +24,7 @@ public class GameControl : MonoBehaviour
         {
             Load();
         }
+        Debug.Log(System.Environment.Version);
     }
     
     //void Awake()

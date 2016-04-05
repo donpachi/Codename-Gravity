@@ -81,7 +81,7 @@ public class RailBoxControl : MonoBehaviour {
     {
         player.SetActive(true);
         player.transform.position = transform.position + (Vector3)OrientationListener.instanceOf.getRelativeUpVector();
-        player.GetComponent<Player>().gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0.0f);
+        player.GetComponent<Player>().gravitySpriteUpdate(player.GetComponent<WorldGravity>().CurrentGravityDirection, 0.0f);
         player.GetComponent<Rigidbody2D>().AddForce(OrientationListener.instanceOf.getRelativeUpVector() * 200);
         mainCamera.GetComponent<FollowPlayer>().setFollowObject(player);
     }

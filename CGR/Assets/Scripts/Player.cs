@@ -26,6 +26,7 @@ public class Player : MonoBehaviour {
     public float ForwardRaySize;
     public bool isMinion = false;
     public bool IsDead { get; private set; }
+    public bool InRotation;
 
     void Awake () {
         anim = this.GetComponent<Animator>();
@@ -35,13 +36,14 @@ public class Player : MonoBehaviour {
         suctionStatus = false;
         inTransition = false;
         facingRight = true;
-	}
+        InRotation = false;
+    }
 
 	void FixedUpdate () {
 
         if (!inTransition)
         {
-            ForwardCheck();
+            //ForwardCheck();
         }
         //faceDirectionCheck();
     }
@@ -80,6 +82,14 @@ public class Player : MonoBehaviour {
             return new Vector2(transform.position.x - 0.25f, transform.position.y);
         else
             return new Vector2(transform.position.x + 0.25f, transform.position.y);
+    }
+
+    /// <summary>
+    /// Called by animator. Resets flag when rotation is done
+    /// </summary>
+    void finishedRotation()
+    {
+        InRotation = false;
     }
 
     //void faceDirectionCheck()
@@ -139,33 +149,7 @@ public class Player : MonoBehaviour {
         transform.localScale = playerScale;
     }
 
-    void ForwardCheck()
-    {
-        Vector2 forwardVector;
-        Vector2 currentDownVector = playerRigidBody.GetComponent<ConstantForce2D>().force.normalized;
-        float degrees;
-        
-        if (facingRight) degrees = 90;
 
-        else degrees = -90;
-
-        float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
-        forwardVector.x = Mathf.Round((cos * currentDownVector.x) - (sin * currentDownVector.y));
-        forwardVector.y = Mathf.Round((sin * currentDownVector.x) + (cos * currentDownVector.y));
-
-        RaycastHit2D forwardCheckRay = Physics2D.Raycast(transform.position, forwardVector, ForwardRaySize, wallMask);
-        Debug.DrawRay(transform.position, forwardVector, Color.cyan, 1);
-        if (forwardCheckRay.collider != null)
-        {
-            this.GetComponent<SuctionWalk>().SetVectors(forwardVector);
-            this.GetComponent<ConstantForce2D>().force = forwardVector.normalized * 75;
-            this.transform.Rotate(new Vector3 (0,0, degrees));
-        }
-        // raycast based on the boolean value facingRight
-        // use constant force value to derive the new left and right vectors
-        // reorientate the player
-    }
 
     /*---------------Event Functions Start Here---------------*/
     void OnCollisionEnter2D(Collision2D collisionEvent) {
@@ -280,7 +264,6 @@ public class Player : MonoBehaviour {
         TouchController.ScreenTouched -= screenTouched;
     }
 
-
     public void ToggleRender()
     {
         Renderer[] potatoParts = this.GetComponentsInChildren<Renderer>();
@@ -298,15 +281,23 @@ public class Player : MonoBehaviour {
         return launched;
     }
 
-    public void SuctionStatusOn()
+    /// <summary>
+    /// Turns on suction status and sets players constant force to requested force
+    /// </summary>
+    /// <param name="force"></param>
+    public void SuctionStatusOn(int force)
     {
         suctionStatus = true;
+        GetComponent<ConstantForce2D>().enabled = true;
+        GetComponent<ConstantForce2D>().relativeForce = new Vector2(0, -1) * force;
+        GetComponent<Walk>().enabled = false;
+        GetComponent<SuctionWalk>().enabled = true; ;
     }
 
     public void SuctionStatusEnd()
     {
         suctionStatus = false;
-        gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
+        //gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
     }
 
     public bool IsSuctioned()
@@ -314,11 +305,16 @@ public class Player : MonoBehaviour {
         return suctionStatus;
     }
 
+    /// <summary>
+    /// On when in Portal
+    /// </summary>
     public void InTransitionStatusOn()
     {
         inTransition = true;
     }
-
+    /// <summary>
+    /// Off when u leave portal
+    /// </summary>
     public void InTransitionStatusEnd()
     {
         inTransition = false;
