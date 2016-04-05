@@ -94,28 +94,32 @@ public class Player : MonoBehaviour {
     //might have to update constant force while suction cups are on
     public void gravitySpriteUpdate(OrientationListener.Orientation orientation, float timer)
     {
-        Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
-        Quaternion playerRotation = transform.localRotation;
+        //Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
+        //Quaternion playerRotation = transform.localRotation;
         //playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
         if (suctionStatus == false || this.GetComponent<GroundCheck>().InAir == true)
         {
             switch (orientation)
             {
                 case OrientationListener.Orientation.PORTRAIT:
-                    playerRotation.SetLookRotation(Vector3.forward, Vector3.up);
-                    transform.rotation = playerRotation;
+                    //playerRotation.SetLookRotation(Vector3.forward, Vector3.up);
+                    //transform.rotation = playerRotation;
+                    anim.SetInteger("Orientation", 0);
                     break;
                 case OrientationListener.Orientation.LANDSCAPE_RIGHT:
-                    playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
-                    transform.rotation = playerRotation;
+                    //playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
+                    //transform.rotation = playerRotation;
+                    anim.SetInteger("Orientation", 3);
                     break;
                 case OrientationListener.Orientation.LANDSCAPE_LEFT:
-                    playerRotation.SetLookRotation(Vector3.forward, Vector3.right);
-                    transform.rotation = playerRotation;
+                    //playerRotation.SetLookRotation(Vector3.forward, Vector3.right);
+                    //transform.rotation = playerRotation;
+                    anim.SetInteger("Orientation", 1);
                     break;
                 case OrientationListener.Orientation.INVERTED_PORTRAIT:
-                    playerRotation.SetLookRotation(Vector3.forward, Vector3.down);
-                    transform.rotation = playerRotation;
+                    //playerRotation.SetLookRotation(Vector3.forward, Vector3.down);
+                    //transform.rotation = playerRotation;
+                    anim.SetInteger("Orientation", 2);
                     break;
             }
         }
@@ -151,9 +155,10 @@ public class Player : MonoBehaviour {
         forwardVector.y = Mathf.Round((sin * currentDownVector.x) + (cos * currentDownVector.y));
 
         RaycastHit2D forwardCheckRay = Physics2D.Raycast(transform.position, forwardVector, ForwardRaySize, wallMask);
+        Debug.DrawRay(transform.position, forwardVector, Color.cyan, 1);
         if (forwardCheckRay.collider != null)
         {
-            this.GetComponent<SuctionWalk>().GetVectors(forwardVector);
+            this.GetComponent<SuctionWalk>().SetVectors(forwardVector);
             this.GetComponent<ConstantForce2D>().force = forwardVector.normalized * 75;
             this.transform.Rotate(new Vector3 (0,0, degrees));
         }

@@ -38,7 +38,6 @@ public class GroundCheck : MonoBehaviour
             else
                 InAir = true;
         }
-
         else
         {
             Vector3 rayOffset = OrientationListener.instanceOf.getRelativeRightVector() * RayOffsetWidth;
@@ -60,7 +59,7 @@ public class GroundCheck : MonoBehaviour
                 player.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
                 player.GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().enabled = false;
                 player.GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().force = Physics2D.gravity * 3;
-                this.GetComponent<SuctionWalk>().GetVectors(OrientationListener.instanceOf.getRelativeDownVector());
+                this.GetComponent<SuctionWalk>().SetVectors(OrientationListener.instanceOf.getRelativeDownVector());
                 InAir = true;
             }
         }
