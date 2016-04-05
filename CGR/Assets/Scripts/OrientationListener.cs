@@ -147,12 +147,27 @@ public class OrientationListener : MonoBehaviour {
     {
         return rightVector;
     }
-
+    /// <summary>
+    /// Returns the relative right vector given a specified down vector
+    /// </summary>
+    /// <param name="down"></param>
+    /// <returns></returns>
+    public Vector2 getRelativeRightVector(Vector2 down)
+    {
+        return new Vector2(down.y * -1, down.x);
+    }
+    /// <summary>
+    /// Returns the relative left vecotr given a specified down vector
+    /// </summary>
+    /// <returns></returns>
     public Vector2 getRelativeLeftVector()
     {
         return rightVector * -1;
     }
 
-    
+    public Vector2 getRelativeLeftVector(Vector2 down)
+    {
+        return new Vector2(down.y, down.x * -1);
+    }
 }
  

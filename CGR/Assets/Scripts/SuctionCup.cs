@@ -50,7 +50,7 @@ public class SuctionCup : MonoBehaviour {
             player.GetComponent<Walk>().enabled = false;
             //player.GetComponent<PlayerJump>().enabled = false;
             player.GetComponent<SuctionWalk>().enabled = true;
-            player.GetComponent<SuctionWalk>().GetVectors(OrientationListener.instanceOf.getRelativeDownVector());
+            player.GetComponent<SuctionWalk>().SetVectors(OrientationListener.instanceOf.getRelativeDownVector());
 
             this.GetComponent<Collider2D>().enabled = false;
             this.GetComponent<SpriteRenderer>().enabled = false;
