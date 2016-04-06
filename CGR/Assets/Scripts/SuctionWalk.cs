@@ -7,21 +7,25 @@ public class SuctionWalk : MonoBehaviour
 
     public float THRUST = 1f;
     public float MAXSPEED = 4f;
+    public float ForwardRaySize;
+    public int SuctionForce = 25;
 
     private Rigidbody2D playerBody;
     private Animator anim;
     private bool atTopSpeed;
-    public Vector2 leftVector;
-    public Vector2 rightVector;
+    Vector2 leftVector = new Vector2(-1, 0);
+    Vector2 rightVector = new Vector2(1, 0);
     private GameObject suctionText;
     private float timer;
+
+    private LayerMask wallMask;
 
     private Vector3 zAxis = new Vector3(0, 0, 1);
     private Vector3 portrait = new Vector3(220, 435, 0);
     private Vector3 landscapeRight = new Vector3(-220, 435, 0);
     private Vector3 portraitUpsideDown = new Vector3(-220, -435, 0);
     private Vector3 landscapeLeft = new Vector3(220, -435, 0);
-    private TouchController.TouchLocation _touchLocation;
+    private ConstantForce2D _cForce;
 
     // Use this for initialization
     void Start()
@@ -31,7 +35,8 @@ public class SuctionWalk : MonoBehaviour
         anim = GetComponent<Animator>();
         suctionText = GameObject.Find("SuctionText");
         suctionText.GetComponent<Text>().enabled = true;
-        _touchLocation = TouchController.TouchLocation.NONE;
+        wallMask = 1 << LayerMask.NameToLayer("Walls");
+        _cForce = GetComponent<ConstantForce2D>();
     }
 
     // Update is called once per frame
@@ -42,6 +47,11 @@ public class SuctionWalk : MonoBehaviour
         else
             atTopSpeed = true;
 
+        if (playerBody.velocity.magnitude > 0)
+            anim.SetBool("Moving", true);
+        else
+            anim.SetBool("Moving", false);
+
         if (timer != 0)
         {
             timer -= Time.deltaTime;
@@ -50,10 +60,9 @@ public class SuctionWalk : MonoBehaviour
             {
                 suctionText.GetComponent<Text>().enabled = false;
                 this.GetComponent<ConstantForce2D>().enabled = false;
-                this.GetComponent<ConstantForce2D>().force = new Vector2 (0,0);
                 this.GetComponent<Player>().SuctionStatusEnd();
-                //this.GetComponent<PlayerJump>().enabled = true;
                 this.GetComponent<SuctionWalk>().enabled = false;
+                GetComponent<Player>().gravitySpriteUpdate(GetComponent<WorldGravity>().CurrentGravityDirection, 0);
                 if (!this.GetComponent<Player>().IsLaunched() && !this.GetComponent<Player>().IsInTransition())
                 {
                     playerBody.gravityScale = 1.0f;
@@ -62,13 +71,6 @@ public class SuctionWalk : MonoBehaviour
                 }
             }
         }
-
-    }
-
-    public void SetVectors(Vector2 downVector)
-    {
-        leftVector = OrientationListener.instanceOf.getRelativeLeftVector(downVector);
-        rightVector = OrientationListener.instanceOf.getRelativeRightVector(downVector);
     }
 
     public void SetTimer(float t)
@@ -80,26 +82,67 @@ public class SuctionWalk : MonoBehaviour
 
     void screenTouched(TouchInstanceData data)
     {
-        _touchLocation = data.touchLocation;
+        TouchController.TouchLocation _touchLocation = data.touchLocation;
 
         if (!atTopSpeed)
         {
             switch (_touchLocation)
             {
                 case TouchController.TouchLocation.LEFT:
-                    playerBody.AddForce(leftVector * THRUST, ForceMode2D.Impulse);
+                    if(forwardCheck(transform.right * -1, _touchLocation))
+                    {
+                        rotateObject(1);
+                    }
+                    else
+                        playerBody.AddRelativeForce(leftVector * THRUST, ForceMode2D.Impulse);
                     break;
                 case TouchController.TouchLocation.RIGHT:
-                    playerBody.AddForce(rightVector * THRUST, ForceMode2D.Impulse);
+                    if (forwardCheck(transform.right, _touchLocation))
+                    {
+                        rotateObject(-1);
+                    }
+                    else
+                        playerBody.AddRelativeForce(rightVector * THRUST, ForceMode2D.Impulse);
                     break;
                 case TouchController.TouchLocation.NONE:
                     break;
             }
         }
-        if (_touchLocation != TouchController.TouchLocation.NONE)
-            anim.SetBool("Moving", true);
-        else
-            anim.SetBool("Moving", false);
+    }
+
+    /// <summary>
+    /// Updates the animator orientation value to reflect rotation, ignores if already in rotation
+    /// -1 is clockwise 1 is counter
+    /// </summary>
+    /// <param name="direction"></param>
+    void rotateObject(int direction)
+    {
+        if (GetComponent<Player>().InRotation)
+            return;
+        int current = anim.GetInteger("Orientation");
+        int newOrientation = current + direction;
+
+        if (newOrientation > 3)
+            newOrientation = 0;
+        else if (newOrientation < 0)
+            newOrientation = 3;
+
+        anim.SetInteger("Orientation", newOrientation);
+        GetComponent<Player>().InRotation = true;
+    }
+
+    bool forwardCheck(Vector2 forwardRay, TouchController.TouchLocation direction)
+    {
+        RaycastHit2D forwardCheckRay = Physics2D.Raycast(transform.position, forwardRay, ForwardRaySize, wallMask);
+        Debug.DrawRay(transform.position, forwardRay * ForwardRaySize, Color.cyan, 0.5f);
+        if (forwardCheckRay.collider != null)
+        {
+            Debug.Log("Forward ray hit");
+            return true;
+        }
+        return false;
+        // use constant force value to derive the new left and right vectors
+        // reorientate the player
     }
 
     void OnEnable()

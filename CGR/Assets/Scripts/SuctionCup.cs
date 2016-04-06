@@ -5,12 +5,12 @@ using System.Collections;
 public class SuctionCup : MonoBehaviour {
 
     public float suctionTimer;
+    public int SuctionForce;
 
     private float timer;
     private bool triggered;
     private GameObject player;
     private Rigidbody2D playerBody;
-	private Vector2 suctionVector;
 
     //Event thrown when picked up
     public delegate void SuctionCupActivated(float time);   //give it a length for the timer
@@ -26,7 +26,7 @@ public class SuctionCup : MonoBehaviour {
 	void Start () {
         player = GameObject.Find("Player");
         timer = 0;
-	}
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
@@ -41,16 +41,15 @@ public class SuctionCup : MonoBehaviour {
         }
 
 	}
-
+    /// <summary>
+    /// When player enters this will set the suction force, turn off all unwanted components
+    /// and turn on suction walk
+    /// </summary>
+    /// <param name="collisionInfo"></param>
 	void OnTriggerEnter2D(Collider2D collisionInfo) {
 		if (collisionInfo.gameObject.name == "Player" && !triggered) {
             playerBody = collisionInfo.GetComponent<Rigidbody2D>();
-            playerBody.GetComponent<ConstantForce2D>().force = Physics2D.gravity * 3;
-            player.GetComponent<Player>().SuctionStatusOn();
-            player.GetComponent<Walk>().enabled = false;
-            //player.GetComponent<PlayerJump>().enabled = false;
-            player.GetComponent<SuctionWalk>().enabled = true;
-            player.GetComponent<SuctionWalk>().SetVectors(OrientationListener.instanceOf.getRelativeDownVector());
+            player.GetComponent<Player>().SuctionStatusOn(SuctionForce);
 
             this.GetComponent<Collider2D>().enabled = false;
             this.GetComponent<SpriteRenderer>().enabled = false;
