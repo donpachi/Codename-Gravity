@@ -153,7 +153,7 @@ public class Player : MonoBehaviour {
 
     /*---------------Event Functions Start Here---------------*/
     void OnCollisionEnter2D(Collision2D collisionEvent) {
-        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > 10 && collisionEvent.gameObject.tag == "Boulder")
+        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.tag == "Boulder")
         {
             TriggerDeath();
 		}        
@@ -244,7 +244,7 @@ public class Player : MonoBehaviour {
     public void switchControlToPlayer()
     {
         GetComponent<Rigidbody2D>().isKinematic = false;
-        GetComponent<Rigidbody2D>().gravityScale = 1;
+        GetComponent<Rigidbody2D>().gravityScale = 1.0f;
         GetComponent<Walk>().enabled = true;
         isMinion = false;
     }

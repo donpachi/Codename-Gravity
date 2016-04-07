@@ -94,7 +94,7 @@ public class Portal : MonoBehaviour {
 		
         entity.velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * entity.velocity;
         entity.body.velocity = entity.velocity;
-		entity.body.gravityScale = 1;
+		entity.body.gravityScale = 1.0f;
 
         for (int i = 0; i < colliders.Length; i++)
             colliders[i].enabled = true;
