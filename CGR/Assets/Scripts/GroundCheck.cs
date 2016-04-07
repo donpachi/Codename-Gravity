@@ -56,7 +56,7 @@ public class GroundCheck : MonoBehaviour
             else
             {
                 player.GetComponent<Player>().gravitySpriteUpdate(GetComponent<WorldGravity>().CurrentGravityDirection, 0);
-                player.GetComponent<Rigidbody2D>().gravityScale = player.GetComponent<Player>().GetGravityScale();
+                player.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
                 player.GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().enabled = false;
                 InAir = true;
             }

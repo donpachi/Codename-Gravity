@@ -12,7 +12,6 @@ public class Player : MonoBehaviour {
     private LayerMask wallMask;
     private const float drag = 0.5f;
     private const float angularDrag = 0.05f;
-    private float gravityScale;
     private bool facingRight;
     private bool suctionStatus;
     private bool inTransition;
@@ -33,7 +32,6 @@ public class Player : MonoBehaviour {
         anim = this.GetComponent<Animator>();
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
-        gravityScale = playerRigidBody.gravityScale;
         inMinionArea = false;
         suctionStatus = false;
         inTransition = false;
@@ -162,7 +160,7 @@ public class Player : MonoBehaviour {
 
         else if (launched == true && collisionEvent.gameObject.tag == "Wall")
         {
-            playerRigidBody.gravityScale = gravityScale;
+            playerRigidBody.gravityScale = 1.0f;
             this.GetComponent<Walk>().enabled = true;
             playerRigidBody.drag = drag;
             playerRigidBody.angularDrag = angularDrag;
@@ -246,7 +244,7 @@ public class Player : MonoBehaviour {
     public void switchControlToPlayer()
     {
         GetComponent<Rigidbody2D>().isKinematic = false;
-        GetComponent<Rigidbody2D>().gravityScale = gravityScale;
+        GetComponent<Rigidbody2D>().gravityScale = 1.0f;
         GetComponent<Walk>().enabled = true;
         isMinion = false;
     }
@@ -333,10 +331,5 @@ public class Player : MonoBehaviour {
     public bool IsInTransition()
     {
         return inTransition;
-    }
-
-    public float GetGravityScale()
-    {
-        return gravityScale;
     }
 }
