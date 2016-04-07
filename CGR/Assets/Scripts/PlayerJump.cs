@@ -8,9 +8,7 @@ public class PlayerJump : MonoBehaviour {
     private bool _jumpRequest;
     private bool _jumping;
 
-    int singlejumpCount = 0;    //used to debug double jumps
     public float jumpForce = 10;
-
 
     private Animator anim;
 
@@ -46,13 +44,23 @@ public class PlayerJump : MonoBehaviour {
         }
     }
 
+    void jumpCheck()
+    {
+        if (!GetComponent<GroundCheck>().InAir)
+        {
+            _jumpRequest = !GetComponent<GroundCheck>().InAir;
+        }
+    }
+
     //Event handling for swipe events
     void OnEnable()
     {
-        TouchController.OnSwipe += jumpCheck;
+        //TouchController.OnSwipe += jumpCheck;
+        TouchController.OnTap += jumpCheck;
     }
     void OnDisable()
     {
-        TouchController.OnSwipe -= jumpCheck;
+        //TouchController.OnSwipe -= jumpCheck;
+        TouchController.OnTap += jumpCheck;
     }
 }
