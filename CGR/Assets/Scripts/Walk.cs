@@ -13,6 +13,7 @@ public class Walk : MonoBehaviour {
     private Animator anim;
     private float minWalkSpeed = 0.1f;
     private TouchController.TouchLocation _touchLocation;
+    private PinchtoZoom cameraZoom;
 
     // Use this for initialization
     void Start ()
@@ -20,22 +21,11 @@ public class Walk : MonoBehaviour {
         rBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         _touchLocation = TouchController.TouchLocation.NONE;
-        //playerState = gameObject.GetComponent<Player>();
+        cameraZoom = GameObject.Find("Main Camera").GetComponent<PinchtoZoom>();
     }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        //if (GetComponent<GroundCheck>().InAir && rBody.velocity.magnitude < MAXFLOATSPEED)
-        //{
-        //    applyMoveForce(INAIRTHRUST);
-        //}
-        //else if (rBody.velocity.magnitude < MAXSPEED && !GetComponent<GroundCheck>().InAir)
-        //{
-        //    applyMoveForce(THRUST);
-        //    if (_touchLocation != TouchController.TouchLocation.NONE)
-        //        anim.SetBool("Moving", true);
-        //}
-
         if (rBody.velocity.magnitude < minWalkSpeed)
             anim.SetBool("Moving", false);
 	}
@@ -66,11 +56,11 @@ public class Walk : MonoBehaviour {
 
         _touchLocation = data.touchLocation;
 
-        if (GetComponent<GroundCheck>().InAir && rBody.velocity.magnitude < MAXFLOATSPEED)
+        if (GetComponent<GroundCheck>().InAir && rBody.velocity.magnitude < MAXFLOATSPEED && !cameraZoom.Zooming)
         {
             applyMoveForce(INAIRTHRUST);
         }
-        else if (rBody.velocity.magnitude < MAXSPEED && !GetComponent<GroundCheck>().InAir)
+        else if (rBody.velocity.magnitude < MAXSPEED && !GetComponent<GroundCheck>().InAir && !cameraZoom.Zooming)
         {
             applyMoveForce(THRUST);
             if (_touchLocation != TouchController.TouchLocation.NONE)
