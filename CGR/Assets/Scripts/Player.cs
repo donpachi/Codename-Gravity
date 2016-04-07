@@ -12,6 +12,7 @@ public class Player : MonoBehaviour {
     private LayerMask wallMask;
     private const float drag = 0.5f;
     private const float angularDrag = 0.05f;
+    private float gravityScale;
     private bool facingRight;
     private bool suctionStatus;
     private bool inTransition;
@@ -32,6 +33,7 @@ public class Player : MonoBehaviour {
         anim = this.GetComponent<Animator>();
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
+        gravityScale = playerRigidBody.gravityScale;
         inMinionArea = false;
         suctionStatus = false;
         inTransition = false;
@@ -153,14 +155,14 @@ public class Player : MonoBehaviour {
 
     /*---------------Event Functions Start Here---------------*/
     void OnCollisionEnter2D(Collision2D collisionEvent) {
-        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > 10 && collisionEvent.gameObject.tag == "Boulder")
+        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.tag == "Boulder")
         {
             TriggerDeath();
 		}        
 
         else if (launched == true && collisionEvent.gameObject.tag == "Wall")
         {
-            playerRigidBody.gravityScale = 1.0f;
+            playerRigidBody.gravityScale = gravityScale;
             this.GetComponent<Walk>().enabled = true;
             playerRigidBody.drag = drag;
             playerRigidBody.angularDrag = angularDrag;
@@ -244,7 +246,7 @@ public class Player : MonoBehaviour {
     public void switchControlToPlayer()
     {
         GetComponent<Rigidbody2D>().isKinematic = false;
-        GetComponent<Rigidbody2D>().gravityScale = 1;
+        GetComponent<Rigidbody2D>().gravityScale = gravityScale;
         GetComponent<Walk>().enabled = true;
         isMinion = false;
     }
@@ -331,5 +333,10 @@ public class Player : MonoBehaviour {
     public bool IsInTransition()
     {
         return inTransition;
+    }
+
+    public float GetGravityScale()
+    {
+        return gravityScale;
     }
 }
