@@ -55,8 +55,15 @@ public class Walk : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Listens for every screen touch, just returns when its more than 1
+    /// </summary>
+    /// <param name="data"></param>
     void screenTouched(TouchInstanceData data)
     {
+        if (TouchController.Instance.GetTouchCount() > 1)
+            return;
+
         _touchLocation = data.touchLocation;
 
         if (GetComponent<GroundCheck>().InAir && rBody.velocity.magnitude < MAXFLOATSPEED)
@@ -69,6 +76,7 @@ public class Walk : MonoBehaviour {
             if (_touchLocation != TouchController.TouchLocation.NONE)
                 anim.SetBool("Moving", true);
         }
+
     }
 
     void OnEnable()
