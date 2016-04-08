@@ -8,11 +8,11 @@ public class Minion : MonoBehaviour {
     public float MinionDistance;
     public float MinionFollowSpeed;
     public float DeathSpeed = 10f;
+    public bool GravityZone { get; private set; }
 
     GameObject player;
     List<GameObject> minions = new List<GameObject>();
     GameObject _parent;
-    float timer = 0.1f;
     public bool isFollowing = true;
     float playerPosDiff;
     Vector2 prevPlayerLocation;
@@ -28,7 +28,7 @@ public class Minion : MonoBehaviour {
         this.GetComponent<PlayerJump>().enabled = false;
         this.GetComponent<Walk>().enabled = false;
         _camera = FindObjectOfType<FollowPlayer>();
-        //updateList();
+        GravityZoneOff();
     }
 
     void Update()
@@ -42,7 +42,7 @@ public class Minion : MonoBehaviour {
         if (!isFollowing)
             return;
 
-        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, OrientationListener.instanceOf.getWorldDownVector(), 0.5f);
+        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, -transform.up, 0.5f);
         if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle") && checkIfSameHeight() && groundCheckRay.collider != null && groundCheckRay.collider.name.Contains("MovingPlatform"))
         {
             if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
@@ -67,6 +67,16 @@ public class Minion : MonoBehaviour {
 
         checkGravityScale();
         prevPlayerLocation = player.transform.position;
+    }
+
+    public void GravityZoneOn()
+    {
+        GravityZone = true;
+    }
+
+    public void GravityZoneOff()
+    {
+        GravityZone = false;
     }
 
     public void SetParent(GameObject parentObj)
@@ -150,7 +160,6 @@ public class Minion : MonoBehaviour {
         this.GetComponent<Rigidbody2D>().gravityScale = 1;
         this.GetComponent<PlayerJump>().enabled = true;
         this.GetComponent<Walk>().enabled = true;
-        GetComponent<GroundCheck>().enabled = true;
         _camera.setFollowObject(gameObject);
         isFollowing = false;
         anim.SetBool("SwitchingToMinion", false);

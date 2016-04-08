@@ -8,13 +8,13 @@ public class SuctionWalk : MonoBehaviour
     public float THRUST = 1f;
     public float MAXSPEED = 4f;
     public float ForwardRaySize;
-    public int SuctionForce = 25;
+    //public int SuctionForce = 25;
 
     private Rigidbody2D playerBody;
     private Animator anim;
     private bool atTopSpeed;
-    Vector2 leftVector = new Vector2(-1, 0);
-    Vector2 rightVector = new Vector2(1, 0);
+    Vector2 leftVector = Vector2.left;
+    Vector2 rightVector = Vector2.right;
     private GameObject suctionText;
     private float timer;
 
@@ -62,7 +62,7 @@ public class SuctionWalk : MonoBehaviour
                 this.GetComponent<ConstantForce2D>().enabled = false;
                 this.GetComponent<Player>().SuctionStatusEnd();
                 this.GetComponent<SuctionWalk>().enabled = false;
-                GetComponent<Player>().gravitySpriteUpdate(GetComponent<WorldGravity>().CurrentGravityDirection, 0);
+                GetComponent<Player>().updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0);
                 if (!this.GetComponent<Player>().IsLaunched() && !this.GetComponent<Player>().IsInTransition())
                 {
                     playerBody.gravityScale = 1.0f;
@@ -137,7 +137,6 @@ public class SuctionWalk : MonoBehaviour
         Debug.DrawRay(transform.position, forwardRay * ForwardRaySize, Color.cyan, 0.5f);
         if (forwardCheckRay.collider != null)
         {
-            Debug.Log("Forward ray hit");
             return true;
         }
         return false;

@@ -8,6 +8,7 @@ public class PinchtoZoom : MonoBehaviour
 {
 	public float orthoZoomSpeed = 0.1f;        // The rate of change of the orthographic size in orthographic mode.
 	public float maxOrthoSize = 15f;
+    public bool Zooming;
 	private Camera playerCam;
 	private float defaultOrthoSize;
 	private float noTouchZoomSpeed = 0.3f;
@@ -54,6 +55,11 @@ public class PinchtoZoom : MonoBehaviour
 				playerCam.orthographicSize -= (playerCam.orthographicSize - defaultOrthoSize);
 			}
 		}
-		
-	}
+
+        if (playerCam.orthographicSize == defaultOrthoSize)
+            Zooming = false;
+        else
+            Zooming = true;
+
+    }
 }

@@ -9,6 +9,7 @@ public class RailBlock : MonoBehaviour {
     public GameObject Origin;
     public GameObject Target;
     public bool isActive;
+    public bool GravityZone { get; private set; }
 
     private SliderJoint2D joint;
     private Animator childAnim;
@@ -44,6 +45,16 @@ public class RailBlock : MonoBehaviour {
                 findNextNode(Origin);
         }
 	}
+
+    public void GravityZoneOn()
+    {
+        GravityZone = true;
+    }
+
+    public void GravityZoneOff()
+    {
+        GravityZone = false;
+    }
 
     //Sets the rail definition according to nodes
     void setJointParam()
@@ -102,21 +113,8 @@ public class RailBlock : MonoBehaviour {
     /// <param name="timer"></param>
     void gravitySpriteUpdate(OrientationListener.Orientation orientation, float timer)
     {
-        switch (orientation)
-        {
-            case OrientationListener.Orientation.PORTRAIT:
-                anim.SetInteger("Orientation", 0);
-                break;
-            case OrientationListener.Orientation.LANDSCAPE_RIGHT:
-                anim.SetInteger("Orientation", 1);
-                break;
-            case OrientationListener.Orientation.LANDSCAPE_LEFT:
-                anim.SetInteger("Orientation", 3);
-                break;
-            case OrientationListener.Orientation.INVERTED_PORTRAIT:
-                anim.SetInteger("Orientation", 2);
-                break;
-        }
+        if(!GravityZone)
+            anim.SetInteger("Orientation", (int)orientation);
     }
 
     //Listeners for player

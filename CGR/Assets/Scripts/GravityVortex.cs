@@ -5,8 +5,8 @@ public class GravityVortex : MonoBehaviour {
 	private GameObject player;
 
 	//Adjustable constants
-	public float VORTEXDISTANCE = 3;
-	public float VORTEXFORCE = 20;
+	public float VORTEXDISTANCE;
+	public float VORTEXFORCE;
 
 	// Use this for initialization
 	void Start () {
@@ -22,5 +22,10 @@ public class GravityVortex : MonoBehaviour {
 			player.GetComponent<Rigidbody2D>().AddForce(direction * VORTEXFORCE);
 		}
 	}
+
+    public void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(this.transform.position, VORTEXDISTANCE);
+    }
 
 }
