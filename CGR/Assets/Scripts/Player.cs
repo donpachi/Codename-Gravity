@@ -13,7 +13,6 @@ public class Player : MonoBehaviour {
     private const float drag = 0.5f;
     private const float angularDrag = 0.05f;
     private bool facingRight;
-    private bool suctionStatus;
     private bool inTransition;
     private bool launched;
     private Animator anim;
@@ -27,6 +26,8 @@ public class Player : MonoBehaviour {
     public bool isMinion = false;
     public bool IsDead { get; private set; }
     public bool InRotation;
+    public bool suctionStatus { get; private set; }
+    public bool gravityZone { get; private set; }
 
     void Awake () {
         anim = this.GetComponent<Animator>();
@@ -37,15 +38,10 @@ public class Player : MonoBehaviour {
         inTransition = false;
         facingRight = true;
         InRotation = false;
+        GravityZoneOff();
     }
 
 	void FixedUpdate () {
-
-        if (!inTransition)
-        {
-            //ForwardCheck();
-        }
-        //faceDirectionCheck();
     }
 
     public void RespawnAt(Transform spawnPoint)
@@ -102,11 +98,10 @@ public class Player : MonoBehaviour {
 
     //updates sprite to correct orientation
     //might have to update constant force while suction cups are on
-    public void gravitySpriteUpdate(OrientationListener.Orientation orientation, float timer)
+    public void updatePlayerOrientation(OrientationListener.Orientation orientation, float timer)
     {
-        //Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(0, 90, 0)), 10 * Time.deltaTime);
-        //Quaternion playerRotation = transform.localRotation;
-        //playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
+        if (gravityZone == true)
+            return;
         if (suctionStatus == false || this.GetComponent<GroundCheck>().InAir == true)
         {
             switch (orientation)
@@ -260,14 +255,14 @@ public class Player : MonoBehaviour {
     //Listeners for player
     void OnEnable()
     {
-        WorldGravity.GravityChanged += gravitySpriteUpdate;
+        WorldGravity.GravityChanged += updatePlayerOrientation;
         TouchController.OnSwipe += swipeCheck;
         TouchController.ScreenTouched += screenTouched;
     }
 
     void OnDisable()
     {
-        WorldGravity.GravityChanged -= gravitySpriteUpdate;
+        WorldGravity.GravityChanged -= updatePlayerOrientation;
         TouchController.OnSwipe -= swipeCheck;
         TouchController.ScreenTouched -= screenTouched;
     }
@@ -306,6 +301,16 @@ public class Player : MonoBehaviour {
     {
         suctionStatus = false;
         //gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
+    }
+
+    public void GravityZoneOn()
+    {
+        gravityZone = true;
+    }
+
+    public void GravityZoneOff()
+    {
+        gravityZone = false;
     }
 
     public bool IsSuctioned()

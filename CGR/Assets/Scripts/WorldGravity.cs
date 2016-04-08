@@ -4,8 +4,9 @@ using System.Collections;
 public class WorldGravity : MonoBehaviour {
     public float GRAVITYVALUE = 25f ;
     public float GRAVITYCOOLDOWN = 5f;
-    public Vector2 gVector;
+    public Vector2 gVector = Vector2.down;
     public OrientationListener.Orientation CurrentGravityDirection { get; private set; }
+    public static WorldGravity Instance;
 
     private bool gravityOnCooldown, gShiftDisabled;
     private float elapsedTime;
@@ -14,17 +15,24 @@ public class WorldGravity : MonoBehaviour {
     public delegate void GravityEvent(OrientationListener.Orientation orientation, float timer);
     public static event GravityEvent GravityChanged;
 
-    void triggerGravityChange(OrientationListener.Orientation orientation, float timer)
+    void Awake()
     {
-        if (GravityChanged != null)
-            GravityChanged(orientation, timer);
+        if (Instance == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
     }
 
     // Use this for initialization
     void Start () {
         initialize();
     }
-	
+
 	// FixedUpdate is called once per synchronized frame
 	void FixedUpdate () {
         elapsedTime += Time.deltaTime;
@@ -57,6 +65,12 @@ public class WorldGravity : MonoBehaviour {
         }
         
         return true;
+    }
+
+    void triggerGravityChange(OrientationListener.Orientation orientation, float timer)
+    {
+        if (GravityChanged != null)
+            GravityChanged(orientation, timer);
     }
 
     public void updateGravity()

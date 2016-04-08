@@ -36,13 +36,13 @@ public class PlayerJump : MonoBehaviour {
         _jumpRequest = false;
     }
 
-    void jumpCheck(TouchController.SwipeDirection direction)
-    {
-        if (direction == TouchController.SwipeDirection.UP && !GetComponent<GroundCheck>().InAir)
-        {
-            _jumpRequest = !GetComponent<GroundCheck>().InAir;
-        }
-    }
+    //void jumpCheck(TouchController.SwipeDirection direction)
+    //{
+    //    if (direction == TouchController.SwipeDirection.UP && !GetComponent<GroundCheck>().InAir)
+    //    {
+    //        _jumpRequest = !GetComponent<GroundCheck>().InAir;
+    //    }
+    //}
 
     void jumpCheck()
     {
@@ -61,6 +61,6 @@ public class PlayerJump : MonoBehaviour {
     void OnDisable()
     {
         //TouchController.OnSwipe -= jumpCheck;
-        TouchController.OnTap += jumpCheck;
+        TouchController.OnTap -= jumpCheck;
     }
 }
