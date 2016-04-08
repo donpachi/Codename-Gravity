@@ -35,10 +35,10 @@ public class Walk : MonoBehaviour {
         switch (_touchLocation)
         {
             case TouchController.TouchLocation.LEFT:
-                rBody.AddForce(OrientationListener.instanceOf.getWorldLeftVector() * force, ForceMode2D.Impulse);
+                rBody.AddForce(transform.right * -force, ForceMode2D.Impulse);
                 break;
             case TouchController.TouchLocation.RIGHT:
-                rBody.AddForce(OrientationListener.instanceOf.getWorldRightVector() * force, ForceMode2D.Impulse);
+                rBody.AddForce(transform.right * force, ForceMode2D.Impulse);
                 break;
             case TouchController.TouchLocation.NONE:
                 break;
