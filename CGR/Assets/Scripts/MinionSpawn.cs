@@ -17,8 +17,8 @@ public class MinionSpawn : MonoBehaviour
     {
         if (_bonusMinion == 0 && LevelManager.Instance.GetMinionCount() > 0)
             anim.SetBool("Stocked", false);
-        //else
-        //    anim.Set
+        else
+            anim.SetBool("Stocked", true);
     }
 
     void OnTriggerEnter2D(Collider2D collider)

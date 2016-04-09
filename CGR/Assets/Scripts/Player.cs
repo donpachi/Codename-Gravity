@@ -206,7 +206,6 @@ public class Player : MonoBehaviour {
         {
             if (inMinionArea == true && LevelManager.Instance.GetMinionCount() != 0 && !isMinion)
             {
-                isMinion = true;
                 switchControlToMinion();
             }
         }
@@ -226,6 +225,7 @@ public class Player : MonoBehaviour {
         GetComponent<Rigidbody2D>().isKinematic = true;
         GetComponent<Animator>().SetBool("Moving", false);
         controllingMinion.GetComponent<Animator>().SetBool("SwitchingToMinion", true);
+        isMinion = true;
     }
 
     public void switchControlToPlayer()
