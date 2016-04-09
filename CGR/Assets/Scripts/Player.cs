@@ -100,7 +100,7 @@ public class Player : MonoBehaviour {
     //might have to update constant force while suction cups are on
     public void updatePlayerOrientation(OrientationListener.Orientation orientation, float timer)
     {
-        if (gravityZone == true)
+        if (gravityZone == true || isMinion == true)
             return;
         if (suctionStatus == false || this.GetComponent<GroundCheck>().InAir == true)
         {
@@ -193,16 +193,8 @@ public class Player : MonoBehaviour {
         }
         else if (isMinion == true)
         {
-            GameObject potato = GameObject.Find("Player");
-            potato.GetComponent<Player>().enabled = true;
-            //GameObject.Find("Main Camera").GetComponent<FollowPlayer>().player = potato;
-            Camera.current.gameObject.GetComponent<FollowPlayer>().setFollowObject(potato);
-            potato.GetComponent<Walk>().enabled = true;
-            foreach (GameObject minionSpawner in GameObject.FindGameObjectsWithTag("MinionSpawner"))
-            {
-                if (GameObject.FindGameObjectsWithTag("Minion").Length == 1)
-                    minionSpawner.GetComponent<MinionSpawn>().minionsSpawned--;
-            }
+            GetComponent<Player>().enabled = true;
+
             switchControlToPlayer();
             LevelManager.Instance.RemoveMinion(gameObject);
             Destroy(gameObject);
@@ -214,7 +206,6 @@ public class Player : MonoBehaviour {
         {
             if (inMinionArea == true && LevelManager.Instance.GetMinionCount() != 0 && !isMinion)
             {
-                isMinion = true;
                 switchControlToMinion();
             }
         }
@@ -234,10 +225,12 @@ public class Player : MonoBehaviour {
         GetComponent<Rigidbody2D>().isKinematic = true;
         GetComponent<Animator>().SetBool("Moving", false);
         controllingMinion.GetComponent<Animator>().SetBool("SwitchingToMinion", true);
+        isMinion = true;
     }
 
     public void switchControlToPlayer()
     {
+        Camera.current.gameObject.GetComponent<FollowPlayer>().setFollowObject(gameObject);
         GetComponent<Rigidbody2D>().isKinematic = false;
         GetComponent<Rigidbody2D>().gravityScale = 1.0f;
         GetComponent<Walk>().enabled = true;
