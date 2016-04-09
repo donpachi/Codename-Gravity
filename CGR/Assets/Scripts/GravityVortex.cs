@@ -14,12 +14,12 @@ public class GravityVortex : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		float distance = Vector2.Distance (player.GetComponent<Transform>().position, this.GetComponent<Transform> ().position);
 
 		if (distance < VORTEXDISTANCE && !player.GetComponent<Player>().IsInTransition()) {
 			Vector2 direction = (this.GetComponent<Transform>().position - player.GetComponent<Transform> ().position).normalized;
-			player.GetComponent<Rigidbody2D>().AddForce(direction * VORTEXFORCE);
+			player.GetComponent<Rigidbody2D>().AddForce(direction * VORTEXFORCE * (distance / VORTEXDISTANCE));
 		}
 	}
 
