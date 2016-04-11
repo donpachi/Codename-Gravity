@@ -29,14 +29,14 @@ public class GravityVortex : MonoBehaviour {
     void OnTriggerStay2D(Collider2D collision)
     {
         GameObject obj = collision.gameObject;
-        if(obj.GetComponent<Player>() != null)
+        if(obj.GetComponent<Rigidbody2D>() != null)
         {
+            if (obj.GetComponent<Player>() != null && obj.GetComponent<Player>().IsInTransition())
+                return;
+
             float distance = Vector2.Distance(obj.GetComponent<Transform>().position, this.GetComponent<Transform>().position);
-            if (!obj.GetComponent<Player>().IsInTransition())
-            {
-                Vector2 direction = (this.GetComponent<Transform>().position - obj.GetComponent<Transform>().position).normalized;
-                obj.GetComponent<Rigidbody2D>().AddForce(direction * currentForce * ((VORTEXDISTANCE - distance) / VORTEXDISTANCE));
-            }
+            Vector2 direction = (this.GetComponent<Transform>().position - obj.GetComponent<Transform>().position).normalized;
+            obj.GetComponent<Rigidbody2D>().AddForce(direction * currentForce * ((VORTEXDISTANCE - distance) / VORTEXDISTANCE));
         }
     }
 
