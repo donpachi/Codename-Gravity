@@ -173,7 +173,7 @@ public class Player : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D colliderEvent)
     {
-        if (colliderEvent.gameObject.tag == "Hazard")
+        if (colliderEvent.gameObject.tag == "Boundary")
         {
             TriggerDeath();
         }
