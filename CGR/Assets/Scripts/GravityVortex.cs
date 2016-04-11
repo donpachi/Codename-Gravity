@@ -23,6 +23,11 @@ public class GravityVortex : MonoBehaviour {
 		}
 	}
 
+    void OnTriggerStay2D(Collider2D collision)
+    {
+
+    }
+
     public void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(this.transform.position, VORTEXDISTANCE);
