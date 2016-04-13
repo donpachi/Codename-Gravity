@@ -50,7 +50,7 @@ public class Laser : MonoBehaviour {
     IEnumerator FireLaser()
     {
         line.enabled = true;
-        while (Fire)
+        while (Fire && On)
         {
             Ray2D ray = new Ray2D(transform.position, transform.right);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, Length);

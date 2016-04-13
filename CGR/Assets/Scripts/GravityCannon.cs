@@ -96,7 +96,7 @@ public class GravityCannon : MonoBehaviour {
         playerBody.AddForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
         playerBody.angularDrag = 0;
         playerBody.drag = 0;
-            
+        enterAble = false;
         anim.SetBool("activated", false);
 	}
 

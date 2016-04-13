@@ -9,7 +9,7 @@ public class RailBoxControl : MonoBehaviour {
     //defined in unity
     public float THRUST;
     public float MAXSPEED;
-    public bool PlayerControlled;
+    bool PlayerControlled;
 
     Rigidbody2D objectRb;
     private Animator anim;
@@ -18,7 +18,7 @@ public class RailBoxControl : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        objectRb = gameObject.GetComponentInParent<Rigidbody2D>();
+        objectRb = gameObject.GetComponent<Rigidbody2D>();
         anim = gameObject.GetComponent<Animator>();
         player = GameObject.Find("Player");
         mainCamera = GameObject.Find("Main Camera");
@@ -43,11 +43,14 @@ public class RailBoxControl : MonoBehaviour {
         {
             case TouchController.TouchLocation.LEFT:
                 objectRb.AddForce(OrientationListener.instanceOf.getWorldLeftVector() * THRUST, ForceMode2D.Impulse);
+                anim.SetInteger("Moving", 1);
                 break;
             case TouchController.TouchLocation.RIGHT:
                 objectRb.AddForce(OrientationListener.instanceOf.getWorldRightVector() * THRUST, ForceMode2D.Impulse);
+                anim.SetInteger("Moving", 2);
                 break;
             case TouchController.TouchLocation.NONE:
+                anim.SetInteger("Moving", 0);
                 break;
         }
     }
@@ -66,8 +69,8 @@ public class RailBoxControl : MonoBehaviour {
     {
         if (anim.GetBool("BoxActive") == true && colliderEvent.gameObject.name == "Player")
         {
-            anim.SetBool("HasEntered", true);
             colliderEvent.gameObject.SetActive(false);
+            PlayerControlled = true;
             mainCamera.GetComponent<FollowPlayer>().setFollowObject(gameObject);
         }
     }
@@ -77,6 +80,11 @@ public class RailBoxControl : MonoBehaviour {
         PlayerControlled = true;
     }
 
+    void controlReleased(TouchInstanceData data)
+    {
+        anim.SetInteger("Moving", 0);
+    }
+
     void deactivateControl()
     {
         player.SetActive(true);
@@ -84,6 +92,7 @@ public class RailBoxControl : MonoBehaviour {
         player.GetComponent<Player>().updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0.0f);
         player.GetComponent<Rigidbody2D>().AddForce(OrientationListener.instanceOf.getRelativeUpVector() * 200);
         mainCamera.GetComponent<FollowPlayer>().setFollowObject(player);
+        anim.SetBool("HasExited", false);
     }
 
     //Event handling
@@ -91,7 +100,7 @@ public class RailBoxControl : MonoBehaviour {
     {
         if (PlayerControlled && direction == TouchController.SwipeDirection.UP)
         {
-            anim.SetBool("HasEntered", false);
+            anim.SetBool("HasExited", true);
             PlayerControlled = false;
         }
     }
@@ -101,11 +110,13 @@ public class RailBoxControl : MonoBehaviour {
     {
         TouchController.OnSwipe += swipeCheck;
         TouchController.ScreenTouched += applyMoveForce;
+        TouchController.ScreenReleased += controlReleased;
     }
     void OnDisable()
     {
         TouchController.OnSwipe -= swipeCheck;
         TouchController.ScreenTouched -= applyMoveForce;
+        TouchController.ScreenReleased += controlReleased;
     }
 
 }
