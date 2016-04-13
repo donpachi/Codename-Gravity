@@ -5,66 +5,67 @@ using System;
 public class PressurePlate : MonoBehaviour
 {
 
-    public bool canBeUntriggered = false;
-    public float releaseDelay = 0;
-    float timer = 0;
-    bool TimerCountingDown = false;
+    public bool CanBeUntriggered = false;
+    public float ReleaseDelay = 0;
     public Animator anim;
     public GameObject[] list;
+
+    float timer = 0;
+    bool timerCountingDown = false;
+    bool pressing = false;
 
     // Use this for initialization
     void Start()
     {
         anim = gameObject.GetComponent<Animator>();
-        timer = releaseDelay;
+        timer = ReleaseDelay;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (TimerCountingDown == true)
+        if (timerCountingDown == true)
             timer -= Time.deltaTime;
-        if (canBeUntriggered == true)
+        if (CanBeUntriggered == true && !pressing)
             checkIfRelease();
     }
 
     void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().isFollowing == false))
-            anim.SetInteger("State", 1);
+            anim.SetBool("Pressed", true);
+        pressing = true;
     }
 
     void OnTriggerExit2D(Collider2D collider)
     {
         if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().isFollowing == false))
         {
-            if (canBeUntriggered == true)
-                TimerCountingDown = true;
+            if (CanBeUntriggered == true)
+                timerCountingDown = true;
         }
+        pressing = false;
     }
 
     void checkIfRelease()
     {
         if (timer <= 0)
-            anim.SetInteger("State", 2);
+            anim.SetBool("Pressed", false);
     }
 
     void broadcastDepress()
     {
-        TimerCountingDown = false;
-        timer = releaseDelay;
+        timerCountingDown = false;
+        timer = ReleaseDelay;
         foreach (GameObject item in list)
             item.SendMessage("plateDepressed");
-        anim.SetInteger("State", 0);
     }
 
     void broadcastRelease()
     {       
-        TimerCountingDown = false;
-        timer = releaseDelay;
+        timerCountingDown = false;
         foreach (GameObject item in list)
-            item.SendMessage("plateReleased");        
-        anim.SetInteger("State", 0);
+            item.SendMessage("plateReleased");
     }
 
 }
