@@ -18,7 +18,7 @@ public class RailBoxControl : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        objectRb = gameObject.GetComponentInParent<Rigidbody2D>();
+        objectRb = gameObject.GetComponent<Rigidbody2D>();
         anim = gameObject.GetComponent<Animator>();
         player = GameObject.Find("Player");
         mainCamera = GameObject.Find("Main Camera");
@@ -80,7 +80,7 @@ public class RailBoxControl : MonoBehaviour {
     void deactivateControl()
     {
         player.SetActive(true);
-        player.transform.position = transform.position + (Vector3)OrientationListener.instanceOf.getRelativeUpVector();
+        player.transform.position = transform.position + transform.up;
         player.GetComponent<Player>().updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0.0f);
         player.GetComponent<Rigidbody2D>().AddForce(OrientationListener.instanceOf.getRelativeUpVector() * 200);
         mainCamera.GetComponent<FollowPlayer>().setFollowObject(player);

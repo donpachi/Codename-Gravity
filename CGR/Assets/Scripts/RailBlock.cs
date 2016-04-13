@@ -12,7 +12,6 @@ public class RailBlock : MonoBehaviour {
     public bool GravityZone { get; private set; }
 
     private SliderJoint2D joint;
-    private Animator childAnim;
     private Animator anim;
 
 	// Find 2 Nodes to start from, mby define in unity
@@ -26,13 +25,7 @@ public class RailBlock : MonoBehaviour {
         transform.position = Origin.transform.position;
         setJointParam();
         anim = gameObject.GetComponent<Animator>();
-        if(anim != null)
-        {
-            childAnim = gameObject.GetComponentsInChildren<Animator>()[1];
-            childAnim.SetBool("BoxActive", isActive);
-        }
-        else
-            Debug.LogError("Rail Block does not have a proper animator", gameObject);
+        anim.SetBool("BoxActive", isActive);
     }
 	
 	// Update is called once per frame
@@ -99,7 +92,7 @@ public class RailBlock : MonoBehaviour {
     void plateDepressed()
     {
         isActive = !isActive;
-        childAnim.SetBool("BoxActive", isActive);
+        anim.SetBool("BoxActive", isActive);
     }
 
     void plateReleased()
