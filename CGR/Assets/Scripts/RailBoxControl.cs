@@ -9,7 +9,7 @@ public class RailBoxControl : MonoBehaviour {
     //defined in unity
     public float THRUST;
     public float MAXSPEED;
-    public bool PlayerControlled;
+    bool PlayerControlled;
 
     Rigidbody2D objectRb;
     private Animator anim;
@@ -43,11 +43,14 @@ public class RailBoxControl : MonoBehaviour {
         {
             case TouchController.TouchLocation.LEFT:
                 objectRb.AddForce(OrientationListener.instanceOf.getWorldLeftVector() * THRUST, ForceMode2D.Impulse);
+                anim.SetInteger("Moving", 1);
                 break;
             case TouchController.TouchLocation.RIGHT:
                 objectRb.AddForce(OrientationListener.instanceOf.getWorldRightVector() * THRUST, ForceMode2D.Impulse);
+                anim.SetInteger("Moving", 2);
                 break;
             case TouchController.TouchLocation.NONE:
+                anim.SetInteger("Moving", 0);
                 break;
         }
     }
@@ -77,6 +80,11 @@ public class RailBoxControl : MonoBehaviour {
         PlayerControlled = true;
     }
 
+    void controlReleased(TouchInstanceData data)
+    {
+        anim.SetInteger("Moving", 0);
+    }
+
     void deactivateControl()
     {
         player.SetActive(true);
@@ -102,11 +110,13 @@ public class RailBoxControl : MonoBehaviour {
     {
         TouchController.OnSwipe += swipeCheck;
         TouchController.ScreenTouched += applyMoveForce;
+        TouchController.ScreenReleased += controlReleased;
     }
     void OnDisable()
     {
         TouchController.OnSwipe -= swipeCheck;
         TouchController.ScreenTouched -= applyMoveForce;
+        TouchController.ScreenReleased += controlReleased;
     }
 
 }
