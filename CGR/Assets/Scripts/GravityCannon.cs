@@ -44,7 +44,7 @@ public class GravityCannon : MonoBehaviour {
             playerBody.Sleep();
             playerBody.GetComponent<Collider2D>().enabled = false;
             playerBody.GetComponent<Transform>().position = launchPosition.position;
-            player.GetComponent<Player>().ToggleRender();
+            player.SetActive(false);
 
             anim.SetBool("activated", true);
         }
@@ -88,7 +88,7 @@ public class GravityCannon : MonoBehaviour {
 
 	public void FirePlayer() {
         Vector2 direction;
-        player.GetComponent<Player>().ToggleRender();
+        player.SetActive(true);
         playerBody.GetComponent<Transform>().position = cannonTip.position;
         playerBody.GetComponent<Collider2D>().enabled = true;
         player.GetComponent<Player>().LaunchStatusOn();
