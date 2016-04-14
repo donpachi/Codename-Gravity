@@ -44,6 +44,9 @@ public class TouchController : MonoBehaviour {
     public delegate void TouchEvent(TouchInstanceData data);
     public static event TouchEvent ScreenTouched;
 
+    public delegate void ReleaseEvent(TouchInstanceData data);
+    public static event ReleaseEvent ScreenReleased;
+
     void triggerSwipe(SwipeDirection direction)
     {
         if (OnSwipe != null)
@@ -60,6 +63,12 @@ public class TouchController : MonoBehaviour {
     {
         if (ScreenTouched != null)
             ScreenTouched(data);
+    }
+
+    void screenReleased(TouchInstanceData data)
+    {
+        if (ScreenReleased != null)
+            ScreenReleased(data);
     }
 
 	void Awake () {
@@ -132,6 +141,7 @@ public class TouchController : MonoBehaviour {
                 {
                     screenTapped();             //fire event for a screen tap given the touch has been short enough
                 }
+                screenReleased(touchDataDictionary[touch.fingerId]);
                 touchDataDictionary.Remove(touch.fingerId);
                 break;
             case TouchPhase.Canceled:
@@ -139,6 +149,7 @@ public class TouchController : MonoBehaviour {
                 {
                     screenTapped();
                 }
+                screenReleased(touchDataDictionary[touch.fingerId]);
                 touchDataDictionary.Remove(touch.fingerId);
                 break;
         }
