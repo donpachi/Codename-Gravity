@@ -7,6 +7,7 @@ public class PlayerJump : MonoBehaviour {
     private Rigidbody2D playerBody;
     private bool _jumpRequest;
     private bool _jumping;
+    private GroundCheck gCheck;
 
     public float jumpForce = 10;
 
@@ -16,6 +17,7 @@ public class PlayerJump : MonoBehaviour {
 	void Start () {
         playerBody = GetComponent<Rigidbody2D>();
         anim = gameObject.GetComponent<Animator>();
+        gCheck = GetComponent<GroundCheck>();
 	}
 	
 	// Update is called once per frame
@@ -26,41 +28,33 @@ public class PlayerJump : MonoBehaviour {
             anim.SetBool("Jumping", true);
             playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
             _jumping = true;
+            _jumpRequest = false;
         }
+        else if (_jumping && !gCheck.InAir)
+            JumpFinished();
     }
 
     public void JumpFinished()
     {
         _jumping = false;
         anim.SetBool("Jumping", false);
-        _jumpRequest = false;
     }
-
-    //void jumpCheck(TouchController.SwipeDirection direction)
-    //{
-    //    if (direction == TouchController.SwipeDirection.UP && !GetComponent<GroundCheck>().InAir)
-    //    {
-    //        _jumpRequest = !GetComponent<GroundCheck>().InAir;
-    //    }
-    //}
 
     void jumpCheck()
     {
-        if (!GetComponent<GroundCheck>().InAir)
+        if (!gCheck.InAir)
         {
-            _jumpRequest = !GetComponent<GroundCheck>().InAir;
+            _jumpRequest = true;
         }
     }
 
     //Event handling for swipe events
     void OnEnable()
     {
-        //TouchController.OnSwipe += jumpCheck;
         TouchController.OnTap += jumpCheck;
     }
     void OnDisable()
     {
-        //TouchController.OnSwipe -= jumpCheck;
         TouchController.OnTap -= jumpCheck;
     }
 }

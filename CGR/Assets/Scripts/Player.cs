@@ -16,6 +16,7 @@ public class Player : MonoBehaviour {
     private bool inTransition;
     private bool launched;
     private Animator anim;
+    private GroundCheck gCheck;
     
     public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour {
         anim = this.GetComponent<Animator>();
         playerRigidBody = GetComponent<Rigidbody2D>();
         wallMask = 1 << LayerMask.NameToLayer("Walls");
+        gCheck = GetComponent<GroundCheck>();
         inMinionArea = false;
         suctionStatus = false;
         inTransition = false;
@@ -102,7 +104,7 @@ public class Player : MonoBehaviour {
     {
         if (gravityZone == true || isMinion == true)
             return;
-        if (suctionStatus == false || this.GetComponent<GroundCheck>().InAir == true)
+        if (suctionStatus == false || gCheck.InAir == true)
         {
             switch (orientation)
             {
@@ -209,12 +211,9 @@ public class Player : MonoBehaviour {
                 switchControlToMinion();
             }
         }
-        else if(direction == TouchController.SwipeDirection.DOWN && !isMinion)
+        else if(direction == TouchController.SwipeDirection.DOWN && !isMinion && !gCheck.InAir)
         {
-            if (!GetComponent<GroundCheck>().InAir)
-            {
-                LevelManager.Instance.NewCheckpointRequest(gameObject);
-            }
+            LevelManager.Instance.NewCheckpointRequest(gameObject);
         }
     }
 
