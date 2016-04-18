@@ -8,7 +8,7 @@ public class Portal : MonoBehaviour {
     public float transitionSpeed;
 
     private List<Node> bodies;
-    private Queue<Rigidbody2D> waitForLeave;
+    private Queue<GameObject> waitForLeave;
     private float distanceThreshold;
     private GameObject playerStatus;
     private bool playerComing;
@@ -18,7 +18,7 @@ public class Portal : MonoBehaviour {
         playerStatus = GameObject.Find("Player");
         distanceThreshold = 0.1f;
         bodies = new List<Node>();
-        waitForLeave = new Queue<Rigidbody2D>();
+        waitForLeave = new Queue<GameObject>();
 	}
 	
 	// Update is called once per frame
@@ -27,15 +27,16 @@ public class Portal : MonoBehaviour {
         {
             for (int i = 0; i < bodies.Count; i++)
             {
-                bodies[i].body.transform.position = new Vector3(Mathf.Lerp(bodies[i].body.transform.position.x, this.transform.position.x, transitionSpeed * Time.deltaTime),
-                                Mathf.Lerp(bodies[i].body.transform.position.y, this.transform.position.y, transitionSpeed * Time.deltaTime),
+                Rigidbody2D body = bodies[i].obj.GetComponent<Rigidbody2D>();
+                body.transform.position = new Vector3(Mathf.Lerp(body.transform.position.x, this.transform.position.x, transitionSpeed * Time.deltaTime),
+                                Mathf.Lerp(body.transform.position.y, this.transform.position.y, transitionSpeed * Time.deltaTime),
                                 0f);
 
-                if ((this.transform.position - bodies[i].body.transform.position).magnitude <= distanceThreshold)
+                if ((this.transform.position - body.transform.position).magnitude <= distanceThreshold)
                 {
-                    bodies[i].body.Sleep();
+                    body.Sleep();
                     StartCoroutine(LaunchPlayer(bodies[i], 2f));
-                    waitForLeave.Enqueue(bodies[i].body);
+                    waitForLeave.Enqueue(bodies[i].obj);
                     bodies.RemoveAt(i);
                     i -= 1;
                 }
@@ -47,27 +48,22 @@ public class Portal : MonoBehaviour {
     {
         if (collisionInfo.gameObject.tag != "Water")
         {
-            Rigidbody2D tempBody = collisionInfo.rigidbody;
-            Collider2D[] colliders = tempBody.GetComponents<Collider2D>();
+            GameObject obj = collisionInfo.gameObject;
             bool isPlayer = collisionInfo.gameObject.name.Equals("Player");
 
-            if (waitForLeave.Contains(tempBody))
+            if (waitForLeave.Contains(obj))
                 return ;
 
             if (isPlayer) {
 				playerStatus.GetComponent<Player>().InTransitionStatusOn();
-				playerStatus.GetComponent<Player>().ToggleRender();
+                playerStatus.GetComponent<GroundCheck>().enabled = false;
 				playerStatus.GetComponent<Walk>().enabled = false;
 				playerStatus.GetComponent<SuctionWalk>().enabled = false;
             }
-            else tempBody.GetComponent<Renderer>().enabled = false;
-            tempBody.gravityScale = 0;
-            tempBody.Sleep();
 
-            for (int i = 0; i < colliders.Length; i++)
-                colliders[i].enabled = false;
+            collisionInfo.gameObject.SetActive(false);
 
-            linkedPortal.GetComponent<Portal>().SendObject(tempBody, collisionInfo.relativeVelocity, this.transform.rotation.eulerAngles.z, isPlayer);
+            linkedPortal.GetComponent<Portal>().SendObject(obj, collisionInfo.relativeVelocity, this.transform.rotation.eulerAngles.z, isPlayer);
         }
     }
 
@@ -77,53 +73,50 @@ public class Portal : MonoBehaviour {
             waitForLeave.Dequeue();
     }
 
-    public void SendObject(Rigidbody2D body, Vector2 velocity, float angle, bool isPlayer)
+    public void SendObject(GameObject obj, Vector2 velocity, float angle, bool isPlayer)
     {
-        bodies.Add(new Node(body, velocity, angle, isPlayer));
+        bodies.Add(new Node(obj, velocity, angle, isPlayer));
     }
 
     IEnumerator LaunchPlayer(Node entity, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
 
-        Collider2D[] colliders = entity.body.GetComponents<Collider2D>();
+        Rigidbody2D body = entity.obj.GetComponent<Rigidbody2D>();
+        entity.obj.SetActive(true);
+
         float launchAngle = this.transform.rotation.eulerAngles.z - entity.angle;
-        entity.body.transform.position = new Vector3(entity.body.transform.position.x,
-                                           entity.body.transform.position.y,
+        body.transform.position = new Vector3(body.transform.position.x,
+                                           body.transform.position.y,
                                            -2f);
 		
         entity.velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * entity.velocity;
-        entity.body.velocity = entity.velocity;
+        body.velocity = entity.velocity;
 
         if (!playerStatus.GetComponent<Player>().IsLaunched())
-		    entity.body.gravityScale = 1.0f;
-
-        for (int i = 0; i < colliders.Length; i++)
-            colliders[i].enabled = true;
+		    body.gravityScale = 1.0f;
 
 		if (entity.isPlayer) {
-			playerStatus.GetComponent<Player>().ToggleRender();
-			playerStatus.GetComponent<Player>().InTransitionStatusEnd(); 
+			playerStatus.GetComponent<Player>().InTransitionStatusEnd();
+            playerStatus.GetComponent<GroundCheck>().enabled = true;
 
-			if (playerStatus.GetComponent<Player>().IsSuctioned())
+            if (playerStatus.GetComponent<Player>().IsSuctioned())
 				playerStatus.GetComponent<SuctionWalk>().enabled = true;
 			else
 				playerStatus.GetComponent<Walk>().enabled = true;
 		}
-
-        else entity.body.GetComponent<Renderer>().enabled = true;
     }
 }
 
 class Node
 {
-    public Rigidbody2D body;
+    public GameObject obj;
     public Vector2 velocity;
     public float angle;
 	public bool isPlayer;
 
-    public Node(Rigidbody2D rb, Vector2 v, float a, bool p) {
-        body = rb;
+    public Node(GameObject go, Vector2 v, float a, bool p) {
+        obj = go;
         velocity = v;
         angle = a;
 		isPlayer = p;
