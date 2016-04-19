@@ -44,8 +44,11 @@ public class MinionArea : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D collider)
     {
-        anim.SetBool("inArea", false);
         if (collider.name == "Player")
+        {
             collider.gameObject.GetComponent<Player>().inMinionArea = false;
+            anim.SetBool("inArea", false);
+        }
+
     }
 }

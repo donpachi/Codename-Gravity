@@ -81,7 +81,7 @@ public class GravityArea : MonoBehaviour {
                 obj.GetComponentInChildren<Animator>().SetInteger("Orientation", (int)areaDirection);
                 obj.GetComponent<RailBlock>().GravityZoneOn();
             }
-            else if (obj.GetComponent<Minion>() != null && !obj.GetComponent<Minion>().isFollowing)
+            else if (obj.GetComponent<Minion>() != null && !obj.GetComponent<Minion>().IsFollowing)
             {
                 obj.GetComponent<Animator>().SetInteger("Orientation", (int)areaDirection);
                 obj.GetComponent<Minion>().GravityZoneOn();
@@ -115,7 +115,7 @@ public class GravityArea : MonoBehaviour {
                     obj.GetComponentInChildren<Animator>().SetInteger("Orientation", (int)WorldGravity.Instance.CurrentGravityDirection);
                     obj.GetComponent<RailBlock>().GravityZoneOff();
                 }
-                else if (obj.GetComponent<Minion>() != null && !obj.GetComponent<Minion>().isFollowing)
+                else if (obj.GetComponent<Minion>() != null && !obj.GetComponent<Minion>().IsFollowing)
                 {
                     obj.GetComponent<Animator>().SetInteger("Orientation", (int)WorldGravity.Instance.CurrentGravityDirection);
                     obj.GetComponent<Minion>().GravityZoneOff();
@@ -142,7 +142,7 @@ public class GravityArea : MonoBehaviour {
                     obj.GetComponentInChildren<Animator>().SetInteger("Orientation", (int)areaDirection);
                     obj.GetComponent<RailBlock>().GravityZoneOn();
                 }
-                else if (obj.GetComponent<Minion>() != null && !obj.GetComponent<Minion>().isFollowing)
+                else if (obj.GetComponent<Minion>() != null && !obj.GetComponent<Minion>().IsFollowing)
                 {
                     obj.GetComponent<Animator>().SetInteger("Orientation", (int)areaDirection);
                     obj.GetComponent<Minion>().GravityZoneOn();
@@ -175,7 +175,7 @@ public class GravityArea : MonoBehaviour {
                 obj.GetComponentInChildren<Animator>().SetInteger("Orientation", (int)WorldGravity.Instance.CurrentGravityDirection);
                 obj.GetComponent<RailBlock>().GravityZoneOff();
             }
-            else if (obj.GetComponent<Minion>() != null && !obj.GetComponent<Minion>().isFollowing)
+            else if (obj.GetComponent<Minion>() != null && !obj.GetComponent<Minion>().IsFollowing)
             {
                 obj.GetComponent<Animator>().SetInteger("Orientation", (int)WorldGravity.Instance.CurrentGravityDirection);
                 obj.GetComponent<Minion>().GravityZoneOff();
