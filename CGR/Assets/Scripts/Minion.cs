@@ -9,22 +9,23 @@ public class Minion : MonoBehaviour {
     public float MinionFollowSpeed;
     public float DeathSpeed = 10f;
     public bool GravityZone { get; private set; }
+    public Animator anim { get; private set; }
 
     GameObject player;
     List<GameObject> minions = new List<GameObject>();
     GameObject _parent;
-    public bool isFollowing = true;
+    public bool IsFollowing = true;
     float playerPosDiff;
     Vector2 prevPlayerLocation;
-    private Animator anim;
     private FollowPlayer _camera;
     private bool _spirit;
+    private GroundCheck gCheck;
 
     // Use this for initialization
     void Start() {
         anim = gameObject.GetComponent<Animator>();
         player = GameObject.Find("Player");
-        //this.GetComponent<Player>().enabled = false;
+        gCheck = GetComponent<GroundCheck>();
         this.GetComponent<PlayerJump>().enabled = false;
         this.GetComponent<Walk>().enabled = false;
         _camera = FindObjectOfType<FollowPlayer>();
@@ -39,7 +40,7 @@ public class Minion : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate() {
-        if (!isFollowing)
+        if (!IsFollowing)
             return;
 
         RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, -transform.up, 0.5f);
@@ -146,13 +147,19 @@ public class Minion : MonoBehaviour {
 
     void swipeCheck(TouchController.SwipeDirection direction)
     {
-        if(direction == TouchController.SwipeDirection.DOWN && !isFollowing)
+        if(direction == TouchController.SwipeDirection.DOWN && !IsFollowing && !gCheck.InAir)
         {
-            GetComponent<Rigidbody2D>().gravityScale = 0;
+            GetComponent<Rigidbody2D>().isKinematic = true;
             GetComponent<Walk>().enabled = false;
             GetComponent<PlayerJump>().enabled = false;
             LevelManager.Instance.NewCheckpointRequest(gameObject);
         }
+    }
+
+    void setCheckpoint()
+    {
+        LevelManager.Instance.setNewCheckpoint();
+        minionDeath();
     }
 
     public void GainControl()
@@ -161,7 +168,7 @@ public class Minion : MonoBehaviour {
         this.GetComponent<PlayerJump>().enabled = true;
         this.GetComponent<Walk>().enabled = true;
         _camera.setFollowObject(gameObject);
-        isFollowing = false;
+        IsFollowing = false;
         anim.SetBool("SwitchingToMinion", false);
     }
 
@@ -201,7 +208,7 @@ public class Minion : MonoBehaviour {
     //Check for deadly collisions
     void OnCollisionEnter2D(Collision2D collisionEvent)
     {
-        if (!isFollowing)
+        if (!IsFollowing)
         {
             if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > DeathSpeed)
             {

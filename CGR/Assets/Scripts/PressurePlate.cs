@@ -32,14 +32,14 @@ public class PressurePlate : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().isFollowing == false))
+        if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().IsFollowing == false))
             anim.SetBool("Pressed", true);
         pressing = true;
     }
 
     void OnTriggerExit2D(Collider2D collider)
     {
-        if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().isFollowing == false))
+        if (collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().IsFollowing == false))
         {
             if (CanBeUntriggered == true)
                 timerCountingDown = true;

@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance { get; private set; }
-
+    public LayerMask checkpointRayMask;
     public Player Player { get; private set; }
     public FollowPlayer Camera { get; private set; }
     public int InitialMinionCount;
@@ -33,7 +33,6 @@ public class LevelManager : MonoBehaviour
     private Checkpoint _currentCheckpoint;
     private List<GameObject> _minionList;
     private DateTime _started;
-    private int checkpointMinionCount;  //The minion count when the checkpoint happened
 
     public Checkpoint DebugSpawn;
     public int BonusCutoffSeconds;
@@ -172,28 +171,39 @@ public class LevelManager : MonoBehaviour
     {
         if(requestedObj.GetComponent<Minion>() != null)
         {
-            setNewCheckpoint(requestedObj);
-            requestedObj.GetComponent<Animator>().SetBool("Spirit", true);
+            requestedObj.GetComponent<Animator>().SetBool("Checkpoint", true);
         }
         else if(requestedObj.GetComponent<Player>() != null && _minionList.Count != 0)
         {
-            setNewCheckpoint(_minionList[_minionList.Count - 1]);
-            _minionList[_minionList.Count - 1].GetComponent<Animator>().SetBool("Spirit", true);
+            _minionList[_minionList.Count - 1].GetComponent<Animator>().SetBool("Checkpoint", true);
             RemoveMinion(_minionList[_minionList.Count - 1]);
         }
-        checkpointMinionCount = _minionList.Count;
     }
 
-    private void setNewCheckpoint(GameObject indicator)
+    /// <summary>
+    /// Sets the new checkpoint location, triggers the animation for the checkpoint too
+    /// </summary>
+    public void setNewCheckpoint()
     {
         if (_currentCheckpoint == null)
         {
             GameObject checkpoint = (GameObject)Instantiate(Resources.Load("Prefabs/Checkpoint"));
             _currentCheckpoint = checkpoint.GetComponent<Checkpoint>();
         }
-        _currentCheckpoint.AssignObjectToCheckpoint(indicator);
-        _currentCheckpoint.transform.position = Player.transform.position;
-        indicator.GetComponent<Minion>().SetParent(_currentCheckpoint.gameObject);
-        indicator.GetComponent<Minion>().isFollowing = false;
+        else
+            _currentCheckpoint.anim.SetTrigger("Spawn");
+
+        RaycastHit2D groundCheckRay = Physics2D.Raycast(Player.transform.position, Player.transform.up * -1, 1, checkpointRayMask);
+        if (!groundCheckRay)
+        {
+            Debug.LogError("Checkpoint not made near ground");
+            _currentCheckpoint.transform.position = Player.transform.position;
+        }
+        else
+        {
+            Debug.Log(groundCheckRay.collider.name);
+            _currentCheckpoint.transform.position = groundCheckRay.point;
+        }
+        _currentCheckpoint.transform.rotation = Player.transform.rotation;
     }
 }

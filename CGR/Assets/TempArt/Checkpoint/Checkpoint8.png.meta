@@ -1,4 +1,8 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
+guid: c74cd107b7a532140b3f99fd833cdec4
+timeCreated: 1460592869
+=======
 <<<<<<< .merge_file_a04500
 guid: 7ec00e746e5586c43893382dc9b94a5b
 timeCreated: 1460591368
@@ -6,6 +10,7 @@ timeCreated: 1460591368
 guid: c2385d6b728a29144a3d40c63bc0aeb9
 timeCreated: 1460769523
 >>>>>>> .merge_file_a06168
+>>>>>>> 6a9eba9d24cb4f24254059328a5c9c371c50369a
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
