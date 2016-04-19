@@ -63,7 +63,7 @@ public class Laser : MonoBehaviour {
                 if (hit.rigidbody)
                 {
                     if (hit.collider.gameObject.GetComponent<Player>())
-                        hit.collider.gameObject.GetComponent<Player>().TriggerDeath();
+                        hit.collider.gameObject.GetComponent<Player>().TriggerDeath("Laser");
                 }
             }
             else

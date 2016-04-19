@@ -169,7 +169,11 @@ public class LevelManager : MonoBehaviour
     /// <param name="requestedObj">The object that requested the checkpoint</param>
     public void NewCheckpointRequest(GameObject requestedObj)
     {
-        if(requestedObj.GetComponent<Minion>() != null)
+        RaycastHit2D groundCheckRay = Physics2D.Raycast(Player.transform.position, Player.transform.up * -1, 1, checkpointRayMask);
+        if (!groundCheckRay || groundCheckRay.collider.tag == "Dynamic")
+            return;
+
+        if (requestedObj.GetComponent<Minion>() != null)
         {
             requestedObj.GetComponent<Animator>().SetBool("Checkpoint", true);
         }

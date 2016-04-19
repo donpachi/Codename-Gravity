@@ -6,9 +6,12 @@ public class GravityVortex : MonoBehaviour {
 	//Adjustable constants
 	public float VORTEXDISTANCE;
 	public float VORTEXFORCE;
+    public float PulseInterval;
 
     private float currentForce;
-    private float timer;
+    private float timer;    //for rings
+    private float ringInterval;
+    private int ringCount;
 
 	// Use this for initialization
 	void Start () {
@@ -20,11 +23,26 @@ public class GravityVortex : MonoBehaviour {
             }
         }
         currentForce = VORTEXFORCE;
+        ringInterval = PulseInterval / VORTEXDISTANCE;
+        timer = ringInterval;
 	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
-	}
+
+    void Update()
+    {
+        if (ringCount >= VORTEXDISTANCE)
+            return;
+        if (timer >= ringInterval)
+        {
+            GameObject ring = (GameObject)Instantiate(Resources.Load("Prefabs/Vortex/VortexRing"));
+            ring.transform.position = transform.position;
+            ring.transform.parent = transform;
+            ring.GetComponent<VortexRing>().Setup(VORTEXDISTANCE, PulseInterval);
+            timer = 0;
+            ringCount++;
+        }
+        else
+            timer += Time.deltaTime;
+    }
 
     void OnTriggerStay2D(Collider2D collision)
     {
