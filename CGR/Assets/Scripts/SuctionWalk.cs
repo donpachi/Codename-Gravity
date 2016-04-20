@@ -17,14 +17,9 @@ public class SuctionWalk : MonoBehaviour
     Vector2 rightVector = Vector2.right;
     private GameObject suctionText;
     private float timer;
+    private PinchtoZoom camera;
 
     private LayerMask wallMask;
-
-    private Vector3 zAxis = new Vector3(0, 0, 1);
-    private Vector3 portrait = new Vector3(220, 435, 0);
-    private Vector3 landscapeRight = new Vector3(-220, 435, 0);
-    private Vector3 portraitUpsideDown = new Vector3(-220, -435, 0);
-    private Vector3 landscapeLeft = new Vector3(220, -435, 0);
     private ConstantForce2D _cForce;
 
     // Use this for initialization
@@ -37,6 +32,7 @@ public class SuctionWalk : MonoBehaviour
         suctionText.GetComponent<Text>().enabled = true;
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         _cForce = GetComponent<ConstantForce2D>();
+        camera = Camera.main.GetComponent<PinchtoZoom>();
     }
 
     // Update is called once per frame
@@ -47,9 +43,7 @@ public class SuctionWalk : MonoBehaviour
         else
             atTopSpeed = true;
 
-        if (playerBody.velocity.magnitude > 0)
-            anim.SetBool("Moving", true);
-        else
+        if (playerBody.velocity.magnitude <= 0.1f || TouchController.Instance.GetTouchCount() <= 0)
             anim.SetBool("Moving", false);
 
         if (timer != 0)
@@ -84,7 +78,7 @@ public class SuctionWalk : MonoBehaviour
     {
         TouchController.TouchLocation _touchLocation = data.touchLocation;
 
-        if (!atTopSpeed)
+        if (!atTopSpeed && !camera.Zooming)
         {
             switch (_touchLocation)
             {
@@ -107,6 +101,7 @@ public class SuctionWalk : MonoBehaviour
                 case TouchController.TouchLocation.NONE:
                     break;
             }
+            anim.SetBool("Moving", true);
         }
     }
 

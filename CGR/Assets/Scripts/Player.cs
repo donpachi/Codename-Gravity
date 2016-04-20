@@ -51,6 +51,7 @@ public class Player : MonoBehaviour {
         IsDead = false;
 
         transform.position = spawnPoint.position;
+        anim.SetBool("Dying", false);
     }
 
     public void Kill()
@@ -152,7 +153,7 @@ public class Player : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D collisionEvent) {
         if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.tag == "Boulder")
         {
-            TriggerDeath();
+            TriggerDeath("deadly/hazard collision");
 		}        
 
         else if (launched == true && collisionEvent.gameObject.layer == LayerMask.NameToLayer("Walls"))
@@ -169,7 +170,7 @@ public class Player : MonoBehaviour {
     {
         if (colliderEvent.gameObject.tag == "SpikeTop")
         {
-            TriggerDeath();
+            TriggerDeath("SpikeTop");
         }
     }
 
@@ -177,17 +178,17 @@ public class Player : MonoBehaviour {
     {
         if (colliderEvent.gameObject.tag == "Boundary")
         {
-            TriggerDeath();
+            TriggerDeath("Boundary");
         }
     }
 
-    public void TriggerDeath()
+    public void TriggerDeath(String reason)
 	{
         anim.SetBool("Dying", true);
-        
+        Debug.Log("Player died because of: " + reason);
 	}
 
-    public void killPlayer()
+    void killPlayer()
     {
         if (OnPlayerDeath != null && isMinion == false)
         {
@@ -224,20 +225,35 @@ public class Player : MonoBehaviour {
         GetComponent<Rigidbody2D>().isKinematic = true;
         GetComponent<Animator>().SetBool("Moving", false);
         controllingMinion.GetComponent<Animator>().SetBool("SwitchingToMinion", true);
+        WorldGravity.Instance.enabled = false;
         isMinion = true;
     }
 
     public void switchControlToPlayer()
     {
-        Camera.current.gameObject.GetComponent<FollowPlayer>().setFollowObject(gameObject);
-        GetComponent<Rigidbody2D>().isKinematic = false;
-        GetComponent<Rigidbody2D>().gravityScale = 1.0f;
-        GetComponent<Walk>().enabled = true;
-        isMinion = false;
+        try
+        {
+            Camera.main.gameObject.GetComponent<FollowPlayer>().setFollowObject(gameObject);
+        }
+        catch(NullReferenceException e)
+        {
+            Debug.LogError("Camera Obj: " + Camera.main.gameObject + " FollowP script: " + Camera.main.gameObject.GetComponent<FollowPlayer>() + " Player GameObject: " + gameObject);
+        }
+           
+            GetComponent<Rigidbody2D>().isKinematic = false;
+            GetComponent<Rigidbody2D>().gravityScale = 1.0f;
+            GetComponent<Walk>().enabled = true;
+            WorldGravity.Instance.enabled = true;
+            isMinion = false;
+
+
     }
 
     void screenTouched(TouchInstanceData data)
     {
+        if (isMinion)
+            return;
+
         if (data.touchLocation == TouchController.TouchLocation.RIGHT && !facingRight)
             flipSprite();
         else if (data.touchLocation == TouchController.TouchLocation.LEFT && facingRight)

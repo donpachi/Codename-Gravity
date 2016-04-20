@@ -25,12 +25,12 @@ public class Walk : MonoBehaviour {
         cameraZoom = GameObject.Find("Main Camera").GetComponent<PinchtoZoom>();
         gCheck = GetComponent<GroundCheck>();
     }
-	
-	// Update is called once per frame
-	void FixedUpdate () {
-        if (rBody.velocity.magnitude < minWalkSpeed)
+    
+    void FixedUpdate()
+    {
+        if (Input.touchCount == 0 || rBody.velocity.magnitude < minWalkSpeed)
             anim.SetBool("Moving", false);
-	}
+    }
 
     void applyMoveForce(float force)
     {
@@ -54,7 +54,10 @@ public class Walk : MonoBehaviour {
     void screenTouched(TouchInstanceData data)
     {
         if (TouchController.Instance.GetTouchCount() > 1)
+        {
+            anim.SetBool("Moving", false);
             return;
+        }
 
         _touchLocation = data.touchLocation;
 
