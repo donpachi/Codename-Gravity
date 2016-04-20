@@ -152,7 +152,7 @@ public class Player : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D collisionEvent) {
         if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.tag == "Boulder")
         {
-            TriggerDeath();
+            TriggerDeath("deadly/hazard collision");
 		}        
 
         else if (launched == true && collisionEvent.gameObject.layer == LayerMask.NameToLayer("Walls"))
@@ -169,7 +169,7 @@ public class Player : MonoBehaviour {
     {
         if (colliderEvent.gameObject.tag == "SpikeTop")
         {
-            TriggerDeath();
+            TriggerDeath("SpikeTop");
         }
     }
 
@@ -177,17 +177,17 @@ public class Player : MonoBehaviour {
     {
         if (colliderEvent.gameObject.tag == "Boundary")
         {
-            TriggerDeath();
+            TriggerDeath("Boundary");
         }
     }
 
-    public void TriggerDeath()
+    public void TriggerDeath(String reason)
 	{
         anim.SetBool("Dying", true);
-        
+        Debug.Log("Player died because of: " + reason);
 	}
 
-    public void killPlayer()
+    void killPlayer()
     {
         if (OnPlayerDeath != null && isMinion == false)
         {
