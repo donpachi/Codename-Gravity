@@ -11,7 +11,6 @@ public class VortexRing : MonoBehaviour {
     float scaleValue;
     float currentScale;
     float minScale = 0.2f;
-    float transpInterval = 0.1f;
     float alphaStep;
     float alphaScale;
     SpriteRenderer rend;
@@ -19,7 +18,9 @@ public class VortexRing : MonoBehaviour {
     void Start()
     {
         rend = GetComponent<SpriteRenderer>();
-        alphaStep = 1 / pulseInterval;
+        alphaStep = 0.8f / pulseInterval;
+        transform.localScale = new Vector2(vortexDistance, vortexDistance);
+        rend.color = new Color(1.0f, 1.0f, 1.0f, alphaScale);
     }
 
     // Update is called once per frame

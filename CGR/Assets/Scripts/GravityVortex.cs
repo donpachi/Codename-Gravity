@@ -23,13 +23,13 @@ public class GravityVortex : MonoBehaviour {
             }
         }
         currentForce = VORTEXFORCE;
-        ringInterval = PulseInterval / VORTEXDISTANCE;
+        ringInterval = PulseInterval / 2;
         timer = ringInterval;
 	}
 
     void Update()
     {
-        if (ringCount >= VORTEXDISTANCE)
+        if (ringCount >= PulseInterval / 2)
             return;
         if (timer >= ringInterval)
         {
