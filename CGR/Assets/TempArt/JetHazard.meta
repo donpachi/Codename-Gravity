@@ -1,7 +1,19 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: f2f7a429e4a1c11428bf0b24b64f7a18
 folderAsset: yes
 timeCreated: 1461115607
+=======
+<<<<<<< HEAD:CGR/Assets/TempArt/JetHazard.meta
+guid: db7572e77a1633b408ef7b81cba84421
+folderAsset: yes
+timeCreated: 1461183102
+=======
+guid: 92dde0a90d0c1ab45ba2cfd44debbc66
+folderAsset: yes
+timeCreated: 1461116243
+>>>>>>> 321f631c8ef2c89fa3a0c7f43153c7c1f127acc7:CGR/Assets/TempArt/JetHazard.meta
+>>>>>>> cca91bf1becf502c9bedcc20a9c570dd1f7f085e
 licenseType: Free
 DefaultImporter:
   userData: 

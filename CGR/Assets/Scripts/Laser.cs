@@ -92,4 +92,9 @@ public class Laser : MonoBehaviour {
 
     }
 
+    public void OnDrawGizmos()
+    {
+        Gizmos.DrawRay(this.transform.position, transform.right*Length);
+    }
+
 }
