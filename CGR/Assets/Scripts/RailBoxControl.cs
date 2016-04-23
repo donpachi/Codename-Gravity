@@ -9,24 +9,33 @@ public class RailBoxControl : MonoBehaviour {
     //defined in unity
     public float THRUST;
     public float MAXSPEED;
+    public float playerOffset;
     bool PlayerControlled;
 
     Rigidbody2D objectRb;
     private Animator anim;
-    GameObject player;
+    Player player;
     GameObject mainCamera;
+    int behindPlayer = 0;        //right behind player
+    int frontPlayer = 7;         //right infront of player
+    SortingOrderScript spriteOrder;
 
     // Use this for initialization
     void Start () {
         objectRb = gameObject.GetComponent<Rigidbody2D>();
         anim = gameObject.GetComponent<Animator>();
-        player = GameObject.Find("Player");
+        player = FindObjectOfType<Player>();
         mainCamera = GameObject.Find("Main Camera");
+        spriteOrder = GetComponentInChildren<SortingOrderScript>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (PlayerControlled)
+        {
+            player.transform.position = transform.GetChild(0).position;
+        }
     }
 
     /// <summary>
@@ -69,29 +78,33 @@ public class RailBoxControl : MonoBehaviour {
     {
         if (anim.GetBool("BoxActive") == true && colliderEvent.gameObject.name == "Player")
         {
-            colliderEvent.gameObject.SetActive(false);
-            PlayerControlled = true;
-            mainCamera.GetComponent<FollowPlayer>().setFollowObject(gameObject);
+            activateControl();
+            player.DeactivateControl(Player.StateChange.BOX);
         }
     }
 
     void activateControl()
     {
         PlayerControlled = true;
+        spriteOrder.SetOrderTo(frontPlayer);
+        mainCamera.GetComponent<FollowPlayer>().setFollowObject(gameObject);
+        
     }
 
     void controlReleased(TouchInstanceData data)
     {
-        anim.SetInteger("Moving", 0);
+        if(PlayerControlled)
+            anim.SetInteger("Moving", 0);
     }
 
     void deactivateControl()
     {
-        player.SetActive(true);
         player.transform.position = transform.position + (Vector3)OrientationListener.instanceOf.getRelativeUpVector();
-        player.GetComponent<Player>().updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0.0f);
+        player.updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0.0f);
         player.GetComponent<Rigidbody2D>().AddForce(OrientationListener.instanceOf.getRelativeUpVector() * 200);
-        mainCamera.GetComponent<FollowPlayer>().setFollowObject(player);
+        player.ReactivateControl(Player.StateChange.BOX);
+        mainCamera.GetComponent<FollowPlayer>().setFollowObject(player.gameObject);
+        PlayerControlled = false;
         anim.SetBool("HasExited", false);
     }
 
@@ -100,11 +113,10 @@ public class RailBoxControl : MonoBehaviour {
     {
         if (PlayerControlled && direction == TouchController.SwipeDirection.UP)
         {
+            anim.SetInteger("Moving", 0);
             anim.SetBool("HasExited", true);
-            PlayerControlled = false;
         }
     }
-
 
     void OnEnable()
     {
@@ -116,7 +128,7 @@ public class RailBoxControl : MonoBehaviour {
     {
         TouchController.OnSwipe -= swipeCheck;
         TouchController.ScreenTouched -= applyMoveForce;
-        TouchController.ScreenReleased += controlReleased;
+        TouchController.ScreenReleased -= controlReleased;
     }
 
 }

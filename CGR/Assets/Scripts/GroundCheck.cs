@@ -31,15 +31,10 @@ public class GroundCheck : MonoBehaviour
 
             if (groundCheckRay.collider != null || groundCheckRay1.collider != null)
             {
-                GetComponent<Rigidbody2D>().gravityScale = 0.0f;
-                GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().enabled = true;
                 InAir = false;
             }
             else
             {
-                GetComponent<Player>().updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0);
-                GetComponent<Rigidbody2D>().gravityScale = 1.0f;
-                GetComponent<Rigidbody2D>().GetComponent<ConstantForce2D>().enabled = false;
                 InAir = true;
             }
         }

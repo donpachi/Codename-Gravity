@@ -71,7 +71,11 @@ public class Walk : MonoBehaviour {
             if (_touchLocation != TouchController.TouchLocation.NONE)
                 anim.SetBool("Moving", true);
         }
+    }
 
+    public void StopWalkAnim()
+    {
+        anim.SetBool("Moving", false);
     }
 
     void OnEnable()

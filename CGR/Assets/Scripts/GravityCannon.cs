@@ -17,6 +17,7 @@ public class GravityCannon : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		player = GameObject.Find("Player");
+        playerBody = player.GetComponent<Rigidbody2D>();
         Transform[] components = this.GetComponentsInChildren<Transform>();
         foreach (var i in components)
         {
@@ -38,32 +39,12 @@ public class GravityCannon : MonoBehaviour {
     {
         if (enterAble && direction == TouchController.SwipeDirection.UP)
         {
-            player.GetComponent<Walk>().enabled = false;
-            playerBody = player.GetComponent<Rigidbody2D>();
-            playerBody.gravityScale = 0f;
-            playerBody.Sleep();
-            playerBody.GetComponent<Collider2D>().enabled = false;
             playerBody.GetComponent<Transform>().position = launchPosition.position;
-            player.SetActive(false);
-
+            //player.SetActive(false);
+            player.GetComponent<Player>().DeactivateControl(Player.StateChange.CANNON);
             anim.SetBool("activated", true);
         }
     }
-
-	//void OnCollisionEnter2D(Collision2D collisionInfo) {
-	//	if (collisionInfo.gameObject.name == "Player") {
- //           player.GetComponent<Walk>().enabled = false;
- //           playerBody = collisionInfo.rigidbody;
- //           playerBody.gravityScale = 0f;
- //           playerBody.Sleep();
- //           playerBody.GetComponent<Collider2D>().enabled = false;
- //           playerBody.GetComponent<Transform>().position = launchPosition.position;
- //           player.GetComponent<Player>().ToggleRender();
-
- //           anim.SetBool("activated", true);
- //           enterAble = true;
- //       }
-	//}
 
     void OnTriggerEnter2D(Collider2D collider)
     {
@@ -88,14 +69,11 @@ public class GravityCannon : MonoBehaviour {
 
 	public void FirePlayer() {
         Vector2 direction;
-        player.SetActive(true);
-        playerBody.GetComponent<Transform>().position = cannonTip.position;
-        playerBody.GetComponent<Collider2D>().enabled = true;
-        player.GetComponent<Player>().LaunchStatusOn();
-		direction = (player.GetComponent<Transform>().position - this.GetComponent<Transform>().position).normalized;
+        //player.SetActive(true);
+        player.GetComponent<Player>().ReactivateControl(Player.StateChange.CANNON);
+        player.transform.position = cannonTip.position;
+		direction = (player.transform.position - transform.position).normalized;
         playerBody.AddForce(direction * LAUNCHFORCE, ForceMode2D.Impulse);
-        playerBody.angularDrag = 0;
-        playerBody.drag = 0;
         enterAble = false;
         anim.SetBool("activated", false);
 	}
