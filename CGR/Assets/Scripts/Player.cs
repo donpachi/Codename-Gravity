@@ -9,15 +9,20 @@ public delegate void PlayerDied();
 public class Player : MonoBehaviour {
 
     private Rigidbody2D playerRigidBody;
+    private Walk walk;
+    private SuctionWalk sWalk;
+    private ConstantForce2D sForce;
     private LayerMask wallMask;
-    private const float drag = 0.5f;
-    private const float angularDrag = 0.05f;
+    private CircleCollider2D playerCollider;
+    private float drag = 0.5f;
+    private float angularDrag = 0.05f;
     private bool facingRight;
     private bool inTransition;
     private bool launched;
     private Animator anim;
     private GroundCheck gCheck;
-    
+    private Renderer[] potatoParts;
+
     public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
     public float deathSpeed = 10f;
@@ -29,21 +34,27 @@ public class Player : MonoBehaviour {
     public bool InRotation;
     public bool suctionStatus { get; private set; }
     public bool gravityZone { get; private set; }
+    public enum StateChange { CANNON, CANNON_COLLISION, PORTAL, MINION, SWALK, BOX }   //The script that wants to effect player
 
     void Awake () {
         anim = this.GetComponent<Animator>();
+        walk = GetComponent<Walk>();
+        sWalk = GetComponent<SuctionWalk>();
+        sForce = GetComponent<ConstantForce2D>();
         playerRigidBody = GetComponent<Rigidbody2D>();
+        playerCollider = GetComponent<CircleCollider2D>();
+        drag = playerRigidBody.drag;
+        angularDrag = playerRigidBody.angularDrag;
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         gCheck = GetComponent<GroundCheck>();
+        potatoParts = GetComponentsInChildren<Renderer>();
+
         inMinionArea = false;
         suctionStatus = false;
         inTransition = false;
         facingRight = true;
         InRotation = false;
         GravityZoneOff();
-    }
-
-	void FixedUpdate () {
     }
 
     public void RespawnAt(Transform spawnPoint)
@@ -90,14 +101,6 @@ public class Player : MonoBehaviour {
     {
         InRotation = false;
     }
-
-    //void faceDirectionCheck()
-    //{
-    //    if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.RIGHT && !facingRight)
-    //        flipSprite();
-    //    else if (TouchController.Instance.getTouchDirection() == TouchController.TouchLocation.LEFT && facingRight)
-    //        flipSprite();
-    //}
 
     //updates sprite to correct orientation
     //might have to update constant force while suction cups are on
@@ -147,8 +150,6 @@ public class Player : MonoBehaviour {
         transform.localScale = playerScale;
     }
 
-
-
     /*---------------Event Functions Start Here---------------*/
     void OnCollisionEnter2D(Collision2D collisionEvent) {
         if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.tag == "Boulder")
@@ -158,11 +159,7 @@ public class Player : MonoBehaviour {
 
         else if (launched == true && collisionEvent.gameObject.layer == LayerMask.NameToLayer("Walls"))
         {
-            playerRigidBody.gravityScale = 1.0f;
-            this.GetComponent<Walk>().enabled = true;
-            playerRigidBody.drag = drag;
-            playerRigidBody.angularDrag = angularDrag;
-            launched = false;
+            ReactivateControl(StateChange.CANNON_COLLISION);
         }
 	}
 
@@ -196,8 +193,7 @@ public class Player : MonoBehaviour {
         }
         else if (isMinion == true)
         {
-            GetComponent<Player>().enabled = true;
-
+            enabled = true;
             switchControlToPlayer();
             LevelManager.Instance.RemoveMinion(gameObject);
             Destroy(gameObject);
@@ -221,9 +217,9 @@ public class Player : MonoBehaviour {
     void switchControlToMinion()
     {
         GameObject controllingMinion = LevelManager.Instance.GetMinion();
-        GetComponent<Walk>().enabled = false;
-        GetComponent<Rigidbody2D>().isKinematic = true;
-        GetComponent<Animator>().SetBool("Moving", false);
+        walk.enabled = false;
+        playerRigidBody.isKinematic = true;
+        anim.SetBool("Moving", false);
         controllingMinion.GetComponent<Animator>().SetBool("SwitchingToMinion", true);
         WorldGravity.Instance.enabled = false;
         isMinion = true;
@@ -238,15 +234,86 @@ public class Player : MonoBehaviour {
         catch(NullReferenceException e)
         {
             Debug.LogError("Camera Obj: " + Camera.main.gameObject + " FollowP script: " + Camera.main.gameObject.GetComponent<FollowPlayer>() + " Player GameObject: " + gameObject);
-        }
-           
-            GetComponent<Rigidbody2D>().isKinematic = false;
-            GetComponent<Rigidbody2D>().gravityScale = 1.0f;
-            GetComponent<Walk>().enabled = true;
+        }        
+            playerRigidBody.isKinematic = false;
+            playerRigidBody.gravityScale = 1.0f;
+            walk.enabled = true;
             WorldGravity.Instance.enabled = true;
             isMinion = false;
+    }
 
+    public void ReactivateControl(StateChange state)
+    {
+        if (state == StateChange.SWALK)
+        {
+            suctionStatus = false;
+            sWalk.enabled = false;
+            sForce.enabled = false;
+        }
+        else if (state == StateChange.CANNON)
+        {
+            ToggleRender();
+            playerCollider.enabled = true;
+        }
+        else if(state == StateChange.CANNON_COLLISION)
+        {
+            playerRigidBody.drag = drag;
+            playerRigidBody.angularDrag = angularDrag;
+            launched = false;
+        }
+        else if (state == StateChange.PORTAL)
+        {
+            inTransition = false;
+            ToggleRender();
+            playerCollider.enabled = true;
+        }
+        else if(state == StateChange.BOX)
+        {
 
+        }
+
+        if (!launched)
+        {
+            if (suctionStatus)
+            {
+                sWalk.enabled = true;
+                sForce.enabled = true;
+            }
+            else
+            {
+                walk.enabled = true;
+                playerRigidBody.gravityScale = 1;
+            }
+            updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0);
+        }
+    }
+
+    public void DeactivateControl(StateChange state)
+    {
+        walk.enabled = false;
+        sWalk.enabled = false;
+        sForce.enabled = false;
+        playerRigidBody.gravityScale = 0;
+        playerRigidBody.Sleep();
+
+        if (state == StateChange.CANNON)
+        {
+            launched = true;
+            playerRigidBody.drag = 0;
+            playerRigidBody.angularDrag = 0;
+            ToggleRender();
+            playerCollider.enabled = false;
+        }
+        if(state == StateChange.PORTAL)
+        {
+            inTransition = true;
+            ToggleRender();
+            playerCollider.enabled = false;
+        }
+        if(state == StateChange.BOX)
+        {
+
+        }
     }
 
     void screenTouched(TouchInstanceData data)
@@ -277,7 +344,6 @@ public class Player : MonoBehaviour {
 
     public void ToggleRender()
     {
-        Renderer[] potatoParts = this.GetComponentsInChildren<Renderer>();
         foreach (Renderer i in potatoParts)
             i.enabled = !i.enabled;
     }
@@ -299,16 +365,14 @@ public class Player : MonoBehaviour {
     public void SuctionStatusOn(int force)
     {
         suctionStatus = true;
-        GetComponent<ConstantForce2D>().enabled = true;
-        GetComponent<ConstantForce2D>().relativeForce = new Vector2(0, -1) * force;
-        GetComponent<Walk>().enabled = false;
-        GetComponent<SuctionWalk>().enabled = true; ;
+        sForce.relativeForce = new Vector2(0, -1) * force;
+        walk.enabled = false;
+        sWalk.enabled = true;
     }
 
     public void SuctionStatusEnd()
     {
         suctionStatus = false;
-        //gravitySpriteUpdate(OrientationListener.instanceOf.currentOrientation(), 0);
     }
 
     public void GravityZoneOn()
@@ -324,21 +388,6 @@ public class Player : MonoBehaviour {
     public bool IsSuctioned()
     {
         return suctionStatus;
-    }
-
-    /// <summary>
-    /// On when in Portal
-    /// </summary>
-    public void InTransitionStatusOn()
-    {
-        inTransition = true;
-    }
-    /// <summary>
-    /// Off when u leave portal
-    /// </summary>
-    public void InTransitionStatusEnd()
-    {
-        inTransition = false;
     }
 
     public bool IsInTransition()

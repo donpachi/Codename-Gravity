@@ -32,10 +32,9 @@ public class Portal : MonoBehaviour {
                                 Mathf.Lerp(body.transform.position.y, this.transform.position.y, transitionSpeed * Time.deltaTime),
                                 0f);
 
-                if ((this.transform.position - body.transform.position).magnitude <= distanceThreshold)
+                if ((transform.position - body.transform.position).magnitude <= distanceThreshold)
                 {
-                    body.Sleep();
-                    StartCoroutine(LaunchPlayer(bodies[i], 2f));
+                    StartCoroutine(LaunchObject(bodies[i], 2f));
                     waitForLeave.Enqueue(bodies[i].obj);
                     bodies.RemoveAt(i);
                     i -= 1;
@@ -49,21 +48,27 @@ public class Portal : MonoBehaviour {
         if (collisionInfo.gameObject.tag != "Water")
         {
             GameObject obj = collisionInfo.gameObject;
-            bool isPlayer = collisionInfo.gameObject.name.Equals("Player");
+            bool isPlayer = collisionInfo.gameObject == playerStatus;
 
             if (waitForLeave.Contains(obj))
                 return ;
 
-            if (isPlayer) {
-				playerStatus.GetComponent<Player>().InTransitionStatusOn();
-                playerStatus.GetComponent<GroundCheck>().enabled = false;
-				playerStatus.GetComponent<Walk>().enabled = false;
-				playerStatus.GetComponent<SuctionWalk>().enabled = false;
+            if (!obj.GetComponent<Animator>())
+            {
+                collisionInfo.gameObject.SetActive(false);
             }
+            else if (isPlayer)
+            {
+                collisionInfo.gameObject.GetComponent<Player>().DeactivateControl(Player.StateChange.PORTAL);
+                //collisionInfo.gameObject.SetActive(false);
+            }
+            else if (obj.GetComponent<Minion>())
+            {
 
-            collisionInfo.gameObject.SetActive(false);
-
-            linkedPortal.GetComponent<Portal>().SendObject(obj, collisionInfo.relativeVelocity, this.transform.rotation.eulerAngles.z, isPlayer);
+            }
+            else
+                Debug.LogError("Object in portal not accounted for");
+            linkedPortal.GetComponent<Portal>().SendObject(obj, collisionInfo.relativeVelocity, transform.rotation.eulerAngles.z, isPlayer);
         }
     }
 
@@ -78,14 +83,14 @@ public class Portal : MonoBehaviour {
         bodies.Add(new Node(obj, velocity, angle, isPlayer));
     }
 
-    IEnumerator LaunchPlayer(Node entity, float delayTime)
+    IEnumerator LaunchObject(Node entity, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
 
         Rigidbody2D body = entity.obj.GetComponent<Rigidbody2D>();
         entity.obj.SetActive(true);
 
-        float launchAngle = this.transform.rotation.eulerAngles.z - entity.angle;
+        float launchAngle = transform.rotation.eulerAngles.z - entity.angle;
         body.transform.position = new Vector3(body.transform.position.x,
                                            body.transform.position.y,
                                            -2f);
@@ -93,17 +98,8 @@ public class Portal : MonoBehaviour {
         entity.velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * entity.velocity;
         body.velocity = entity.velocity;
 
-        if (!playerStatus.GetComponent<Player>().IsLaunched())
-		    body.gravityScale = 1.0f;
-
 		if (entity.isPlayer) {
-			playerStatus.GetComponent<Player>().InTransitionStatusEnd();
-            playerStatus.GetComponent<GroundCheck>().enabled = true;
-
-            if (playerStatus.GetComponent<Player>().IsSuctioned())
-				playerStatus.GetComponent<SuctionWalk>().enabled = true;
-			else
-				playerStatus.GetComponent<Walk>().enabled = true;
+            entity.obj.GetComponent<Player>().ReactivateControl(Player.StateChange.PORTAL);
 		}
     }
 }

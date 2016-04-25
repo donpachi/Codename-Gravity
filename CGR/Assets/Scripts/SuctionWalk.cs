@@ -17,7 +17,9 @@ public class SuctionWalk : MonoBehaviour
     Vector2 rightVector = Vector2.right;
     private GameObject suctionText;
     private float timer;
-    private PinchtoZoom camera;
+    private GroundCheck gCheck;
+    private PinchtoZoom cameraZoom;
+    private Player player;
 
     private LayerMask wallMask;
     private ConstantForce2D _cForce;
@@ -27,12 +29,14 @@ public class SuctionWalk : MonoBehaviour
     {
         atTopSpeed = false;
         playerBody = GetComponent<Rigidbody2D>();
+        player = GetComponent<Player>();
         anim = GetComponent<Animator>();
         suctionText = GameObject.Find("SuctionText");
         suctionText.GetComponent<Text>().enabled = true;
         wallMask = 1 << LayerMask.NameToLayer("Walls");
         _cForce = GetComponent<ConstantForce2D>();
-        camera = Camera.main.GetComponent<PinchtoZoom>();
+        cameraZoom = Camera.main.GetComponent<PinchtoZoom>();
+        gCheck = GetComponent<GroundCheck>();
     }
 
     // Update is called once per frame
@@ -53,17 +57,10 @@ public class SuctionWalk : MonoBehaviour
             if (timer <= 0)
             {
                 suctionText.GetComponent<Text>().enabled = false;
-                this.GetComponent<ConstantForce2D>().enabled = false;
-                this.GetComponent<Player>().SuctionStatusEnd();
-                this.GetComponent<SuctionWalk>().enabled = false;
-                GetComponent<Player>().updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0);
-                if (!this.GetComponent<Player>().IsLaunched() && !this.GetComponent<Player>().IsInTransition())
-                {
-                    playerBody.gravityScale = 1.0f;
-                    this.GetComponent<Walk>().enabled = true;
-                    this.GetComponent<SuctionWalk>().enabled = false;
-                }
+                player.ReactivateControl(Player.StateChange.SWALK);
             }
+            else
+                checkGround();
         }
     }
 
@@ -74,11 +71,26 @@ public class SuctionWalk : MonoBehaviour
             suctionText.GetComponent<Text>().enabled = true;
     }
 
+    void checkGround()
+    {
+        if(gCheck.InAir)
+        {
+            player.updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0);
+            playerBody.gravityScale = 1.0f;
+            playerBody.GetComponent<ConstantForce2D>().enabled = false;
+        }
+        else
+        {
+            playerBody.gravityScale = 0.0f;
+            playerBody.GetComponent<ConstantForce2D>().enabled = true;
+        }
+    }
+
     void screenTouched(TouchInstanceData data)
     {
         TouchController.TouchLocation _touchLocation = data.touchLocation;
 
-        if (!atTopSpeed && !camera.Zooming)
+        if (!atTopSpeed && !cameraZoom.Zooming)
         {
             switch (_touchLocation)
             {
@@ -112,7 +124,7 @@ public class SuctionWalk : MonoBehaviour
     /// <param name="direction"></param>
     void rotateObject(int direction)
     {
-        if (GetComponent<Player>().InRotation)
+        if (player.InRotation)
             return;
         int current = anim.GetInteger("Orientation");
         int newOrientation = current + direction;
@@ -123,7 +135,7 @@ public class SuctionWalk : MonoBehaviour
             newOrientation = 3;
 
         anim.SetInteger("Orientation", newOrientation);
-        GetComponent<Player>().InRotation = true;
+        player.InRotation = true;
     }
 
     bool forwardCheck(Vector2 forwardRay, TouchController.TouchLocation direction)
@@ -135,8 +147,6 @@ public class SuctionWalk : MonoBehaviour
             return true;
         }
         return false;
-        // use constant force value to derive the new left and right vectors
-        // reorientate the player
     }
 
     void OnEnable()
