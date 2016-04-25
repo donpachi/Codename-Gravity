@@ -8,22 +8,31 @@ public class OscillatingObject : MonoBehaviour {
     public float Delay;     //Delays object at limit for set amount of time
     public bool IsActive;   //Is the slider joint active?
     public bool IgnoreWalls;
+    public bool IsElevator;
 
     SliderJoint2D joint;
     JointLimitState2D lastLimit;
     float timer;
+    Rigidbody2D rBody;
+    bool elevatorTrigger;
 
 	// Use this for initialization
 	void Start () {
-        joint = gameObject.GetComponent<SliderJoint2D>();
+        joint = GetComponent<SliderJoint2D>();
         timer = 0;
         lastLimit = JointLimitState2D.LowerLimit;
-        if (!IsActive)
-            gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+        rBody = GetComponent<Rigidbody2D>();
+        if (!IsActive || IsElevator)
+            rBody.isKinematic = true;
+
+        if (IsElevator)
+            elevatorTrigger = false;
+        else
+            elevatorTrigger = true;
+
         setCollisions();
 	}
 	
-	// Update is called once per frame
 	void FixedUpdate () {
 	    if(IsActive && (joint.limitState == JointLimitState2D.LowerLimit || joint.limitState == JointLimitState2D.UpperLimit))
         {
@@ -31,9 +40,8 @@ public class OscillatingObject : MonoBehaviour {
             {
                 timer += Time.deltaTime;
             }
-            else if (joint.limitState != lastLimit)
+            else if (elevatorTrigger && joint.limitState != lastLimit)
             {
-                lastLimit = joint.limitState;
                 flipDirection();
                 timer = 0;
             }
@@ -44,7 +52,7 @@ public class OscillatingObject : MonoBehaviour {
     {
         if (IgnoreWalls)
         {
-            foreach (var gObject in gameObject.GetComponentsInChildren<Transform>())
+            foreach (var gObject in GetComponentsInChildren<Transform>())
             {
                 gObject.gameObject.layer = LayerMask.NameToLayer("ThroughWalls");
             }
@@ -60,21 +68,44 @@ public class OscillatingObject : MonoBehaviour {
 
     void flipDirection()
     {
-        float newMotorSpeed = -GetComponent<SliderJoint2D>().motor.motorSpeed;
+        if (IsElevator)
+        {
+            elevatorTrigger = false;
+            rBody.isKinematic = true;
+        }
+
+        lastLimit = joint.limitState;
+        float newMotorSpeed = -joint.motor.motorSpeed;
         JointMotor2D newMotor = new JointMotor2D();
         newMotor.motorSpeed = newMotorSpeed;
-        newMotor.maxMotorTorque = GetComponent<SliderJoint2D>().motor.maxMotorTorque;
-        GetComponent<SliderJoint2D>().motor = newMotor;
+        newMotor.maxMotorTorque = joint.motor.maxMotorTorque;
+        joint.motor = newMotor;
     }
 
     //For Switches
     void plateDepressed()
     {
-        IsActive = true;
-        gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
+        if (!IsElevator)
+        {
+            IsActive = !IsActive;
+            rBody.isKinematic = !rBody.isKinematic;
+        }
+        else
+        {
+            if(joint.limitState == JointLimitState2D.LowerLimit || joint.limitState == JointLimitState2D.UpperLimit)
+            {
+                elevatorTrigger = true;
+                rBody.isKinematic = !rBody.isKinematic;
+            }
+        }
     }
 
     void plateReleased()
     {
+        if (!IsElevator)
+        {
+            IsActive = !IsActive;
+            rBody.isKinematic = !rBody.isKinematic;
+        }
     }
 }
