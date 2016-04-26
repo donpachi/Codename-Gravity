@@ -15,6 +15,7 @@ public class OscillatingObject : MonoBehaviour {
     float timer;
     Rigidbody2D rBody;
     bool elevatorTrigger;
+    Animator anim;
 
 	// Use this for initialization
 	void Start () {
@@ -22,6 +23,7 @@ public class OscillatingObject : MonoBehaviour {
         timer = 0;
         lastLimit = JointLimitState2D.LowerLimit;
         rBody = GetComponent<Rigidbody2D>();
+
         if (!IsActive || IsElevator)
             rBody.isKinematic = true;
 
@@ -30,10 +32,17 @@ public class OscillatingObject : MonoBehaviour {
         else
             elevatorTrigger = true;
 
+        anim = GetComponent<Animator>();
+
         setCollisions();
 	}
 	
 	void FixedUpdate () {
+        if (anim)
+        {
+            anim.SetBool("On", IsActive);
+        }
+
 	    if(IsActive && (joint.limitState == JointLimitState2D.LowerLimit || joint.limitState == JointLimitState2D.UpperLimit))
         {
             if (timer < Delay)
