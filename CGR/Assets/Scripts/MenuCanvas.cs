@@ -21,6 +21,7 @@ public class MenuCanvas : MonoBehaviour {
         {
             pauseScreen();
         }
+
     }
 
 	private void AddListener (Player character)
@@ -47,7 +48,6 @@ public class MenuCanvas : MonoBehaviour {
             if (menuButtons[i].name == "Continue")
             {
                 continueButton = menuButtons[i];
-                break;
             }
         }
     }
@@ -106,12 +106,11 @@ public class MenuCanvas : MonoBehaviour {
 		Time.timeScale = 1;
 		this.GetComponent<Canvas>().enabled = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-		//Application.LoadLevel(Application.loadedLevel);
 	}
 
     public void RestartFromCheckpoint()
     {
-        LevelManager.Instance.SpawnPlayer();
+        LevelManager.Instance.ReloadFromCheckpoint();
         Time.timeScale = 1;
         this.GetComponent<Canvas>().enabled = false;
 

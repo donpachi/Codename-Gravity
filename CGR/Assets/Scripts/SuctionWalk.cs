@@ -71,6 +71,11 @@ public class SuctionWalk : MonoBehaviour
             suctionText.GetComponent<Text>().enabled = true;
     }
 
+    public float GetTimer()
+    {
+        return timer;
+    }
+
     void checkGround()
     {
         if(gCheck.InAir)
