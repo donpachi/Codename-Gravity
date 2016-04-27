@@ -33,11 +33,18 @@ public class LevelManager : MonoBehaviour
     private Checkpoint _currentCheckpoint;
     private List<GameObject> _minionList;
     private DateTime _started;
+    private LevelData checkpointSaveData;
 
     public Checkpoint DebugSpawn;
     public int BonusCutoffSeconds;
     public int BonusSecondMultiplyer;
     public float MinionLeaderDist = 0.1f;
+
+    public delegate void CheckpointSave();
+    public static event CheckpointSave OnCheckpointSave;
+
+    public delegate void CheckpointLoad();
+    public static event CheckpointLoad OnCheckpointLoad;
 
     public void Awake()
     {
@@ -78,6 +85,18 @@ public class LevelManager : MonoBehaviour
 
     }
 
+    void triggerSave()
+    {
+        if (OnCheckpointSave != null)
+            OnCheckpointSave();
+    }
+
+    void trigerLoad()
+    {
+        if (OnCheckpointLoad != null)
+            OnCheckpointLoad();
+    }
+
     /// <summary>
     /// Adds a minion to the minion list
     /// Function sets the parent of the minion to the last in this list
@@ -102,7 +121,7 @@ public class LevelManager : MonoBehaviour
     /// Removes minions from the list. NOT from the game
     /// </summary>
     /// <param name="minion"></param>
-    public void RemoveMinion(GameObject minion)
+    public void RemoveMinion(GameObject minion, bool destroy)
     {
         if(_minionList.Count == 0)
         {
@@ -110,6 +129,9 @@ public class LevelManager : MonoBehaviour
             return;
         }
         _minionList.Remove(minion);
+
+        if (destroy)
+            Destroy(minion);
     }
 
     public void GotoNextLevel(int level)
@@ -117,8 +139,22 @@ public class LevelManager : MonoBehaviour
         SceneManager.LoadScene(level);
     }
 
+    public void ReloadFromCheckpoint()
+    {
+        if(_currentCheckpoint == null)
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        else
+        {
+            trigerLoad();
+            reinitializeMinions();
+            SpawnPlayer();
+        }
+    }
+
     public void SpawnPlayer()
     {
+        Player.LoadPlayerState(checkpointSaveData.PlayerState);
+
         if (_currentCheckpoint == null)
         {
             _startPosition.SpawnPlayer(Player);
@@ -128,7 +164,6 @@ public class LevelManager : MonoBehaviour
             _currentCheckpoint.SpawnPlayer(Player);
         }
         Player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-
     }
 
     public int GetMinionCount()
@@ -144,6 +179,26 @@ public class LevelManager : MonoBehaviour
             GameObject newMinion = (GameObject)Instantiate(Resources.Load("Prefabs/Minion"));
             newMinion.transform.position = Player.transform.position;
             AddMinion(newMinion);
+        }
+    }
+
+    private void reinitializeMinions()
+    {
+        if(_minionList.Count > checkpointSaveData.MinionCount)
+        {
+            while (_minionList.Count > checkpointSaveData.MinionCount)
+            {
+                RemoveMinion(_minionList[_minionList.Count - 1], true);
+            }
+        }
+        else
+        {
+            while (_minionList.Count < checkpointSaveData.MinionCount)
+            {
+                GameObject newMinion = (GameObject)Instantiate(Resources.Load("Prefabs/Minion"));
+                newMinion.transform.position = Player.transform.position;
+                AddMinion(newMinion);
+            }
         }
     }
 
@@ -180,7 +235,7 @@ public class LevelManager : MonoBehaviour
         else if(requestedObj.GetComponent<Player>() != null && _minionList.Count != 0)
         {
             _minionList[_minionList.Count - 1].GetComponent<Animator>().SetBool("Checkpoint", true);
-            RemoveMinion(_minionList[_minionList.Count - 1]);
+            RemoveMinion(_minionList[_minionList.Count - 1], false);
         }
     }
 
@@ -209,5 +264,21 @@ public class LevelManager : MonoBehaviour
             _currentCheckpoint.transform.position = groundCheckRay.point;
         }
         _currentCheckpoint.transform.rotation = Player.transform.rotation;
+        createLevelSave();
+        triggerSave();
     }
+
+    private void createLevelSave()
+    {
+        if(checkpointSaveData == null)
+            checkpointSaveData = new LevelData();
+        checkpointSaveData.MinionCount = _minionList.Count;
+        checkpointSaveData.PlayerState = Player.SavePlayerState();
+    }
+}
+
+public class LevelData
+{
+    public int MinionCount;
+    public PlayerState PlayerState;
 }

@@ -16,9 +16,7 @@ public class RailBoxControl : MonoBehaviour {
     private Animator anim;
     Player player;
     GameObject mainCamera;
-    int behindPlayer = 0;        //right behind player
-    int frontPlayer = 7;         //right infront of player
-    SortingOrderScript spriteOrder;
+
 
     // Use this for initialization
     void Start () {
@@ -26,7 +24,6 @@ public class RailBoxControl : MonoBehaviour {
         anim = gameObject.GetComponent<Animator>();
         player = FindObjectOfType<Player>();
         mainCamera = GameObject.Find("Main Camera");
-        spriteOrder = GetComponentInChildren<SortingOrderScript>();
     }
 
     // Update is called once per frame
@@ -64,15 +61,7 @@ public class RailBoxControl : MonoBehaviour {
         }
     }
 
-    void activateBox()
-    {
-        objectRb.isKinematic = false;
-    }
 
-    void deactivateBox()
-    {
-        objectRb.isKinematic = true;
-    }
 
     void OnTriggerEnter2D(Collider2D colliderEvent)
     {
@@ -86,9 +75,7 @@ public class RailBoxControl : MonoBehaviour {
     void activateControl()
     {
         PlayerControlled = true;
-        spriteOrder.SetOrderTo(frontPlayer);
         mainCamera.GetComponent<FollowPlayer>().setFollowObject(gameObject);
-        
     }
 
     void controlReleased(TouchInstanceData data)
@@ -118,17 +105,28 @@ public class RailBoxControl : MonoBehaviour {
         }
     }
 
+    void checkpointReset()
+    {
+        if (PlayerControlled)
+        {
+            PlayerControlled = false;
+            deactivateControl();
+        }
+    }
+
     void OnEnable()
     {
         TouchController.OnSwipe += swipeCheck;
-        TouchController.ScreenTouched += applyMoveForce;
+        TouchController.OnHold += applyMoveForce;
         TouchController.ScreenReleased += controlReleased;
+        LevelManager.OnCheckpointLoad += checkpointReset;
     }
     void OnDisable()
     {
         TouchController.OnSwipe -= swipeCheck;
-        TouchController.ScreenTouched -= applyMoveForce;
+        TouchController.OnHold -= applyMoveForce;
         TouchController.ScreenReleased -= controlReleased;
+        LevelManager.OnCheckpointLoad += checkpointReset;
     }
 
 }

@@ -8,29 +8,38 @@ using System.Collections;
 public class RailBlock : MonoBehaviour {
     public GameObject Origin;
     public GameObject Target;
-    public bool isActive;
+    public bool IsActive;
     public bool GravityZone { get; private set; }
 
     private SliderJoint2D joint;
     private Animator anim;
+    private RailBlockState objSaveState;
+    Rigidbody2D objectRb;
+    int behindPlayer = 0;        //right behind player
+    int frontPlayer = 7;         //right infront of player
+    SortingOrderScript spriteOrder;
 
-	// Find 2 Nodes to start from, mby define in unity
+    // Find 2 Nodes to start from, mby define in unity
     // Set where the box originates, set the definition of rail it rides on
-	void Start () {
+    void Start ()
+    {
         if (Origin == null || Target == null)
         {
             Debug.LogError("Rail Block does not have start or end node defined", gameObject);
         }
+        objectRb = gameObject.GetComponent<Rigidbody2D>();
         joint = gameObject.GetComponent<SliderJoint2D>();
+        spriteOrder = GetComponentInChildren<SortingOrderScript>();
         transform.position = Origin.transform.position;
         setJointParam();
         anim = gameObject.GetComponent<Animator>();
-        anim.SetBool("BoxActive", isActive);
+        anim.SetBool("BoxActive", IsActive);
+        SetCheckpointState();
     }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (isActive)
+        if (IsActive)
         {
             if (joint.limitState == JointLimitState2D.UpperLimit)
                 findNextNode(Target);
@@ -47,6 +56,18 @@ public class RailBlock : MonoBehaviour {
     public void GravityZoneOff()
     {
         GravityZone = false;
+    }
+
+    void activateBox()
+    {
+        objectRb.isKinematic = false;
+        spriteOrder.SetOrderTo(frontPlayer);
+    }
+
+    void deactivateBox()
+    {
+        objectRb.isKinematic = true;
+        spriteOrder.SetOrderTo(behindPlayer);
     }
 
     //Sets the rail definition according to nodes
@@ -91,14 +112,14 @@ public class RailBlock : MonoBehaviour {
     //For Switches
     void plateDepressed()
     {
-        isActive = !isActive;
-        anim.SetBool("BoxActive", isActive);
+        IsActive = !IsActive;
+        anim.SetBool("BoxActive", IsActive);
     }
 
     void plateReleased()
     {
-        isActive = !isActive;
-        anim.SetBool("BoxActive", isActive);
+        IsActive = !IsActive;
+        anim.SetBool("BoxActive", IsActive);
     }
 
     /// <summary>
@@ -112,16 +133,52 @@ public class RailBlock : MonoBehaviour {
             anim.SetInteger("Orientation", (int)orientation);
     }
 
+    void SetCheckpointState()
+    {
+        objSaveState = new RailBlockState();
+        objSaveState.Position = transform.position;
+        objSaveState.Orientation = anim.GetInteger("Orientation");
+        objSaveState.Origin = Origin;
+        objSaveState.Target = Target;
+        objSaveState.IsActive = IsActive;
+    }
+
+    void CheckpointRestart()
+    {
+        transform.position = objSaveState.Position;
+        anim.SetInteger("Orientation", objSaveState.Orientation);
+        Origin = objSaveState.Origin;
+        Target = objSaveState.Target;
+        setJointParam();
+        IsActive = objSaveState.IsActive;
+        anim.SetBool("BoxActive", IsActive);
+        if (IsActive)
+            activateBox();
+        else
+            deactivateBox();
+    }
+
     //Listeners for player
     void OnEnable()
     {
         WorldGravity.GravityChanged += gravitySpriteUpdate;
+        LevelManager.OnCheckpointLoad += CheckpointRestart;
+        LevelManager.OnCheckpointSave += SetCheckpointState;
     }
 
     void OnDisable()
     {
         WorldGravity.GravityChanged -= gravitySpriteUpdate;
+        LevelManager.OnCheckpointLoad -= CheckpointRestart;
+        LevelManager.OnCheckpointSave -= SetCheckpointState;
     }
+}
 
-
+public class RailBlockState
+{
+    public Vector3 Position;
+    public int Orientation;
+    public GameObject Origin;
+    public GameObject Target;
+    public bool IsActive;
 }

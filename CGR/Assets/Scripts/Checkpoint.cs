@@ -3,7 +3,7 @@
 public class Checkpoint : MonoBehaviour 
 {
     public Animator anim { get; private set; }
-    private GameObject _checkpointIndicator;
+    public LevelData data { get; private set; }
 
     void Awake()
     {
@@ -12,6 +12,12 @@ public class Checkpoint : MonoBehaviour
 
     public void SpawnPlayer(Player player)
     {
-        player.RespawnAt(transform);
+        player.CheckpointRespawn(transform);
+    }
+
+    public void SaveLevelState(LevelData newData)
+    {
+        data = newData;
     }
 }
+

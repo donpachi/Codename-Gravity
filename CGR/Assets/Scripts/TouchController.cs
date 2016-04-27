@@ -41,6 +41,9 @@ public class TouchController : MonoBehaviour {
     public delegate void TapEvent();
     public static event TapEvent OnTap;
 
+    public delegate void HoldEvent(TouchInstanceData data);
+    public static event HoldEvent OnHold;
+
     public delegate void TouchEvent(TouchInstanceData data);
     public static event TouchEvent ScreenTouched;
 
@@ -57,6 +60,12 @@ public class TouchController : MonoBehaviour {
     {
         if (OnTap != null)
             OnTap();
+    }
+
+    void screenHeld(TouchInstanceData data)
+    {
+        if (OnHold != null)
+            OnHold(data);
     }
 
     void screenTouched(TouchInstanceData data)
@@ -115,42 +124,44 @@ public class TouchController : MonoBehaviour {
         {
             //Beginning of a touch, need start position, set delta time to 0
             case TouchPhase.Began:
-                data = new TouchInstanceData();
-                resetTouchData(touch, data);
-                updateTouchLocation(touch, data);
-                data.phase = touch.phase;
-                data.FingerID = touch.fingerId;
-                screenTouched(data);
-                touchDataDictionary.Add(touch.fingerId, data);
+                    data = new TouchInstanceData();
+                    resetTouchData(touch, data);
+                    updateTouchLocation(touch, data);
+                    data.phase = touch.phase;
+                    data.FingerID = touch.fingerId;
+                    screenTouched(data);
+                    touchDataDictionary.Add(touch.fingerId, data);
                 break;
             //Midpoint of a touch, need to see how far it moved, how fast it moved that distance and react accordingly
             case TouchPhase.Moved:
-                processMovePhase(touch);
-                updateTouchLocation(touch, touchDataDictionary[touch.fingerId]);
-                screenTouched(touchDataDictionary[touch.fingerId]);
+                    processMovePhase(touch);
+                    updateTouchLocation(touch, touchDataDictionary[touch.fingerId]);
+                    checkHold(touchDataDictionary[touch.fingerId]);
+                    screenTouched(touchDataDictionary[touch.fingerId]);
                 break;
             //Finger stopped, if long enough stop swipe state ends
             case TouchPhase.Stationary:
-                processStationaryPhase(touch);
-                updateTouchLocation(touch, touchDataDictionary[touch.fingerId]);
-                screenTouched(touchDataDictionary[touch.fingerId]);
+                    processStationaryPhase(touch);
+                    updateTouchLocation(touch, touchDataDictionary[touch.fingerId]);
+                    checkHold(touchDataDictionary[touch.fingerId]);
+                    screenTouched(touchDataDictionary[touch.fingerId]);
                 break;
             //End of a touch, finger has lifted
             case TouchPhase.Ended:
-                if (isTap(touch, touchDataDictionary[touch.fingerId]))
-                {
-                    screenTapped();             //fire event for a screen tap given the touch has been short enough
-                }
-                screenReleased(touchDataDictionary[touch.fingerId]);
-                touchDataDictionary.Remove(touch.fingerId);
+                    if (isTap(touch, touchDataDictionary[touch.fingerId]))
+                    {
+                        screenTapped();             //fire event for a screen tap given the touch has been short enough
+                    }
+                    screenReleased(touchDataDictionary[touch.fingerId]);
+                    touchDataDictionary.Remove(touch.fingerId);
                 break;
             case TouchPhase.Canceled:
-                if (isTap(touch, touchDataDictionary[touch.fingerId]))
-                {
-                    screenTapped();
-                }
-                screenReleased(touchDataDictionary[touch.fingerId]);
-                touchDataDictionary.Remove(touch.fingerId);
+                    if (isTap(touch, touchDataDictionary[touch.fingerId]))
+                    {
+                        screenTapped();
+                    }
+                    screenReleased(touchDataDictionary[touch.fingerId]);
+                    touchDataDictionary.Remove(touch.fingerId);
                 break;
         }
     }
@@ -189,50 +200,6 @@ public class TouchController : MonoBehaviour {
         data.phase = touch.phase;
     }
 
-    //void processATouch(Touch touch, int touchOrder)
-    //{
-    //    switch (touch.phase)
-    //    {
-    //        //Beginning of a touch, need start position, set delta time to 0
-    //        case TouchPhase.Began:
-    //            resetTouchData(touch, touchDataArray[touch.fingerId]);
-    //            updateTouchLocation(touch, touchDataArray[touch.fingerId]);
-    //            screenTouched(touchDataArray[touch.fingerId]);    //fire event for a screen touch
-    //            break;
-    //        //Midpoint of a touch, need to see how far it moved, how fast it moved that distance and react accordingly
-    //        case TouchPhase.Moved:
-    //            TouchInstanceData data = touchDataArray[touch.fingerId];
-    //            data.moveTime += touch.deltaTime;
-    //            data.totalTime += touch.deltaTime;
-    //            checkSwipe(touch, data);
-    //            updateTouchLocation(touch, data);
-    //            break;
-    //        //Finger stopped or ended, swipe data resets
-    //        case TouchPhase.Stationary:
-    //            touchDataArray[touch.fingerId].swipeTriggered = false;
-    //            touchDataArray[touch.fingerId].totalTime += touch.deltaTime;
-    //            resetSwipeData(touch, touchDataArray[touch.fingerId]);
-    //            updateTouchLocation(touch, touchDataArray[touch.fingerId]);
-    //            break;
-    //        case TouchPhase.Ended:
-    //            updateTouchLocation(touch, touchDataArray[touch.fingerId]);
-    //            touchDataArray[touch.fingerId].totalTime += touch.deltaTime;
-    //            if (isTap(touch, touchDataArray[touch.fingerId]))
-    //            {
-    //                screenTapped();             //fire event for a screen tap given the touch has been short enough
-    //            }
-    //            resetTouchData(touch, touchDataArray[touch.fingerId]);
-    //            break;
-    //        case TouchPhase.Canceled:
-    //            if (isTap(touch, touchDataArray[touch.fingerId]))
-    //            {
-    //                screenTapped();
-    //            }
-    //            resetTouchData(touch, touchDataArray[touch.fingerId]);
-    //            break;
-    //    }
-    //}
-
     /// <summary>
     /// Looks at a touch and data and determines if it should be a tap
     /// </summary>
@@ -250,6 +217,18 @@ public class TouchController : MonoBehaviour {
             }
         }
         return false;
+    }
+
+    /// <summary>
+    /// Sends screen held event if touch is longer than tap allowance
+    /// </summary>
+    /// <param name="data"></param>
+    void checkHold(TouchInstanceData data)
+    {
+        if (data.totalTime > TapTimeAllowance)
+        {
+            screenHeld(data);
+        }
     }
 
     /// <summary>
@@ -287,6 +266,7 @@ public class TouchController : MonoBehaviour {
                 break;
         }
     }
+
 
     //Checks if the move should be a swipe
     void checkSwipe(Touch touch, TouchInstanceData data)

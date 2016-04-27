@@ -54,7 +54,7 @@ public class GameControl
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Create(Application.persistentDataPath + "/gameSave.dat");
 
-        PlayerData data = new PlayerData();
+        GameData data = new GameData();
         data.levelUnlocked = levelUnlocked;
         data.levelHighScore = levelHighScore;
         data.latestLevel = latestLevel;
@@ -69,12 +69,21 @@ public class GameControl
         {
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "/gameSave.dat", FileMode.Open);
-            PlayerData data = (PlayerData)bf.Deserialize(file);
-            file.Close();
+            try
+            {
+                GameData data = (GameData)bf.Deserialize(file);
 
-            levelUnlocked = data.levelUnlocked;
-            levelHighScore = data.levelHighScore;
-            latestLevel = data.latestLevel;
+                levelUnlocked = data.levelUnlocked;
+                levelHighScore = data.levelHighScore;
+                latestLevel = data.latestLevel;
+                file.Close();
+            }
+            catch(TypeLoadException e)
+            {
+                Debug.LogError(e + " The Game had trouble loading");
+                file.Close();
+                NewGame();
+            }
         }
     }
 
@@ -117,7 +126,7 @@ public class GameControl
 }
 
 [Serializable]
-class PlayerData
+class GameData
 {
     public bool[] levelUnlocked;
     public int[] levelHighScore;
