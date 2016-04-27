@@ -105,6 +105,7 @@ public class Portal : MonoBehaviour {
 
     void CheckpointRestart()
     {
+        StopAllCoroutines();
         if(bodies.Count > 0)
         {
             foreach (var body in bodies)

@@ -14,10 +14,5 @@ public class Checkpoint : MonoBehaviour
     {
         player.CheckpointRespawn(transform);
     }
-
-    public void SaveLevelState(LevelData newData)
-    {
-        data = newData;
-    }
 }
 

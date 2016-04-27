@@ -6,6 +6,7 @@ public class MinionSpawn : MonoBehaviour
     public Animator anim;
 
     private int _bonusMinion = 1;
+    private bool used = false;
 
     // Use this for initialization
     void Start()
@@ -39,5 +40,30 @@ public class MinionSpawn : MonoBehaviour
         newMinion.transform.position = transform.position;
         LevelManager.Instance.AddMinion(newMinion);
         anim.SetBool("Spawning", false);
+    }
+
+    void checkpointSave()
+    {
+        if(_bonusMinion != 0)
+        {
+            used = true;
+        }
+    }
+
+    void checkpointLoad()
+    {
+        if (!used)
+            _bonusMinion = 1;
+    }
+
+    void OnEnable()
+    {
+        LevelManager.OnCheckpointLoad += checkpointLoad;
+        LevelManager.OnCheckpointSave += checkpointSave;
+    }
+    void OnDisable()
+    {
+        LevelManager.OnCheckpointLoad -= checkpointLoad;
+        LevelManager.OnCheckpointSave -= checkpointSave;
     }
 }

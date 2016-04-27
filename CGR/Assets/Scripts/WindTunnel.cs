@@ -118,8 +118,10 @@ public class WindTunnel : MonoBehaviour {
 
     void plateDepressed()
     {
-        TurbineOn = !TurbineOn;
-        setAnimationState(TurbineOn);
+        if (TurbineOn)
+        {
+            setAnimationState(false);
+        }
     }
 
     void plateReleased()
