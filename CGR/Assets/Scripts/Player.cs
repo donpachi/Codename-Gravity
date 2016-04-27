@@ -23,18 +23,16 @@ public class Player : MonoBehaviour {
     private GroundCheck gCheck;
     private Renderer[] potatoParts;
 
-    public static Player Instance;
 	public event PlayerDied OnPlayerDeath;
     public float deathSpeed = 10f;
     public bool inMinionArea;
     public float OnGroundRaySize;
     public float ForwardRaySize;
     public bool isMinion = false;
-    public bool IsDead { get; private set; }
     public bool InRotation;
     public bool suctionStatus { get; private set; }
     public bool gravityZone { get; private set; }
-    public enum StateChange { CANNON, CANNON_COLLISION, PORTAL, MINION, SWALK, BOX }   //The script that wants to effect player
+    public enum StateChange { CANNON, CANNON_COLLISION, PORTAL, MINION, SWALK, BOX, CHECKPOINT }   //The script that wants to effect player
 
     void Awake () {
         anim = this.GetComponent<Animator>();
@@ -57,17 +55,10 @@ public class Player : MonoBehaviour {
         GravityZoneOff();
     }
 
-    public void RespawnAt(Transform spawnPoint)
+    public void CheckpointRespawn(Transform spawnPoint)
     {
-        IsDead = false;
-
         transform.position = spawnPoint.position;
         anim.SetBool("Dying", false);
-    }
-
-    public void Kill()
-    {
-        IsDead = true;
     }
 
     public float getPlayerFeet()
@@ -113,23 +104,15 @@ public class Player : MonoBehaviour {
             switch (orientation)
             {
                 case OrientationListener.Orientation.PORTRAIT:
-                    //playerRotation.SetLookRotation(Vector3.forward, Vector3.up);
-                    //transform.rotation = playerRotation;
                     anim.SetInteger("Orientation", 0);
                     break;
                 case OrientationListener.Orientation.LANDSCAPE_RIGHT:
-                    //playerRotation.SetLookRotation(Vector3.forward, Vector3.left);
-                    //transform.rotation = playerRotation;
                     anim.SetInteger("Orientation", 3);
                     break;
                 case OrientationListener.Orientation.LANDSCAPE_LEFT:
-                    //playerRotation.SetLookRotation(Vector3.forward, Vector3.right);
-                    //transform.rotation = playerRotation;
                     anim.SetInteger("Orientation", 1);
                     break;
                 case OrientationListener.Orientation.INVERTED_PORTRAIT:
-                    //playerRotation.SetLookRotation(Vector3.forward, Vector3.down);
-                    //transform.rotation = playerRotation;
                     anim.SetInteger("Orientation", 2);
                     break;
             }
@@ -195,8 +178,7 @@ public class Player : MonoBehaviour {
         {
             enabled = true;
             switchControlToPlayer();
-            LevelManager.Instance.RemoveMinion(gameObject);
-            Destroy(gameObject);
+            LevelManager.Instance.RemoveMinion(gameObject, true);
         }
     }
     void swipeCheck(TouchController.SwipeDirection direction)
@@ -252,7 +234,7 @@ public class Player : MonoBehaviour {
         }
         else if (state == StateChange.CANNON)
         {
-            ToggleRender();
+            ToggleRender(true);
             playerCollider.enabled = true;
         }
         else if(state == StateChange.CANNON_COLLISION)
@@ -264,12 +246,22 @@ public class Player : MonoBehaviour {
         else if (state == StateChange.PORTAL)
         {
             inTransition = false;
-            ToggleRender();
+            ToggleRender(true);
             playerCollider.enabled = true;
         }
         else if(state == StateChange.BOX)
         {
 
+        }
+        else if(state == StateChange.CHECKPOINT)
+        {
+            playerRigidBody.drag = drag;
+            playerRigidBody.angularDrag = angularDrag;
+            ToggleRender(true);
+            playerCollider.enabled = true;
+            inTransition = false;
+            launched = false;
+            isMinion = false;
         }
 
         if (!launched)
@@ -284,7 +276,8 @@ public class Player : MonoBehaviour {
                 walk.enabled = true;
                 playerRigidBody.gravityScale = 1;
             }
-            updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0);
+            if(state != StateChange.CHECKPOINT)
+                updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0);
         }
     }
 
@@ -301,19 +294,40 @@ public class Player : MonoBehaviour {
             launched = true;
             playerRigidBody.drag = 0;
             playerRigidBody.angularDrag = 0;
-            ToggleRender();
+            ToggleRender(false);
             playerCollider.enabled = false;
         }
         if(state == StateChange.PORTAL)
         {
             inTransition = true;
-            ToggleRender();
+            ToggleRender(false);
             playerCollider.enabled = false;
         }
         if(state == StateChange.BOX)
         {
 
         }
+    }
+
+    public PlayerState SavePlayerState()
+    {
+        PlayerState data = new PlayerState();
+        data.suctionStatus = suctionStatus;
+        if(suctionStatus)
+            data.suctionTimer = sWalk.GetTimer();
+        data.orientation = anim.GetInteger("Orientation");
+
+        return data;
+    }
+
+    public void LoadPlayerState(PlayerState state)
+    {
+        suctionStatus = state.suctionStatus;
+        if (suctionStatus)
+            sWalk.SetTimer(state.suctionTimer);
+        gravityZone = state.gravityZone;
+        anim.SetInteger("Orientation", state.orientation);  //currently doesnt do much
+        ReactivateControl(StateChange.CHECKPOINT);
     }
 
     void screenTouched(TouchInstanceData data)
@@ -342,10 +356,10 @@ public class Player : MonoBehaviour {
         TouchController.ScreenTouched -= screenTouched;
     }
 
-    public void ToggleRender()
+    public void ToggleRender(bool state)
     {
         foreach (Renderer i in potatoParts)
-            i.enabled = !i.enabled;
+            i.enabled = state;
     }
 
     public void LaunchStatusOn()
@@ -394,4 +408,12 @@ public class Player : MonoBehaviour {
     {
         return inTransition;
     }
+}
+
+public class PlayerState
+{
+    public float suctionTimer;
+    public bool suctionStatus;
+    public bool gravityZone;
+    public int orientation;
 }

@@ -69,7 +69,6 @@ public class GravityCannon : MonoBehaviour {
 
 	public void FirePlayer() {
         Vector2 direction;
-        //player.SetActive(true);
         player.GetComponent<Player>().ReactivateControl(Player.StateChange.CANNON);
         player.transform.position = cannonTip.position;
 		direction = (player.transform.position - transform.position).normalized;
@@ -78,24 +77,32 @@ public class GravityCannon : MonoBehaviour {
         anim.SetBool("activated", false);
 	}
 
-    void screenTouched(TouchInstanceData data)
+    void screenTouched()
     {
-        if (cannonReady && data.touchLocation != TouchController.TouchLocation.NONE)
+        if (cannonReady)
         {
             cannonReady = false;
             FirePlayer();
         }
     }
 
+    void resetCannon()
+    {
+        enterAble = false;
+        anim.SetBool("activated", false);
+    }
+
     void OnEnable()
     {
-        TouchController.ScreenTouched += screenTouched;
+        TouchController.OnTap += screenTouched;
         TouchController.OnSwipe += enterCannon;
+        LevelManager.OnCheckpointLoad += resetCannon;
     }
 
     void OnDisable()
     {
-        TouchController.ScreenTouched -= screenTouched;
+        TouchController.OnTap -= screenTouched;
         TouchController.OnSwipe -= enterCannon;
+        LevelManager.OnCheckpointLoad -= resetCannon;
     }
 }

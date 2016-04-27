@@ -11,7 +11,7 @@ public class Portal : MonoBehaviour {
     private Queue<GameObject> waitForLeave;
     private float distanceThreshold;
     private GameObject playerStatus;
-    private bool playerComing;
+    private Portal linkedPortalScript;
 
 	// Use this for initialization
 	void Start () {
@@ -19,6 +19,7 @@ public class Portal : MonoBehaviour {
         distanceThreshold = 0.1f;
         bodies = new List<Node>();
         waitForLeave = new Queue<GameObject>();
+        linkedPortalScript = linkedPortal.GetComponent<Portal>();
 	}
 	
 	// Update is called once per frame
@@ -60,7 +61,6 @@ public class Portal : MonoBehaviour {
             else if (isPlayer)
             {
                 collisionInfo.gameObject.GetComponent<Player>().DeactivateControl(Player.StateChange.PORTAL);
-                //collisionInfo.gameObject.SetActive(false);
             }
             else if (obj.GetComponent<Minion>())
             {
@@ -68,7 +68,7 @@ public class Portal : MonoBehaviour {
             }
             else
                 Debug.LogError("Object in portal not accounted for");
-            linkedPortal.GetComponent<Portal>().SendObject(obj, collisionInfo.relativeVelocity, transform.rotation.eulerAngles.z, isPlayer);
+            linkedPortalScript.SendObject(obj, collisionInfo.relativeVelocity, transform.rotation.eulerAngles.z, isPlayer);
         }
     }
 
@@ -102,6 +102,35 @@ public class Portal : MonoBehaviour {
             entity.obj.GetComponent<Player>().ReactivateControl(Player.StateChange.PORTAL);
 		}
     }
+
+    void CheckpointRestart()
+    {
+        if(bodies.Count > 0)
+        {
+            foreach (var body in bodies)
+            {
+                if (!body.obj.GetComponent<Animator>())
+                {
+                    body.obj.SetActive(true);
+                }
+            }
+            bodies.Clear();
+        }
+        if(waitForLeave.Count > 0)
+        {
+            waitForLeave.Clear();
+        }
+    }
+
+    void OnEnable()
+    {
+        LevelManager.OnCheckpointLoad += CheckpointRestart;
+    }
+    void OnDisable()
+    {
+        LevelManager.OnCheckpointLoad -= CheckpointRestart;
+    }
+
 }
 
 class Node
