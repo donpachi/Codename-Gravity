@@ -124,11 +124,7 @@ public class Player : MonoBehaviour {
     {
         facingRight = !facingRight;
         Vector3 playerScale = transform.localScale;
-        //if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT
-        //        || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
             playerScale.x *= -1;
-        //else
-        //    playerScale.y *= -1;
 
         transform.localScale = playerScale;
     }
