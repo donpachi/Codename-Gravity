@@ -18,7 +18,6 @@ public class Minion : MonoBehaviour {
     float playerPosDiff;
     Vector2 prevPlayerLocation;
     private FollowPlayer _camera;
-    private bool _spirit;
     private GroundCheck gCheck;
 
     // Use this for initialization
@@ -34,8 +33,6 @@ public class Minion : MonoBehaviour {
 
     void Update()
     {
-        if (_spirit)
-            lerpToObject(_parent);
     }
 
     // Update is called once per frame
@@ -175,12 +172,6 @@ public class Minion : MonoBehaviour {
     private void minionDeath()
     {
         Destroy(gameObject);
-        returnToPlayer();
-    }
-
-    private void becomeSpirit()
-    {
-        _spirit = true;
         returnToPlayer();
     }
 
