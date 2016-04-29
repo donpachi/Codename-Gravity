@@ -4,7 +4,6 @@ using System;
 
 public class PressurePlate : MonoBehaviour
 {
-
     public bool CanBeUntriggered = false;
     public float ReleaseDelay = 0;
     public Animator anim;
@@ -13,6 +12,7 @@ public class PressurePlate : MonoBehaviour
     float timer = 0;
     bool timerCountingDown = false;
     bool pressing = false;
+    ButtonState checkpointState;
 
     // Use this for initialization
     void Start()
@@ -62,10 +62,52 @@ public class PressurePlate : MonoBehaviour
     }
 
     void broadcastRelease()
-    {       
+    {
         timerCountingDown = false;
         foreach (GameObject item in list)
             item.SendMessage("plateReleased");
     }
 
+    void checkpointSave()
+    {
+        checkpointState = new ButtonState();
+        checkpointState.pressed = anim.GetBool("Pressed");
+
+        if (CanBeUntriggered)
+        {
+            checkpointState.timer = timer;
+            checkpointState.timerCountingDown = timerCountingDown;
+        }
+    }
+
+    void checkpointLoad()
+    {
+        if (CanBeUntriggered)
+        {
+            timer = checkpointState.timer;
+            timerCountingDown = checkpointState.timerCountingDown;
+        }
+        else
+        {
+            anim.SetBool("Pressed", checkpointState.pressed);
+        }
+    }
+
+    void OnEnable()
+    {
+        LevelManager.OnCheckpointLoad += checkpointLoad;
+        LevelManager.OnCheckpointSave += checkpointSave;
+    }
+    void OnDisable()
+    {
+        LevelManager.OnCheckpointLoad -= checkpointLoad;
+        LevelManager.OnCheckpointSave -= checkpointSave;
+    }
+}
+
+class ButtonState
+{
+    public bool pressed;
+    public float timer;
+    public bool timerCountingDown;
 }
