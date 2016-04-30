@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 1e3361d48a6881d40a799fe879e1460e
-timeCreated: 1461889301
+timeCreated: 1461965327
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -61,8 +61,8 @@ TextureImporter:
         y: 16
         width: 13
         height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.9585798, y: 0.8463037}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
     - name: Arms_R
@@ -72,8 +72,8 @@ TextureImporter:
         y: 0
         width: 12
         height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.21238185, y: 0.9555405}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
     - name: Arms_L_Jump
@@ -83,8 +83,8 @@ TextureImporter:
         y: 16
         width: 13
         height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.04410201, y: 0.176938}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
     - name: Arms_L
@@ -94,8 +94,8 @@ TextureImporter:
         y: 0
         width: 12
         height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.20947647, y: 0.96018887}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
     outline: []

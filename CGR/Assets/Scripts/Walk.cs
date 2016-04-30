@@ -80,12 +80,12 @@ public class Walk : MonoBehaviour {
 
     void OnEnable()
     {
-        TouchController.ScreenTouched += screenTouched;
+        TouchController.OnHold += screenTouched;
     }
 
     void OnDisable()
     {
-        TouchController.ScreenTouched -= screenTouched;
+        TouchController.OnHold -= screenTouched;
     }
 
 }

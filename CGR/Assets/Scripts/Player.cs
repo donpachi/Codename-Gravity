@@ -124,7 +124,7 @@ public class Player : MonoBehaviour {
     {
         facingRight = !facingRight;
         Vector3 playerScale = transform.localScale;
-            playerScale.x *= -1;
+        playerScale.x *= -1;
 
         transform.localScale = playerScale;
     }

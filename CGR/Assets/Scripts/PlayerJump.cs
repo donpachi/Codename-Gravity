@@ -26,12 +26,9 @@ public class PlayerJump : MonoBehaviour {
         if (!_jumping && _jumpRequest)
         {
             anim.SetBool("Jumping", true);
-            playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
-            _jumping = true;
             _jumpRequest = false;
+            _jumping = true;
         }
-        else if (_jumping && !gCheck.InAir)
-            JumpFinished();
     }
 
     public void JumpFinished()
@@ -40,8 +37,14 @@ public class PlayerJump : MonoBehaviour {
         anim.SetBool("Jumping", false);
     }
 
+    void jump()
+    {
+        playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
+    }
+
     void jumpCheck()
     {
+        Debug.Log("Tap happened");
         if (!gCheck.InAir)
         {
             _jumpRequest = true;

@@ -37,6 +37,7 @@ public class Minion : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate() {
+        anim.SetBool("InAir", gCheck.InAir);
         if (!IsFollowing)
             return;
 
