@@ -9,6 +9,7 @@ public class WindtunnelPush : MonoBehaviour {
 
     public bool TurbineOn;
 
+    private bool turbineState;
 
     void Start () {
         windtunnels = GetComponentsInChildren<WindTunnel>();
@@ -21,7 +22,11 @@ public class WindtunnelPush : MonoBehaviour {
     }
 	
 	void FixedUpdate () {
-        if (!TurbineOn)
+        if(TurbineOn != turbineState)
+        {
+            changeState(TurbineOn);
+        }
+        if (!turbineState)
             return;
 
         foreach (var turbine in windtunnels)
@@ -34,7 +39,6 @@ public class WindtunnelPush : MonoBehaviour {
                     {
                         addWindForce(entry.Key, entry.Value);
                         pushed.Add(entry.Key);
-                        //Debug.Log("------");
                     }
                 }
             }           
@@ -52,32 +56,42 @@ public class WindtunnelPush : MonoBehaviour {
     /// Function looks throguh all the child objects and changes the animation state for each object
     /// </summary>
     /// 
-    void setAnimationState(bool turbineState)
+    void setAnimationState(bool state)
     {
         Animator[] animators = gameObject.GetComponentsInChildren<Animator>();
         foreach (Animator anim in animators)
         {
-            anim.SetBool("TurbineOn", turbineState);
+            anim.SetBool("TurbineOn", state);
+        }
+    }
+
+    void changeState(bool state)
+    {
+        turbineState = state;
+        setAnimationState(turbineState);
+        foreach (var turbine in windtunnels)
+        {
+            turbine.TurbineOn = state;
+        }
+    }
+
+    void toggleOnOff()
+    {
+        turbineState = !turbineState;
+        setAnimationState(turbineState);
+        foreach (var turbine in windtunnels)
+        {
+            turbine.TurbineOn = turbineState;
         }
     }
 
     void plateDepressed()
     {
-        TurbineOn = !TurbineOn;
-        setAnimationState(TurbineOn);
-        foreach (var turbine in windtunnels)
-        {
-            turbine.TurbineOn = TurbineOn;
-        }
+        toggleOnOff();
     }
 
     void plateReleased()
     {
-        TurbineOn = !TurbineOn;
-        setAnimationState(TurbineOn);
-        foreach (var turbine in windtunnels)
-        {
-            turbine.TurbineOn = TurbineOn;
-        }
+        toggleOnOff();
     }
 }
