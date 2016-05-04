@@ -19,6 +19,7 @@ public class Minion : MonoBehaviour {
     Vector2 prevPlayerLocation;
     private FollowPlayer _camera;
     private GroundCheck gCheck;
+    private bool facingRight = true;
 
     // Use this for initialization
     void Start() {
@@ -187,14 +188,34 @@ public class Minion : MonoBehaviour {
         player.GetComponent<Player>().switchControlToPlayer();
     }
 
+    //Flip character while moving left and right
+    void flipSprite(TouchInstanceData data)
+    {
+        Vector3 objScale = transform.localScale;
+        if (facingRight && data.touchLocation == TouchController.TouchLocation.LEFT)
+        {
+            facingRight = false;
+            objScale.x *= -1;
+        }
+        else if(!facingRight && data.touchLocation == TouchController.TouchLocation.RIGHT)
+        {
+            facingRight = true;
+            objScale.x *= -1;
+        }
+
+        transform.localScale = objScale;
+    }
+
     //Event handling for swipe events
     void OnEnable()
     {
         TouchController.OnSwipe += swipeCheck;
+        TouchController.OnHold += flipSprite;
     }
     void OnDisable()
     {
         TouchController.OnSwipe -= swipeCheck;
+        TouchController.OnHold -= flipSprite;
     }
 
     //Check for deadly collisions

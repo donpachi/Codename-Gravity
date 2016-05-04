@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#define UNITY_CHANGE3
+
+using UnityEngine;
 using System.Collections;
 using System.Threading;
 
