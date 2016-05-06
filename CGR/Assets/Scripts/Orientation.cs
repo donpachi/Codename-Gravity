@@ -5,14 +5,15 @@ public class Orientation : MonoBehaviour {
 
     Animator anim;
     bool autoUpdate = false;
-    bool syncWithPlayer = true;
+    public bool syncWithPlayer { get; set; }
     bool InRotation = false;
     Animator playerAnim;
 
 	void Start () {
         anim = GetComponent<Animator>();
         playerAnim = GameObject.Find("Player").GetComponent<Animator>();
-	}
+        syncWithPlayer = true;
+    }
 
     void Update()
     {

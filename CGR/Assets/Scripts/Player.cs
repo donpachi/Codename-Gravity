@@ -192,6 +192,7 @@ public class Player : MonoBehaviour {
         playerRigidBody.isKinematic = true;
         anim.SetBool("Moving", false);
         controllingMinion.GetComponent<Animator>().SetBool("SwitchingToMinion", true);
+        controllingMinion.GetComponent<Orientation>().syncWithPlayer = false;
         WorldGravity.Instance.enabled = false;
         isMinion = true;
     }
