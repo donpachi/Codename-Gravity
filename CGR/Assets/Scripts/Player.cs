@@ -73,16 +73,9 @@ public class Player : MonoBehaviour {
             return transform.position.x + 0.25f;
     }
 
-    public Vector2 getPlayerFeetVector()
+    public Vector2 getPlayerFeetPosition()
     {
-        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT)
-            return new Vector2(transform.position.x, transform.position.y - 0.25f);
-        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
-            return new Vector2(transform.position.x, transform.position.y + 0.25f);
-        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT)
-            return new Vector2(transform.position.x - 0.25f, transform.position.y);
-        else
-            return new Vector2(transform.position.x + 0.25f, transform.position.y);
+        return transform.position - transform.up * 0.25f;
     }
 
     /// <summary>

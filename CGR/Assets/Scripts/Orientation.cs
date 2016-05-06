@@ -4,15 +4,27 @@ using System.Collections;
 public class Orientation : MonoBehaviour {
 
     Animator anim;
+    bool autoUpdate = false;
+    bool syncWithPlayer = true;
     bool InRotation = false;
+    Animator playerAnim;
 
 	void Start () {
         anim = GetComponent<Animator>();
+        playerAnim = GameObject.Find("Player").GetComponent<Animator>();
 	}
+
+    void Update()
+    {
+        if (syncWithPlayer)
+            anim.SetInteger("Orientation", playerAnim.GetInteger("Orientation"));
+    }
 
     //updates sprite to correct orientation
     public void updateOrientation(OrientationListener.Orientation orientation, float timer)
     {
+        if (!autoUpdate)
+            return;
         switch (orientation)
         {
             case OrientationListener.Orientation.PORTRAIT:
@@ -28,6 +40,11 @@ public class Orientation : MonoBehaviour {
                 anim.SetInteger("Orientation", 2);
                 break;
         }
+    }
+
+    public void AutoUpdate(bool On)
+    {
+        autoUpdate = On; 
     }
 
     /// <summary>
