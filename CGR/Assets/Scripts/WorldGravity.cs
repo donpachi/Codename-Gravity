@@ -20,7 +20,6 @@ public class WorldGravity : MonoBehaviour {
     {
         if (Instance == null)
         {
-            DontDestroyOnLoad(gameObject);
             Instance = this;
         }
         else if (Instance != this)
