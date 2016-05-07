@@ -1,4 +1,8 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:CGR/Assets/TempArt/Explosion/Explosion1.png.meta
+guid: 3e13af0e96bb3624ba2566855852b97b
+timeCreated: 1462394409
+=======
 <<<<<<< HEAD
 guid: 98c90c26efe5712459382e041116f351
 timeCreated: 1462398211
@@ -6,6 +10,7 @@ timeCreated: 1462398211
 guid: 8adfac2f2b2122e4e8d40a07342621f9
 timeCreated: 1462399525
 >>>>>>> efe9ed622661a1a7b0e2b7886e117b1ab046962b
+>>>>>>> ab484c2cb58bb0c4cb28b335ea111aa9568147e5:CGR/Assets/TempArt/Explosion/Explosion1.png.meta
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}

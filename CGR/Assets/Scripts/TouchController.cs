@@ -27,7 +27,8 @@ public class TouchController : MonoBehaviour {
     //Data for each touch
     private Dictionary<int, TouchInstanceData> touchDataDictionary;
     private Text DebugText;
-    private float TapTimeAllowance = 0.05f;      //delta time allowance that will determine if the screen was tapped
+    private float tapTimeAllowance = 0.05f;      //delta time allowance that will determine if the screen was tapped
+    private float holdTimeAllowance = 0.02f;     // delta time that will determine if the screen was held
 
     //Event Stuff
     public delegate void SwipeEvent(SwipeDirection direction);
@@ -202,7 +203,7 @@ public class TouchController : MonoBehaviour {
     /// <returns></returns>
     bool isTap(Touch touch, TouchInstanceData data)
     {
-        if (data.totalTime <= TapTimeAllowance)
+        if (data.totalTime <= tapTimeAllowance)
         {
             if (DebugText != null)
                 DebugText.text += "\n Tap Moved " + (data.StartPosition - touch.position).magnitude;
@@ -224,7 +225,7 @@ public class TouchController : MonoBehaviour {
     {
         if(DebugText != null)
             DebugText.text = "Held for: " + data.totalTime;
-        if (data.totalTime > TapTimeAllowance)
+        if (data.totalTime > holdTimeAllowance)
         {
             screenHeld(data);
             if(DebugText != null)
