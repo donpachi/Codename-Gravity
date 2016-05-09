@@ -13,10 +13,8 @@ using UnityEngine.UI;       //FOR DEBUG REMOVE LATER
 public class TouchController : MonoBehaviour {
 
     public static TouchController Instance;
-    public float SwipeTime = 1.0f;     //Max time for movement check of a swipe.
+    public float SwipeTime = 0.5f;     //Max time for movement check of a swipe.
     public float DeadZoneMagnitude = 20;      //DeadZone of swipe movement calculated as ratio between this value and screen height
-    public float TapTimeAllowance = 0.4f;      //delta time allowance that will determine if the screen was tapped
-    public float TapPositionGrace = 2f;       //movement allowed for a touch to be considered a tap
     public float stationaryTouchGrace = 0.1f;   //Time allowed for a touch to be stationary
     public enum SwipeDirection {UP, DOWN, LEFT, RIGHT}
     public enum TouchLocation {LEFT, RIGHT, NONE}
@@ -24,15 +22,13 @@ public class TouchController : MonoBehaviour {
     //Screen width and height
     private int height;
     private int width;
-    //max touches counted
-    private int MAXTOUCHES = 2;
-    //Array for touch data
-    private TouchInstanceData[] touchDataArray;
     //Deadzone of swipe move, calculated as a ratio of the screen height
     private float deadZone;
+    //Data for each touch
     private Dictionary<int, TouchInstanceData> touchDataDictionary;
-
-
+    private Text DebugText;
+    private float tapTimeAllowance = 0.05f;      //delta time allowance that will determine if the screen was tapped
+    private float holdTimeAllowance = 0.02f;     // delta time that will determine if the screen was held
 
     //Event Stuff
     public delegate void SwipeEvent(SwipeDirection direction);
@@ -92,27 +88,26 @@ public class TouchController : MonoBehaviour {
         }
         height = Screen.height;
         width = Screen.width;
-        initTouchDataArray();
         deadZone = height / DeadZoneMagnitude;
 
         touchDataDictionary = new Dictionary<int, TouchInstanceData>();
-	}
+    }
 
-    void initTouchDataArray()
+    void OnLevelWasLoaded(int level)
     {
-        touchDataArray = new TouchInstanceData[MAXTOUCHES];
-        for (int i = 0; i < touchDataArray.Length; i++)
+        if (GameObject.Find("DebugText") != null)
         {
-            touchDataArray[i] = new TouchInstanceData();
+            DebugText = GameObject.Find("DebugText").GetComponent<Text>();
+            DebugText.text = "Deadzone: " + deadZone;
         }
+        else
+            DebugText = null;
     }
 	
 	void Update () {
         for (int i = 0; i < Input.touchCount; ++i)
         {
-            //processATouch(Input.touches[i], i);
             processATouch(Input.GetTouch(i));
-            //GameObject.Find("ScreenText").GetComponent<Text>().text += "TouchLocation: " + touchDataArray[Input.touches[i].fingerId].touchLocation + " touchposition: " + Input.touches[i].position + "\n";
         }
 	}
 
@@ -208,11 +203,14 @@ public class TouchController : MonoBehaviour {
     /// <returns></returns>
     bool isTap(Touch touch, TouchInstanceData data)
     {
-        if (data.totalTime <= TapTimeAllowance)
+        if (data.totalTime <= tapTimeAllowance)
         {
-            //Debug.Log("Start: " + data.StartPosition + " end: " + touch.position + " offset: " + (data.StartPosition - touch.position).magnitude + " time: " + data.totalTime);
-            if ((data.StartPosition - touch.position).magnitude < TapPositionGrace)
+            if (DebugText != null)
+                DebugText.text += "\n Tap Moved " + (data.StartPosition - touch.position).magnitude;
+            if ((data.StartPosition - touch.position).magnitude < deadZone)
             {
+                if(DebugText != null)
+                    DebugText.text += "\n tap detected";
                 return true;
             }
         }
@@ -225,9 +223,13 @@ public class TouchController : MonoBehaviour {
     /// <param name="data"></param>
     void checkHold(TouchInstanceData data)
     {
-        if (data.totalTime > TapTimeAllowance)
+        if(DebugText != null)
+            DebugText.text = "Held for: " + data.totalTime;
+        if (data.totalTime > holdTimeAllowance)
         {
             screenHeld(data);
+            if(DebugText != null)
+                DebugText.text += "\n**Hold Triggered**";
         }
     }
 

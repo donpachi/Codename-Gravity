@@ -1,0 +1,466 @@
+fileFormatVersion: 2
+guid: 340ce190f3068264a9d5bbec767cead6
+timeCreated: 1462401178
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: M_Arm_L
+    21300002: M_Foot_R
+    21300004: M_Foot_L
+    21300006: M_Body
+    21300008: M_Mouth_Happy
+    21300010: M_Mouth_Smirk
+    21300012: M_Mouth_Surprise
+    21300014: M_Mouth_Tounge
+    21300016: M_Mouth_Sad
+    21300018: M_Mouth_Sadder
+    21300020: M_Arm_R
+    21300022: M_Eyes_Death
+    21300024: M_Eyes_Forward
+    21300026: M_Eyes_Down
+    21300028: M_Eyes_Camera
+    21300030: M_Eyebrows
+    21300032: M_Antenna_0
+    21300034: M_Antenna_1
+    21300036: M_Antenna_2
+    21300038: M_Antenna_3
+    21300040: M_Antenna_4
+    21300042: M_Antenna_5
+    21300044: M_Antenna_6
+    21300046: M_Antenna_7
+    21300048: M_Antenna_8
+    21300050: M_Antenna_9
+    21300052: M_Antenna_10
+    21300054: M_Antenna_11
+    21300056: Minion_1
+    21300058: M_Antenna_12
+    21300060: M_Antenna_13
+    21300062: M_Antenna_14
+    21300064: M_Antenna_15
+    21300066: M_Antenna_16
+    21300068: M_Antenna_17
+    21300070: Minion_8
+    21300072: Minion_9
+    21300074: Minion_10
+    21300076: M_Eyes_Up
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: M_Foot_R
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 135
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Foot_L
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 134
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Body
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 41
+        width: 38
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -19, y: 20}
+        - {x: -19, y: -19}
+        - {x: -17, y: -20}
+        - {x: 18, y: -20}
+        - {x: 19, y: -16}
+        - {x: 19, y: 16}
+        - {x: 14, y: 20}
+    - name: M_Mouth_Happy
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 81
+        width: 19
+        height: 5
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Mouth_Smirk
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 66
+        width: 19
+        height: 6
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Mouth_Surprise
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 64
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Mouth_Tounge
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 79
+        width: 17
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Mouth_Sad
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 68
+        width: 19
+        height: 5
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Mouth_Sadder
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 80
+        width: 26
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Eyes_Death
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 105
+        width: 19
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Eyes_Forward
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 92
+        width: 19
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Eyes_Down
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 88
+        width: 19
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Eyes_Camera
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 99
+        width: 19
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Eyebrows
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 110
+        width: 19
+        height: 2
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_1
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_2
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_3
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_4
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_5
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_6
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_7
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_8
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_9
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_10
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_11
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_12
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_13
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_14
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_15
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 479
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 457
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Antenna_17
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 457
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: M_Eyes_Up
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 92
+        width: 19
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

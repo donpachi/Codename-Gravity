@@ -105,16 +105,37 @@ public class LevelManager : MonoBehaviour
     /// <param name="minion"></param>
     public void AddMinion(GameObject minion)
     {
+        Minion minionScript = minion.GetComponent<Minion>();
+        _minionList.Add(minion);
+
         if (_minionList.Count == 0)
         {
-            minion.GetComponent<Minion>().SetParent(null);
-            minion.GetComponent<Minion>().MinionDistance = MinionLeaderDist;
+            minionScript.SetParent(Player.gameObject);
+            minionScript.MinionDistance = MinionLeaderDist;
         }
         else
         {
-            minion.GetComponent<Minion>().SetParent(_minionList.Last());
+            minionScript.SetParent(_minionList.Last());
+            minionScript.SetRenderOrder(_minionList.Count - 1);
         }
-        _minionList.Add(minion);
+    }
+
+    /// <summary>
+    /// Fixes order of the minions so they render properly
+    /// </summary>
+    void reorderMinions()
+    {
+        for (int i = 0; i < _minionList.Count; i++)
+        {
+            if(i == _minionList.Count - 1)
+            {
+                _minionList[i].GetComponent<Minion>().SetParent(Player.gameObject);
+            }
+            else
+            {
+
+            }
+        }
     }
 
     /// <summary>
@@ -182,25 +203,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private void reinitializeMinions()
-    {
-        if(_minionList.Count > checkpointSaveData.MinionCount)
-        {
-            while (_minionList.Count > checkpointSaveData.MinionCount)
-            {
-                RemoveMinion(_minionList[_minionList.Count - 1], true);
-            }
-        }
-        else
-        {
-            while (_minionList.Count < checkpointSaveData.MinionCount)
-            {
-                GameObject newMinion = (GameObject)Instantiate(Resources.Load("Prefabs/Minion"));
-                newMinion.transform.position = Player.transform.position;
-                AddMinion(newMinion);
-            }
-        }
-    }
+
 
     /// <summary>
     /// Gets the front most minion and removes it from the list
@@ -212,7 +215,7 @@ public class LevelManager : MonoBehaviour
         _minionList.RemoveAt(0);        //remove him from the list
         if (_minionList.Count > 0)
         {
-            _minionList[0].GetComponent<Minion>().SetParent(null); //set the new front minion parent to null
+            _minionList[0].GetComponent<Minion>().SetParent(Player.gameObject); //set the new front minion parent to player
             _minionList[0].GetComponent<Minion>().MinionDistance = MinionLeaderDist;
         }
         return minion;
@@ -222,21 +225,24 @@ public class LevelManager : MonoBehaviour
     /// Request a new checkpoint to be set
     /// </summary>
     /// <param name="requestedObj">The object that requested the checkpoint</param>
-    public void NewCheckpointRequest(GameObject requestedObj)
+    public bool NewCheckpointRequest(GameObject requestedObj)
     {
         RaycastHit2D groundCheckRay = Physics2D.Raycast(Player.transform.position, Player.transform.up * -1, 1, checkpointRayMask);
         if (!groundCheckRay || groundCheckRay.collider.tag == "Dynamic")
-            return;
+            return false;
 
         if (requestedObj.GetComponent<Minion>() != null)
         {
             requestedObj.GetComponent<Animator>().SetBool("Checkpoint", true);
+            return true;
         }
         else if(requestedObj.GetComponent<Player>() != null && _minionList.Count != 0)
         {
             _minionList[_minionList.Count - 1].GetComponent<Animator>().SetBool("Checkpoint", true);
             RemoveMinion(_minionList[_minionList.Count - 1], false);
+            return true;
         }
+        return false;
     }
 
     /// <summary>
@@ -274,6 +280,26 @@ public class LevelManager : MonoBehaviour
             checkpointSaveData = new LevelData();
         checkpointSaveData.MinionCount = _minionList.Count;
         checkpointSaveData.PlayerState = Player.SavePlayerState();
+    }
+
+    private void reinitializeMinions()
+    {
+        if(_minionList.Count > checkpointSaveData.MinionCount)
+        {
+            while (_minionList.Count > checkpointSaveData.MinionCount)
+            {
+                RemoveMinion(_minionList[_minionList.Count - 1], true);
+            }
+        }
+        else
+        {
+            while (_minionList.Count < checkpointSaveData.MinionCount)
+            {
+                GameObject newMinion = (GameObject)Instantiate(Resources.Load("Prefabs/Minion"));
+                newMinion.transform.position = Player.transform.position;
+                AddMinion(newMinion);
+            }
+        }
     }
 }
 

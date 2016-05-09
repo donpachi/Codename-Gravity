@@ -12,13 +12,16 @@ public class Minion : MonoBehaviour {
     public Animator anim { get; private set; }
 
     GameObject player;
+    Rigidbody2D rBody;
     List<GameObject> minions = new List<GameObject>();
     GameObject _parent;
     public bool IsFollowing = true;
-    float playerPosDiff;
     Vector2 prevPlayerLocation;
     private FollowPlayer _camera;
     private GroundCheck gCheck;
+    private bool facingRight = true;
+    private float teleportDistance = 4f;
+    private float suctionTimer = 0;
 
     // Use this for initialization
     void Start() {
@@ -28,43 +31,54 @@ public class Minion : MonoBehaviour {
         this.GetComponent<PlayerJump>().enabled = false;
         this.GetComponent<Walk>().enabled = false;
         _camera = FindObjectOfType<FollowPlayer>();
+        rBody = GetComponent<Rigidbody2D>();
         GravityZoneOff();
-    }
-
-    void Update()
-    {
     }
 
     // Update is called once per frame
     void FixedUpdate() {
+        anim.SetBool("InAir", gCheck.InAir);
         if (!IsFollowing)
             return;
 
-        RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, -transform.up, 0.5f);
-        if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle") && checkIfSameHeight() && groundCheckRay.collider != null && groundCheckRay.collider.name.Contains("MovingPlatform"))
-        {
-            if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
-            {
-                playerPosDiff = Mathf.Abs(prevPlayerLocation.x - player.transform.position.x);
-                if (prevPlayerLocation.x > player.transform.position.x)
-                    transform.position = new Vector2(transform.position.x - playerPosDiff, transform.position.y);
-                else
-                    transform.position = new Vector2(transform.position.x + playerPosDiff, transform.position.y);
-            }
-            else
-            {
-                playerPosDiff = Mathf.Abs(prevPlayerLocation.y - player.transform.position.y);
-                if (prevPlayerLocation.y > player.transform.position.y)
-                    transform.position = new Vector2(transform.position.x, transform.position.y + playerPosDiff);
-                else
-                    transform.position = new Vector2(transform.position.x, transform.position.y - playerPosDiff);
-            }
-        }
-        else
-            lerpToPlayer();
+        //RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, -transform.up, 0.5f);
+        //if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle") && checkIfSameHeight() && groundCheckRay.collider != null && groundCheckRay.collider.name.Contains("MovingPlatform"))
+        //{
+        //    if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT || OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT)
+        //    {
+        //        playerPosDiff = Mathf.Abs(prevPlayerLocation.x - player.transform.position.x);
+        //        if (prevPlayerLocation.x > player.transform.position.x)
+        //            transform.position = new Vector2(transform.position.x - playerPosDiff, transform.position.y);
+        //        else
+        //            transform.position = new Vector2(transform.position.x + playerPosDiff, transform.position.y);
+        //    }
+        //    else
+        //    {
+        //        playerPosDiff = Mathf.Abs(prevPlayerLocation.y - player.transform.position.y);
+        //        if (prevPlayerLocation.y > player.transform.position.y)
+        //            transform.position = new Vector2(transform.position.x, transform.position.y + playerPosDiff);
+        //        else
+        //            transform.position = new Vector2(transform.position.x, transform.position.y - playerPosDiff);
+        //    }
+        //}
+        //else
+        lerpToParent();
 
-        checkGravityScale();
+        if ((transform.position - _parent.transform.position).magnitude > teleportDistance)
+            teleportToParent();
+
+        //checkGravityScale();
         prevPlayerLocation = player.transform.position;
+
+        if(suctionTimer > 0)
+        {
+            suctionTimer -= Time.deltaTime;
+        }
+        if(suctionTimer < 0)
+        {
+            suctionTimer = 0;
+            rBody.gravityScale = 1;
+        }
     }
 
     public void GravityZoneOn()
@@ -80,6 +94,15 @@ public class Minion : MonoBehaviour {
     public void SetParent(GameObject parentObj)
     {
         _parent = parentObj;
+    }
+
+    public void SetRenderOrder(int order)
+    {
+        SortingOrderScript[] orderChangers = gameObject.GetComponentsInChildren<SortingOrderScript>();
+        foreach (var changer in orderChangers)
+        {
+            changer.SetOrderTo(order);
+        }
     }
 
     void checkGravityScale()
@@ -112,13 +135,31 @@ public class Minion : MonoBehaviour {
         return true;
     }
 
-    void lerpToPlayer()
+    void checkVelocity()
     {
-        if (_parent == null)
+        if(_parent.name == "Player")
         {
-            if (Vector2.Distance(transform.position, player.GetComponent<Player>().getPlayerFeetVector()) > MinionDistance)
+            if(rBody.velocity.magnitude > _parent.GetComponent<Rigidbody2D>().velocity.magnitude)
             {
-                transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetVector(), MinionFollowSpeed);
+                rBody.velocity = _parent.GetComponent<Rigidbody2D>().velocity;
+            }
+        }
+    }
+
+    void teleportToParent()
+    {
+        transform.position = _parent.transform.position;
+        rBody.velocity = Vector2.zero;
+    }
+
+    void lerpToParent()
+    {
+        if (_parent.name == "Player")
+        {
+            if (Vector2.Distance(transform.position, player.GetComponent<Player>().getPlayerFeetPosition()) > MinionDistance)
+            {
+                Vector2 newPosition = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetPosition(), MinionFollowSpeed);
+                transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetPosition(), MinionFollowSpeed);
                 anim.SetBool("Moving", true);
             }
             else
@@ -146,10 +187,12 @@ public class Minion : MonoBehaviour {
     {
         if(direction == TouchController.SwipeDirection.DOWN && !IsFollowing && !gCheck.InAir)
         {
-            GetComponent<Rigidbody2D>().isKinematic = true;
-            GetComponent<Walk>().enabled = false;
-            GetComponent<PlayerJump>().enabled = false;
-            LevelManager.Instance.NewCheckpointRequest(gameObject);
+            if (LevelManager.Instance.NewCheckpointRequest(gameObject))
+            {
+                GetComponent<Rigidbody2D>().isKinematic = true;
+                GetComponent<Walk>().enabled = false;
+                GetComponent<PlayerJump>().enabled = false;
+            }
         }
     }
 
@@ -186,14 +229,42 @@ public class Minion : MonoBehaviour {
         player.GetComponent<Player>().switchControlToPlayer();
     }
 
+    //Flip character while moving left and right
+    void flipSprite(TouchInstanceData data)
+    {
+        Vector3 objScale = transform.localScale;
+        if (facingRight && data.touchLocation == TouchController.TouchLocation.LEFT)
+        {
+            facingRight = false;
+            objScale.x *= -1;
+        }
+        else if(!facingRight && data.touchLocation == TouchController.TouchLocation.RIGHT)
+        {
+            facingRight = true;
+            objScale.x *= -1;
+        }
+
+        transform.localScale = objScale;
+    }
+
+    private void scActive(float time)
+    {
+        rBody.gravityScale = 0;
+        suctionTimer = time;
+    }
+
     //Event handling for swipe events
     void OnEnable()
     {
         TouchController.OnSwipe += swipeCheck;
+        TouchController.OnHold += flipSprite;
+        SuctionCup.SCActivated += scActive;
     }
     void OnDisable()
     {
         TouchController.OnSwipe -= swipeCheck;
+        TouchController.OnHold -= flipSprite;
+        SuctionCup.SCActivated -= scActive;
     }
 
     //Check for deadly collisions

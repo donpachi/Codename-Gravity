@@ -54,6 +54,7 @@ public class SuctionCup : MonoBehaviour {
 
             timer = suctionTimer;
             player.GetComponent<SuctionWalk>().SetTimer(suctionTimer);
+            triggerSuctionEvent();
 		}
 	}
 
