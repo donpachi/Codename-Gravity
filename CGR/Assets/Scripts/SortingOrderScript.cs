@@ -8,7 +8,7 @@ public class SortingOrderScript : MonoBehaviour {
     private SpriteRenderer rend;
 
 	// Use this for initialization
-	void Start ()
+	void Awake ()
     {
         rend = GetComponent<SpriteRenderer>();
 	}
