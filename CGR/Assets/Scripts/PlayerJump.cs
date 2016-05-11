@@ -39,8 +39,8 @@ public class PlayerJump : MonoBehaviour {
 
     void jump()
     {
-        playerBody.AddForce(OrientationListener.instanceOf.getRelativeUpVector() * jumpForce);
-        playerBody.AddForce(playerBody.transform.forward * 1.0f);
+        playerBody.AddForce(playerBody.transform.up * jumpForce);
+        playerBody.AddForce(playerBody.transform.right * 30.0f * playerBody.transform.localScale.x);
     }
 
     void jumpCheck()

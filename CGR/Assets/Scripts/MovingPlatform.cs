@@ -157,7 +157,6 @@ public class MovingPlatform : MonoBehaviour {
         return collidingObjects;
     }
 
-
     void plateDepressed()
     {
         isActive = true;
@@ -167,4 +166,16 @@ public class MovingPlatform : MonoBehaviour {
     {
         isActive = false;
     }
+
+	public void OnDrawGizmos()
+	{
+		if (MoveRight)
+			Gizmos.DrawRay(transform.position, transform.right*XDistance);
+		else
+			Gizmos.DrawRay(transform.position, transform.right*-XDistance);
+		if (MoveDown)
+			Gizmos.DrawRay(transform.position, transform.up*-YDistance);
+		else
+			Gizmos.DrawRay(transform.position, transform.up*YDistance);
+	}
 }
