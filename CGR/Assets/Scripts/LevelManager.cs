@@ -106,7 +106,6 @@ public class LevelManager : MonoBehaviour
     public void AddMinion(GameObject minion)
     {
         Minion minionScript = minion.GetComponent<Minion>();
-        _minionList.Add(minion);
 
         if (_minionList.Count == 0)
         {
@@ -116,8 +115,9 @@ public class LevelManager : MonoBehaviour
         else
         {
             minionScript.SetParent(_minionList.Last());
-            minionScript.SetRenderOrder(_minionList.Count - 1);
         }
+        _minionList.Add(minion);
+        reorderMinions();
     }
 
     /// <summary>
@@ -125,16 +125,11 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     void reorderMinions()
     {
+        int j = _minionList.Count - 1;
         for (int i = 0; i < _minionList.Count; i++)
         {
-            if(i == _minionList.Count - 1)
-            {
-                _minionList[i].GetComponent<Minion>().SetParent(Player.gameObject);
-            }
-            else
-            {
-
-            }
+            _minionList[i].GetComponent<Minion>().SetRenderOrder(j);
+            j--;
         }
     }
 

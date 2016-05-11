@@ -105,6 +105,15 @@ public class Minion : MonoBehaviour {
         }
     }
 
+    public void SetRenderLayer(string layer)
+    {
+        SortingOrderScript[] orderChangers = gameObject.GetComponentsInChildren<SortingOrderScript>();
+        foreach (var changer in orderChangers)
+        {
+            changer.SetLayerTo(layer);
+        }
+    }
+
     void checkGravityScale()
     {
         if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT && transform.position.y > player.GetComponent<Player>().getPlayerFeet())

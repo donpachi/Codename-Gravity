@@ -188,6 +188,7 @@ public class Player : MonoBehaviour {
     void switchControlToMinion()
     {
         GameObject controllingMinion = LevelManager.Instance.GetMinion();
+        controllingMinion.GetComponent<Minion>().SetRenderLayer("FrontOfPlayer");
         walk.enabled = false;
         playerRigidBody.isKinematic = true;
         anim.SetBool("Moving", false);
