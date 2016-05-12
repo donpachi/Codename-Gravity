@@ -105,16 +105,32 @@ public class LevelManager : MonoBehaviour
     /// <param name="minion"></param>
     public void AddMinion(GameObject minion)
     {
+        Minion minionScript = minion.GetComponent<Minion>();
+
         if (_minionList.Count == 0)
         {
-            minion.GetComponent<Minion>().SetParent(Player.gameObject);
-            minion.GetComponent<Minion>().MinionDistance = MinionLeaderDist;
+            minionScript.SetParent(Player.gameObject);
+            minionScript.MinionDistance = MinionLeaderDist;
         }
         else
         {
-            minion.GetComponent<Minion>().SetParent(_minionList.Last());
+            minionScript.SetParent(_minionList.Last());
         }
         _minionList.Add(minion);
+        reorderMinions();
+    }
+
+    /// <summary>
+    /// Fixes order of the minions so they render properly
+    /// </summary>
+    void reorderMinions()
+    {
+        int j = _minionList.Count - 1;
+        for (int i = 0; i < _minionList.Count; i++)
+        {
+            _minionList[i].GetComponent<Minion>().SetRenderOrder(j);
+            j--;
+        }
     }
 
     /// <summary>
@@ -204,21 +220,24 @@ public class LevelManager : MonoBehaviour
     /// Request a new checkpoint to be set
     /// </summary>
     /// <param name="requestedObj">The object that requested the checkpoint</param>
-    public void NewCheckpointRequest(GameObject requestedObj)
+    public bool NewCheckpointRequest(GameObject requestedObj)
     {
         RaycastHit2D groundCheckRay = Physics2D.Raycast(Player.transform.position, Player.transform.up * -1, 1, checkpointRayMask);
         if (!groundCheckRay || groundCheckRay.collider.tag == "Dynamic")
-            return;
+            return false;
 
         if (requestedObj.GetComponent<Minion>() != null)
         {
             requestedObj.GetComponent<Animator>().SetBool("Checkpoint", true);
+            return true;
         }
         else if(requestedObj.GetComponent<Player>() != null && _minionList.Count != 0)
         {
             _minionList[_minionList.Count - 1].GetComponent<Animator>().SetBool("Checkpoint", true);
             RemoveMinion(_minionList[_minionList.Count - 1], false);
+            return true;
         }
+        return false;
     }
 
     /// <summary>

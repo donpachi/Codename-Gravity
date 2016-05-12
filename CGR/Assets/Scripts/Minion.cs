@@ -96,6 +96,24 @@ public class Minion : MonoBehaviour {
         _parent = parentObj;
     }
 
+    public void SetRenderOrder(int order)
+    {
+        SortingOrderScript[] orderChangers = gameObject.GetComponentsInChildren<SortingOrderScript>();
+        foreach (var changer in orderChangers)
+        {
+            changer.SetOrderTo(order);
+        }
+    }
+
+    public void SetRenderLayer(string layer)
+    {
+        SortingOrderScript[] orderChangers = gameObject.GetComponentsInChildren<SortingOrderScript>();
+        foreach (var changer in orderChangers)
+        {
+            changer.SetLayerTo(layer);
+        }
+    }
+
     void checkGravityScale()
     {
         if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT && transform.position.y > player.GetComponent<Player>().getPlayerFeet())
@@ -178,10 +196,12 @@ public class Minion : MonoBehaviour {
     {
         if(direction == TouchController.SwipeDirection.DOWN && !IsFollowing && !gCheck.InAir)
         {
-            GetComponent<Rigidbody2D>().isKinematic = true;
-            GetComponent<Walk>().enabled = false;
-            GetComponent<PlayerJump>().enabled = false;
-            LevelManager.Instance.NewCheckpointRequest(gameObject);
+            if (LevelManager.Instance.NewCheckpointRequest(gameObject))
+            {
+                GetComponent<Rigidbody2D>().isKinematic = true;
+                GetComponent<Walk>().enabled = false;
+                GetComponent<PlayerJump>().enabled = false;
+            }
         }
     }
 

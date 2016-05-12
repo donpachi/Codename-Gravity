@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:CGR/Assets/TempArt/Background/WallAtGround/Wall.gal.meta
 guid: b1856f39ab7a3f04fbbef840003802d9
 timeCreated: 1462585046
+=======
+guid: 7d957e5607aea174fa616ff5f3dd8994
+timeCreated: 1462583277
+>>>>>>> a53ec88ad3ae0f7a888b1cd1a78c21b00940b45e:CGR/Assets/TempArt/Background/WallAtGround/Wall.gal.meta
 licenseType: Free
 DefaultImporter:
   userData: 
