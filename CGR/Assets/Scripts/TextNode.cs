@@ -4,20 +4,19 @@ using System.Collections;
 public class TextNode : MonoBehaviour {
     public int dialogueIndex = 0;
     public bool visited;
-    private bool inTextSequence;
+    public bool repeatable;
 
     void Start()
     {
-        inTextSequence = false; visited = false;
+        visited = false;
     }
 
     void OnCollisionEnter2D(Collision2D info)
     {
-        if (info.gameObject.name == "Player" && !visited)
+        if (info.gameObject.name == "Player" && (!visited || repeatable))
         {
-            inTextSequence = true;
             visited = true;
-            GameObject.Find("GameController").GetComponent<DialogueHandler>().DisplayText(dialogueIndex);
+            GameObject.Find("DialogueCanvas").GetComponent<DialogueHandler>().initiateDialogue(dialogueIndex);
         }
     }
 }
