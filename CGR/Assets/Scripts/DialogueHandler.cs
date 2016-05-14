@@ -1,55 +1,135 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
 /* keep in mind that a single xml file will hold the dialogue data for all levels
 */
-public class DialogueHandler : MonoBehaviour {
+public class DialogueHandler : MonoBehaviour
+{
     private string speech;
     private string currentlevel;    //use this as a formal indexer into the xml structure to grab dialogue
-    private LevelCollection dialoguecontainer;
-    private Level leveldialogue;
-    private Dialogues dialogueGroup;
+    private LevelCollection levelCollection;
+    private Level level;
+    private DialogueNode dialogueNode;
     private float savedTimeScale;
     private float typeSpeed;
     private bool resume, drawText;
-    private Rect textboxConstraint;
     private bool waitingfortap;
-    private int charcount;
-    private int newlinecount;
     private int dialogueIndexer;
     private bool inTextSequence;
+    private GameObject pCObj, llCObj, lrCObj, ipCObj;
+    private Text speakerText, speakerName;
+    private int MAXCHAR, MAXNEWLINE, MAXCHARLINE, currentCharCount, currentLineCount, currentCharsPerLine;
+    private float waitTimeInterval = 0.3f;
 
-    public int MAXCHARCOUNT { get; private set; }
-    public int MAXROWS { get; private set; }
+    public int PORTRAIT_MAXCHAR { get; set; }
+    public int PORTRAIT_MAXNEWLINE { get; set; }
+    public int PORTRAIT_MAXCHARLINE { get; set; }
+    public int LANDSCAPE_MAXCHAR { get; set; }
+    public int LANDSCAPE_MAXNEWLINE { get; set; }
+    public int LANDSCAPE_MAXCHARLINE { get; set; }
 
     // Use this for initialization
-
+    private void initBounds()
+    {
+        PORTRAIT_MAXCHAR = 230;
+        PORTRAIT_MAXNEWLINE = 7;
+        PORTRAIT_MAXCHARLINE = 33;
+        LANDSCAPE_MAXCHAR = 230;
+        LANDSCAPE_MAXNEWLINE = 5;
+        LANDSCAPE_MAXCHARLINE = 3;
+        currentCharCount = 0; currentLineCount = 0; currentCharsPerLine = 0;
+    }
+    
+    
     //hitting a collider box for a dialogue trigger will call this function and pass it certain index node
     //should bring up a graphical text box to display the name of the speaker and the text.
     //text will scroll until it hits a period or until the buffer space inside the text window
     //runs out.
     void Start()
     {
-        //grab the starting level 
-        currentlevel = SceneManager.GetActiveScene().name;
-        dialoguecontainer = DialogueSerializer.DeserializeLevelDialogue();
-        for (int i = 0; i < dialoguecontainer.Level.Length; i++)
-        {
-            if (currentlevel == dialoguecontainer.Level[i].levelname)
-            {
-                leveldialogue = dialoguecontainer.Level[i];
-            }
-        }
+        initBounds();
         eventEnable();
         resume = true;
-        typeSpeed = 0.1f;
-        newlinecount = 0;
-        charcount = 0;
-        MAXCHARCOUNT = 150;
-        MAXROWS = 3;
+        typeSpeed = 0.01f;
         inTextSequence = false;
         dialogueIndexer = 0;
+    }
+
+    void Awake()
+    {
+        //grab the starting level's dialogue
+        currentlevel = SceneManager.GetActiveScene().name;
+        levelCollection = DialogueSerializer.DeserializeLevelDialogue();
+        for (int i = 0; i < levelCollection.levelCollection.Length; i++)
+        {
+            if (currentlevel == levelCollection.levelCollection[i].levelname)
+            {
+                level = levelCollection.levelCollection[i];
+            }
+        }
+        initCanvasObjects();
+        hideCanvas();
+    }
+
+    private void initCanvasObjects()
+    {
+        foreach (var obj in GetComponentsInChildren<Canvas>())
+        {
+            switch (obj.gameObject.name)
+            {
+                case "Portrait":
+                    pCObj = obj.gameObject;
+                    break;
+                case "InvPortrait":
+                    ipCObj = obj.gameObject;
+                    break;
+                case "LSLeft":
+                    llCObj = obj.gameObject;
+                    break;
+                case "LSRight":
+                    lrCObj = obj.gameObject;
+                    break;
+            }
+        }
+    }
+
+    private void setLocalBounds()
+    {
+        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT ||
+            OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT){
+            MAXCHAR = PORTRAIT_MAXCHAR; MAXNEWLINE = PORTRAIT_MAXNEWLINE; MAXCHARLINE = PORTRAIT_MAXCHARLINE;
+        }
+        else
+            MAXCHAR = LANDSCAPE_MAXCHAR; MAXNEWLINE = LANDSCAPE_MAXNEWLINE; MAXCHARLINE = LANDSCAPE_MAXCHARLINE;
+    }
+
+    private void hideCanvas()
+    {
+        pCObj.GetComponent<Canvas>().enabled = false;
+        ipCObj.GetComponent<Canvas>().enabled = false;
+        llCObj.GetComponent<Canvas>().enabled = false;
+        lrCObj.GetComponent<Canvas>().enabled = false;
+    }
+
+    private void clearCanvasText(GameObject canvasObject)
+    {
+        foreach (var textBox in canvasObject.GetComponentsInChildren<Text>())
+        {
+            textBox.text = "";
+        }
+    }
+
+    private void clearAllCanvasText()
+    {
+        foreach (var canvas in this.GetComponentsInChildren<Canvas>())
+        {
+            foreach (var textBox in canvas.GetComponentsInChildren<Text>())
+            {
+                textBox.text = "";
+            }
+        }
     }
 
     // Update is called once per frame
@@ -58,80 +138,83 @@ public class DialogueHandler : MonoBehaviour {
         if (currentlevel != SceneManager.GetActiveScene().name)
         {
             currentlevel = SceneManager.GetActiveScene().name;
-            for (int i = 0; i < dialoguecontainer.Level.Length; i++)
+            for (int i = 0; i < levelCollection.levelCollection.Length; i++)
             {
-                if (currentlevel == dialoguecontainer.Level[i].levelname)
+                if (currentlevel == levelCollection.levelCollection[i].levelname)
                 {
-                    leveldialogue = dialoguecontainer.Level[i];
+                    level = levelCollection.levelCollection[i];
                 }
             }
         }
-        if (inTextSequence)
-        {
-            string string2display = dialogueGroup.Dialogue[dialogueIndexer].speech;
-            StartCoroutine(animateText(string2display));
-        }
     }
 
-    private void setOrientationAlignment()
-    {
-        switch (OrientationListener.instanceOf.currentOrientation())
-        {
-            case (OrientationListener.Orientation.PORTRAIT):
-                textboxConstraint = new Rect(0, Screen.height * (0.75f), Screen.width, Screen.height / 4);
-                break;
-            case (OrientationListener.Orientation.INVERTED_PORTRAIT):
-                textboxConstraint = new Rect(0, 0, Screen.width, Screen.height / 4);
-                break;
-            case (OrientationListener.Orientation.LANDSCAPE_LEFT):
-                textboxConstraint = new Rect(Screen.width / 2, 0, Screen.width / 2, Screen.height);
-                break;
-            case (OrientationListener.Orientation.LANDSCAPE_RIGHT):
-                textboxConstraint = new Rect(0, 0, Screen.width / 2, Screen.height);
-                break;
-            default:
-                textboxConstraint = new Rect(0, 0, Screen.width / 2, Screen.height);
-                break;
-        }
-    }
-
-    void OnGUI()    //GUI elements have to react based on device orientation
-    {
-        if (resume == false)
-        {
-            GUI.Box(textboxConstraint, speech);   //change this to drawTexture when implementing the drawn chatbox
-            if (drawText)
-            {   
-                //GUI.Label(new Rect()
-
-            }
-
-        }
-    }
-      
-    /// <summary>
-    /// stops the text gui from displaying
-    /// </summary>
-    public void hideTextGUI()
-    {
-        resume = true;
-    }
-
-    public void DisplayText(int index)
+    public void initiateDialogue(int dNodeIndex)
     {
         pauseGame();
-        inTextSequence = true;
-        dialogueGroup = leveldialogue.Dialogues[index];    //text to display for that node. Each index corresponds to a new speaker (like a conversation)
         DrawTextCanvas();
-        //switch the speech function on (onGUI will constantly update so just set a trigger or boolean here, same in the generic display text)
+        DialogueNode dNode = level.levelDialogueNodes[dNodeIndex];
+        foreach (var dialogue in dNode.dialogueArray)
+        {
+            speakerName.text = dialogue.speaker;
+            StartCoroutine(animateText(dialogue.speech));
+        }
         resumeGame();
     }
 
-    public void DisplayText(string speaker, string msg)
+    private void setActiveText(GameObject canvasObj)
+    {
+        speakerName = canvasObj.transform.Find("Name").GetComponent<Text>();
+        speakerText = canvasObj.transform.Find("Dialogue").GetComponent<Text>();
+    }
+
+    /// <summary>
+    /// Helper function to find the dialogue canvas to right on based on orientation
+    /// </summary>
+    private void align2Orientation()
+    {
+        hideCanvas();
+        switch (OrientationListener.instanceOf.currentOrientation())
+        {
+            case (OrientationListener.Orientation.PORTRAIT):
+                clearCanvasText(pCObj);
+                pCObj.GetComponent<Canvas>().enabled = true;
+                setActiveText(pCObj);
+                break;
+            case (OrientationListener.Orientation.INVERTED_PORTRAIT):
+                clearCanvasText(ipCObj);
+                ipCObj.GetComponent<Canvas>().enabled = true;
+                setActiveText(ipCObj);
+                break;
+            case (OrientationListener.Orientation.LANDSCAPE_LEFT):
+                clearCanvasText(llCObj);
+                llCObj.GetComponent<Canvas>().enabled = true;
+                setActiveText(llCObj);
+                break;
+            case (OrientationListener.Orientation.LANDSCAPE_RIGHT):
+                clearCanvasText(lrCObj);
+                lrCObj.GetComponent<Canvas>().enabled = true;
+                setActiveText(lrCObj);
+                break;
+            default:
+                clearCanvasText(llCObj);
+                llCObj.GetComponent<Canvas>().enabled = true;
+                setActiveText(llCObj);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Convenience method that allows explicit calls to create a text sequence at any point 
+    /// in the game (exlcuding dialogue nodes already in the scene)
+    /// </summary>
+    /// <param name="speaker"> Speaker's name to display</param>
+    /// <param name="msg">Speaker's text to display</param>
+    public void displayText(string speaker, string msg)
     {
         pauseGame();
-        inTextSequence = true;
         DrawTextCanvas();
+        speakerName.text = speaker;
+        StartCoroutine(animateText(msg));
         resumeGame();
     }
 
@@ -146,19 +229,19 @@ public class DialogueHandler : MonoBehaviour {
         Time.timeScale = savedTimeScale;
     }
 
-    // animate player art (scroll in from the right)
-    // animate textbox art (alpha in)
-    // create box within dimensions of textbox art
+
     private void DrawTextCanvas()
     {
-        resume = false;
-        setOrientationAlignment();
-        while (!resume) { }
-        //wait until user taps the screen
+        // animate player art (scroll in from the right)
+        // animate textbox art (alpha in)
+        // create box within dimensions of textbox art
+        //....
+
+
+
+        align2Orientation();
     }
 
-    // this method is assuming that unity will reference to the string variable in the parameter and not make its own copy of the string before displaying it
-    // if this isnt the case, secondary method is to print the whole string but to change the text alpha char by char.
     /// <summary>
     /// coroutine method that will display text in the screen in a constrained box by modifying the string variable passed into the GUI element.
     /// the speed at which text is displayed is controlled by the typeSpeed property.
@@ -167,26 +250,37 @@ public class DialogueHandler : MonoBehaviour {
     /// <returns>Iterable object that the coroutine will handle</returns>
     IEnumerator animateText(string fullstring)
     {
-        speech = "";
+        //if we want to do handling for letter overflow, we need to split the string into words and then check the next word to see if enough space on line
+        //ABOVE NOT IMPLEMENTED
         for (int i = 0; i > fullstring.Length; i++)
         {
-            if (charcount <= MAXCHARCOUNT || newlinecount <= MAXROWS)
+            if (currentCharCount >= MAXCHAR || currentLineCount >= MAXNEWLINE)
             {
+                //need to puase execution of this here and wait for a tap
                 waitingfortap = true;
                 while (waitingfortap)
                 {
-                    yield return new WaitForSeconds(0.3f);//somehow stop execution here to wait for event from touch controller.. yield?
+                    yield return new WaitForSeconds(waitTimeInterval);
                 }
-                waitingfortap = true; //at this point, the program has recieved the tap and is executing normally. Reset the flag.
-                charcount = 0;
-                newlinecount = 0;
-                speech = "";
+                speakerText.text = "";
+                currentCharCount = 0;
+                currentLineCount = 0;
+                currentCharsPerLine = 0;
             }
             else if (fullstring[i] == '\n')
-                newlinecount++;
-            else {
-                speech += fullstring[i];
-                charcount++;
+            {
+                currentLineCount++;
+                currentCharsPerLine = 0;
+            }
+            else if (currentCharsPerLine == MAXCHARLINE-1)
+            {
+                speakerText.text += "-\n";
+                currentLineCount++;
+            }
+            else
+            {
+                speakerText.text += fullstring[i];
+                currentCharCount++;
                 yield return new WaitForSeconds(typeSpeed);
             }
         }
