@@ -3,42 +3,56 @@ using System.Collections;
 using System.Collections.Generic;
 
 //TODO: Minions get stuck on wall
-public class Minion : MonoBehaviour {
+public class Minion : MonoBehaviour, ICharacter{
 
     public float MinionDistance;
     public float MinionFollowSpeed;
     public float DeathSpeed = 10f;
+    public bool IsFollowing = true;
     public bool GravityZone { get; private set; }
     public Animator anim { get; private set; }
+    public MinionState CurrentState { get; set; }
 
-    GameObject player;
+
+    //GameObject player;
+    Player player; 
     Rigidbody2D rBody;
     List<GameObject> minions = new List<GameObject>();
     GameObject _parent;
-    public bool IsFollowing = true;
     Vector2 prevPlayerLocation;
+    CircleCollider2D circleCollider;
     private FollowPlayer _camera;
     private GroundCheck gCheck;
     private bool facingRight = true;
     private float teleportDistance = 4f;
     private float suctionTimer = 0;
+    private Renderer[] renderParts;
+    private float _followDistance;
+    private float _followSpeed;
+
+    public enum MinionState { FOLLOWING, CONTROL, PORTAL, CANNON }
 
     // Use this for initialization
     void Start() {
         anim = gameObject.GetComponent<Animator>();
-        player = GameObject.Find("Player");
+        player = GameObject.Find("Player").GetComponent<Player>(); ;
         gCheck = GetComponent<GroundCheck>();
         this.GetComponent<PlayerJump>().enabled = false;
         this.GetComponent<Walk>().enabled = false;
         _camera = FindObjectOfType<FollowPlayer>();
         rBody = GetComponent<Rigidbody2D>();
         GravityZoneOff();
+        renderParts = GetComponentsInChildren<Renderer>();
+        _followDistance = MinionDistance;
+        _followSpeed = MinionFollowSpeed;
+        CurrentState = MinionState.FOLLOWING;
+        circleCollider = GetComponent<CircleCollider2D>();
     }
 
     // Update is called once per frame
     void FixedUpdate() {
         anim.SetBool("InAir", gCheck.InAir);
-        if (!IsFollowing)
+        if (!IsFollowing || CurrentState != MinionState.FOLLOWING)
             return;
 
         //RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position, -transform.up, 0.5f);
@@ -62,23 +76,14 @@ public class Minion : MonoBehaviour {
         //    }
         //}
         //else
+
         lerpToParent();
 
         if ((transform.position - _parent.transform.position).magnitude > teleportDistance)
             teleportToParent();
 
         //checkGravityScale();
-        prevPlayerLocation = player.transform.position;
-
-        if(suctionTimer > 0)
-        {
-            suctionTimer -= Time.deltaTime;
-        }
-        if(suctionTimer < 0)
-        {
-            suctionTimer = 0;
-            rBody.gravityScale = 1;
-        }
+        //prevPlayerLocation = player.transform.position;
     }
 
     public void GravityZoneOn()
@@ -114,24 +119,63 @@ public class Minion : MonoBehaviour {
         }
     }
 
+    public void ToggleRender(bool state)
+    {
+        foreach (Renderer i in renderParts)
+            i.enabled = state;
+    }
+
+    public void DeactivateControl(StateChange state)
+    {
+        switch (state)
+        {
+            case StateChange.PORTAL_IN:
+                ToggleRender(false);
+                circleCollider.enabled = false;
+                rBody.gravityScale = 0;
+                rBody.Sleep();
+                break;
+            case StateChange.CANNON_COLLISION:
+
+                break;
+        }
+    }
+
+    public void ReactivateControl(StateChange state)
+    {
+        switch (state)
+        {
+            case StateChange.PORTAL_OUT:
+                ToggleRender(true);
+                circleCollider.enabled = true;
+                rBody.gravityScale = 1;
+                break;
+            case StateChange.CANNON_COLLISION:
+
+                break;
+        }
+
+
+    }
+
     void checkGravityScale()
     {
-        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT && transform.position.y > player.GetComponent<Player>().getPlayerFeet())
+        if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT && transform.position.y > player.getPlayerFeet())
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
-        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT && transform.position.y <= player.GetComponent<Player>().getPlayerFeet())
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.PORTRAIT && transform.position.y <= player.getPlayerFeet())
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
-        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT && transform.position.y > player.GetComponent<Player>().getPlayerFeet())
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT && transform.position.y > player.getPlayerFeet())
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
-        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT && transform.position.y <= player.GetComponent<Player>().getPlayerFeet())
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.INVERTED_PORTRAIT && transform.position.y <= player.getPlayerFeet())
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
 
-        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT && transform.position.x > player.GetComponent<Player>().getPlayerFeet())
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT && transform.position.x > player.getPlayerFeet())
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
-        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT && transform.position.x <= player.GetComponent<Player>().getPlayerFeet())
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_LEFT && transform.position.x <= player.getPlayerFeet())
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
-        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT && transform.position.x > player.GetComponent<Player>().getPlayerFeet())
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT && transform.position.x > player.getPlayerFeet())
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
-        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT && transform.position.x <= player.GetComponent<Player>().getPlayerFeet())
+        else if (OrientationListener.instanceOf.currentOrientation() == OrientationListener.Orientation.LANDSCAPE_RIGHT && transform.position.x <= player.getPlayerFeet())
             gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
     }
 
@@ -165,19 +209,19 @@ public class Minion : MonoBehaviour {
     {
         if (_parent.name == "Player")
         {
-            if (Vector2.Distance(transform.position, player.GetComponent<Player>().getPlayerFeetPosition()) > MinionDistance)
+            if (Vector2.Distance(transform.position, player.getPlayerFeetPosition()) > _followDistance)
             {
-                Vector2 newPosition = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetPosition(), MinionFollowSpeed);
-                transform.position = Vector2.Lerp(transform.position, player.GetComponent<Player>().getPlayerFeetPosition(), MinionFollowSpeed);
+                Vector2 newPosition = Vector2.Lerp(transform.position, player.getPlayerFeetPosition(), _followSpeed);
+                transform.position = Vector2.Lerp(transform.position, player.getPlayerFeetPosition(), _followSpeed);
                 anim.SetBool("Moving", true);
             }
             else
                 anim.SetBool("Moving", false);
         }
-        else if (Vector2.Distance(transform.position, _parent.transform.position) > MinionDistance)
+        else if (Vector2.Distance(transform.position, _parent.transform.position) > _followDistance)
         {
             anim.SetBool("Moving", true);
-            transform.position = Vector2.Lerp(transform.position, _parent.transform.position, MinionFollowSpeed);
+            transform.position = Vector2.Lerp(transform.position, _parent.transform.position, _followSpeed);
         }
         else
             anim.SetBool("Moving", false);
@@ -188,7 +232,7 @@ public class Minion : MonoBehaviour {
         if (Vector2.Distance(transform.position, target.transform.position) > .01f)
         {
             anim.SetBool("Moving", true);
-            transform.position = Vector2.Lerp(transform.position, target.transform.position, MinionFollowSpeed);
+            transform.position = Vector2.Lerp(transform.position, target.transform.position, _followSpeed);
         }
     }
 
@@ -234,8 +278,8 @@ public class Minion : MonoBehaviour {
 
     private void returnToPlayer()
     {
-        _camera.setFollowObject(player);
-        player.GetComponent<Player>().switchControlToPlayer();
+        _camera.setFollowObject(player.gameObject);
+        player.switchControlToPlayer();
     }
 
     //Flip character while moving left and right
@@ -256,10 +300,42 @@ public class Minion : MonoBehaviour {
         transform.localScale = objScale;
     }
 
-    private void scActive(float time)
+    private void syncWithPlayer(StateChange state)
     {
-        rBody.gravityScale = 0;
-        suctionTimer = time;
+        if (!IsFollowing)
+            return;
+        switch (state)
+        {
+            case StateChange.PORTAL_IN:
+                ToggleRender(false);
+                break;
+            case StateChange.PORTAL_OUT:
+                ToggleRender(true);
+                break;
+            case StateChange.CANNON_COLLISION:
+                rBody.gravityScale = 1;
+                _followDistance = MinionDistance;
+                _followSpeed = MinionFollowSpeed;
+                break;
+            case StateChange.CANNON:
+                rBody.gravityScale = 0;
+                _followDistance = 0.001f;
+                _followSpeed = 0.5f;
+                ToggleRender(false);
+                break;
+            case StateChange.CANNON_FIRE:
+                ToggleRender(true);
+                break;
+            case StateChange.SWALK_ON:
+                rBody.gravityScale = 0;
+                _followSpeed = 0.2f;
+                break;
+            case StateChange.SWALK_OFF:
+                rBody.gravityScale = 1;
+                _followDistance = MinionDistance;
+                _followSpeed = MinionFollowSpeed;
+                break;
+        }
     }
 
     //Event handling for swipe events
@@ -267,13 +343,13 @@ public class Minion : MonoBehaviour {
     {
         TouchController.OnSwipe += swipeCheck;
         TouchController.OnHold += flipSprite;
-        SuctionCup.SCActivated += scActive;
+        Player.PlayerStateChange += syncWithPlayer;
     }
     void OnDisable()
     {
         TouchController.OnSwipe -= swipeCheck;
         TouchController.OnHold -= flipSprite;
-        SuctionCup.SCActivated -= scActive;
+        Player.PlayerStateChange -= syncWithPlayer;
     }
 
     //Check for deadly collisions

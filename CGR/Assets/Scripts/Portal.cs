@@ -13,8 +13,8 @@ public class Portal : MonoBehaviour {
     private GameObject playerStatus;
     private Portal linkedPortalScript;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         playerStatus = GameObject.Find("Player");
         distanceThreshold = 0.1f;
         bodies = new List<Node>();
@@ -46,30 +46,32 @@ public class Portal : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D collisionInfo)
     {
-        if (collisionInfo.gameObject.tag != "Water")
+        GameObject obj = collisionInfo.gameObject;
+
+        if (waitForLeave.Contains(obj))
+            return ;
+
+        if (!obj.GetComponent<Animator>())
         {
-            GameObject obj = collisionInfo.gameObject;
-            bool isPlayer = collisionInfo.gameObject == playerStatus;
-
-            if (waitForLeave.Contains(obj))
-                return ;
-
-            if (!obj.GetComponent<Animator>())
-            {
-                collisionInfo.gameObject.SetActive(false);
-            }
-            else if (isPlayer)
-            {
-                collisionInfo.gameObject.GetComponent<Player>().DeactivateControl(Player.StateChange.PORTAL);
-            }
-            else if (obj.GetComponent<Minion>())
-            {
-
-            }
-            else
-                Debug.LogError("Object in portal not accounted for");
-            linkedPortalScript.SendObject(obj, collisionInfo.relativeVelocity, transform.rotation.eulerAngles.z, isPlayer);
+            collisionInfo.gameObject.SetActive(false);
+            linkedPortalScript.SendObject(obj, collisionInfo.relativeVelocity, transform.rotation.eulerAngles.z, Node.ObjType.Other);
         }
+        else if (obj == playerStatus)
+        {
+            collisionInfo.gameObject.GetComponent<Player>().DeactivateControl(StateChange.PORTAL_IN);
+            linkedPortalScript.SendObject(obj, collisionInfo.relativeVelocity, transform.rotation.eulerAngles.z, Node.ObjType.Player);
+        }
+        else if (obj.GetComponent<Minion>())
+        {
+            Minion minion = obj.GetComponent<Minion>();
+            if (!minion.IsFollowing)
+            {
+                minion.DeactivateControl(StateChange.PORTAL_IN);
+                linkedPortalScript.SendObject(obj, collisionInfo.relativeVelocity, transform.rotation.eulerAngles.z, Node.ObjType.Minion);
+            }
+        }
+        else
+            Debug.LogError("Object in portal not accounted for");
     }
 
     void OnTriggerExit2D(Collider2D collisionInfo)
@@ -78,9 +80,9 @@ public class Portal : MonoBehaviour {
             waitForLeave.Dequeue();
     }
 
-    public void SendObject(GameObject obj, Vector2 velocity, float angle, bool isPlayer)
+    void SendObject(GameObject obj, Vector2 velocity, float angle, Node.ObjType type)
     {
-        bodies.Add(new Node(obj, velocity, angle, isPlayer));
+        bodies.Add(new Node(obj, velocity, angle, type));
     }
 
     IEnumerator LaunchObject(Node entity, float delayTime)
@@ -98,9 +100,13 @@ public class Portal : MonoBehaviour {
         entity.velocity = Quaternion.AngleAxis(launchAngle, Vector3.forward) * entity.velocity;
         body.velocity = entity.velocity;
 
-		if (entity.isPlayer) {
-            entity.obj.GetComponent<Player>().ReactivateControl(Player.StateChange.PORTAL);
+		if (entity.type == Node.ObjType.Player) {
+            entity.obj.GetComponent<Player>().ReactivateControl(StateChange.PORTAL_OUT);
 		}
+        if(entity.type == Node.ObjType.Minion)
+        {
+            entity.obj.GetComponent<Minion>().ReactivateControl(StateChange.PORTAL_OUT);
+        }
     }
 
     void CheckpointRestart()
@@ -132,6 +138,7 @@ public class Portal : MonoBehaviour {
         LevelManager.OnCheckpointLoad -= CheckpointRestart;
     }
 
+
 }
 
 class Node
@@ -139,12 +146,13 @@ class Node
     public GameObject obj;
     public Vector2 velocity;
     public float angle;
-	public bool isPlayer;
+    public enum ObjType { Player, Minion, Other }
+    public ObjType type;
 
-    public Node(GameObject go, Vector2 v, float a, bool p) {
+    public Node(GameObject go, Vector2 v, float a, ObjType t) {
         obj = go;
         velocity = v;
         angle = a;
-		isPlayer = p;
+		type = t;
     }
 }

@@ -49,7 +49,7 @@ public class GravityVortex : MonoBehaviour {
         GameObject obj = collision.gameObject;
         if(obj.GetComponent<Rigidbody2D>() != null)
         {
-            if (obj.GetComponent<Player>() != null && obj.GetComponent<Player>().IsInTransition())
+            if (obj.GetComponent<Player>() != null && obj.GetComponent<Player>().InTransition)
                 return;
 
             float distance = Vector2.Distance(obj.GetComponent<Transform>().position, this.GetComponent<Transform>().position);

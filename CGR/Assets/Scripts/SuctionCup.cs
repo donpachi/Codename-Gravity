@@ -9,7 +9,7 @@ public class SuctionCup : MonoBehaviour {
 
     private float timer;
     private bool triggered;
-    private GameObject player;
+    private Player player;
 
     //Event thrown when picked up
     public delegate void SuctionCupActivated(float time);   //give it a length for the timer
@@ -23,7 +23,7 @@ public class SuctionCup : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        player = GameObject.Find("Player");
+        player = FindObjectOfType<Player>();
         timer = 0;
     }
 	
@@ -47,7 +47,7 @@ public class SuctionCup : MonoBehaviour {
     /// <param name="collisionInfo"></param>
 	void OnTriggerEnter2D(Collider2D collisionInfo) {
 		if (collisionInfo.gameObject.name == "Player" && !triggered) {
-            player.GetComponent<Player>().SuctionStatusOn(SuctionForce);
+            player.SuctionStatusOn(SuctionForce);
 
             GetComponent<Collider2D>().enabled = false;
             GetComponent<SpriteRenderer>().enabled = false;
