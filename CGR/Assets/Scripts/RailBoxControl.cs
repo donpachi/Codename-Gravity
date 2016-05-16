@@ -68,7 +68,7 @@ public class RailBoxControl : MonoBehaviour {
         if (anim.GetBool("BoxActive") == true && colliderEvent.gameObject.name == "Player")
         {
             activateControl();
-            player.DeactivateControl(Player.StateChange.BOX);
+            player.DeactivateControl(StateChange.BOX_IN);
         }
     }
 
@@ -89,7 +89,7 @@ public class RailBoxControl : MonoBehaviour {
         player.transform.position = transform.position + (Vector3)OrientationListener.instanceOf.getRelativeUpVector();
         player.updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0.0f);
         player.GetComponent<Rigidbody2D>().AddForce(OrientationListener.instanceOf.getRelativeUpVector() * 200);
-        player.ReactivateControl(Player.StateChange.BOX);
+        player.ReactivateControl(StateChange.BOX_IN);
         mainCamera.GetComponent<FollowPlayer>().setFollowObject(player.gameObject);
         PlayerControlled = false;
         anim.SetBool("HasExited", false);

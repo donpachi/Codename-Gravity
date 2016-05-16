@@ -57,7 +57,7 @@ public class SuctionWalk : MonoBehaviour
             if (timer <= 0)
             {
                 suctionText.GetComponent<Text>().enabled = false;
-                player.ReactivateControl(Player.StateChange.SWALK);
+                player.ReactivateControl(StateChange.SWALK_OFF);
             }
             else
                 checkGround();

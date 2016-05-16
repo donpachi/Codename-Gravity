@@ -5,8 +5,7 @@ using System;
 
 public delegate void PlayerDied();
 
-
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour, ICharacter {
 
     private Rigidbody2D playerRigidBody;
     private Walk walk;
@@ -17,7 +16,6 @@ public class Player : MonoBehaviour {
     private float drag = 0.5f;
     private float angularDrag = 0.05f;
     private bool facingRight;
-    private bool inTransition;
     private bool launched;
     private Animator anim;
     private GroundCheck gCheck;
@@ -30,9 +28,14 @@ public class Player : MonoBehaviour {
     public float ForwardRaySize;
     public bool isMinion = false;
     public bool InRotation;
+    public bool InTransition { get; private set; }
     public bool suctionStatus { get; private set; }
     public bool gravityZone { get; private set; }
-    public enum StateChange { CANNON, CANNON_COLLISION, PORTAL, MINION, SWALK, BOX, CHECKPOINT }   //The script that wants to effect player
+    //public enum StateChange { CANNON, CANNON_COLLISION, PORTAL, MINION, SWALK, BOX, CHECKPOINT }   //The script that wants to effect player
+
+    //Player state change events
+    public delegate void PlayerEvent(StateChange state);   //give it a length for the timer
+    public static event PlayerEvent PlayerStateChange;
 
     void Awake () {
         anim = this.GetComponent<Animator>();
@@ -49,7 +52,7 @@ public class Player : MonoBehaviour {
 
         inMinionArea = false;
         suctionStatus = false;
-        inTransition = false;
+        InTransition = false;
         facingRight = true;
         InRotation = false;
         GravityZoneOff();
@@ -90,7 +93,7 @@ public class Player : MonoBehaviour {
     //might have to update constant force while suction cups are on
     public void updatePlayerOrientation(OrientationListener.Orientation orientation, float timer)
     {
-        if (gravityZone == true || isMinion == true)
+        if (gravityZone == true || isMinion == true || launched)
             return;
         if (suctionStatus == false || gCheck.InAir == true)
         {
@@ -120,35 +123,6 @@ public class Player : MonoBehaviour {
         playerScale.x *= -1;
 
         transform.localScale = playerScale;
-    }
-
-    /*---------------Event Functions Start Here---------------*/
-    void OnCollisionEnter2D(Collision2D collisionEvent) {
-        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.tag == "Boulder")
-        {
-            TriggerDeath("deadly/hazard collision");
-		}        
-
-        else if (launched == true && collisionEvent.gameObject.layer == LayerMask.NameToLayer("Walls"))
-        {
-            ReactivateControl(StateChange.CANNON_COLLISION);
-        }
-	}
-
-    void OnTriggerEnter2D(Collider2D colliderEvent)
-    {
-        if (colliderEvent.gameObject.tag == "SpikeTop")
-        {
-            TriggerDeath("SpikeTop");
-        }
-    }
-
-    void OnTriggerExit2D(Collider2D colliderEvent)
-    {
-        if (colliderEvent.gameObject.tag == "Boundary")
-        {
-            TriggerDeath("Boundary");
-        }
     }
 
     public void TriggerDeath(String reason)
@@ -217,13 +191,13 @@ public class Player : MonoBehaviour {
 
     public void ReactivateControl(StateChange state)
     {
-        if (state == StateChange.SWALK)
+        if (state == StateChange.SWALK_OFF)
         {
             suctionStatus = false;
             sWalk.enabled = false;
             sForce.enabled = false;
         }
-        else if (state == StateChange.CANNON)
+        else if (state == StateChange.CANNON_FIRE)
         {
             ToggleRender(true);
             playerCollider.enabled = true;
@@ -234,13 +208,13 @@ public class Player : MonoBehaviour {
             playerRigidBody.angularDrag = angularDrag;
             launched = false;
         }
-        else if (state == StateChange.PORTAL)
+        else if (state == StateChange.PORTAL_OUT)
         {
-            inTransition = false;
+            InTransition = false;
             ToggleRender(true);
             playerCollider.enabled = true;
         }
-        else if(state == StateChange.BOX)
+        else if(state == StateChange.BOX_OUT)
         {
 
         }
@@ -250,7 +224,7 @@ public class Player : MonoBehaviour {
             playerRigidBody.angularDrag = angularDrag;
             ToggleRender(true);
             playerCollider.enabled = true;
-            inTransition = false;
+            InTransition = false;
             launched = false;
             isMinion = false;
         }
@@ -270,6 +244,7 @@ public class Player : MonoBehaviour {
             if(state != StateChange.CHECKPOINT)
                 updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0);
         }
+        throwPlayerEvent(state);
     }
 
     public void DeactivateControl(StateChange state)
@@ -288,16 +263,17 @@ public class Player : MonoBehaviour {
             ToggleRender(false);
             playerCollider.enabled = false;
         }
-        if(state == StateChange.PORTAL)
+        if(state == StateChange.PORTAL_IN)
         {
-            inTransition = true;
+            InTransition = true;
             ToggleRender(false);
             playerCollider.enabled = false;
         }
-        if(state == StateChange.BOX)
+        if(state == StateChange.BOX_IN)
         {
 
         }
+        throwPlayerEvent(state);
     }
 
     public PlayerState SavePlayerState()
@@ -373,6 +349,7 @@ public class Player : MonoBehaviour {
         sForce.relativeForce = new Vector2(0, -1) * force;
         walk.enabled = false;
         sWalk.enabled = true;
+        throwPlayerEvent(StateChange.SWALK_ON);
     }
 
     public void SuctionStatusEnd()
@@ -395,9 +372,40 @@ public class Player : MonoBehaviour {
         return suctionStatus;
     }
 
-    public bool IsInTransition()
+    /*---------------Event Functions Start Here---------------*/
+    void OnCollisionEnter2D(Collision2D collisionEvent)
     {
-        return inTransition;
+        if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.layer == 10 || collisionEvent.relativeVelocity.magnitude > deathSpeed && collisionEvent.gameObject.tag == "Boulder")
+        {
+            TriggerDeath("deadly/hazard collision");
+        }
+
+        else if (launched == true && collisionEvent.gameObject.layer == LayerMask.NameToLayer("Walls"))
+        {
+            ReactivateControl(StateChange.CANNON_COLLISION);
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D colliderEvent)
+    {
+        if (colliderEvent.gameObject.tag == "SpikeTop")
+        {
+            TriggerDeath("SpikeTop");
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D colliderEvent)
+    {
+        if (colliderEvent.gameObject.tag == "Boundary")
+        {
+            TriggerDeath("Boundary");
+        }
+    }
+
+    void throwPlayerEvent(StateChange state)
+    {
+        if (PlayerStateChange != null)
+            PlayerStateChange(state);
     }
 }
 

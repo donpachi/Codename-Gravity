@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
 //container for raw speech data as well as speaker name for each section of dialogue
+[Serializable]
 public class Dialogue
 {
     [XmlElement("Speaker")]
@@ -19,14 +21,19 @@ public class Dialogue
     }
 }
 //this is a sub container that contains all the given speech for a given node in a level
-public class Dialogues
+[Serializable]
+public class DialogueNode
 {
+    [XmlAttribute("DialogueNode")]
+    public int nodeIndex { get; set; }
+
     [XmlArray("Dialogues")]
     [XmlArrayItem("Dialogue", typeof(Dialogue))]
-    public Dialogue[] Dialogue { get; set; }
+    public Dialogue[] dialogueArray { get; set; }
 }
 
 //this is a container that holds all the blocks of dialogue for a given level
+[Serializable]
 public class Level
 {
     [XmlElement("LevelName")]
@@ -36,15 +43,15 @@ public class Level
         set;
     }
     [XmlArray("Level")]
-    [XmlArrayItem("Dialogues", typeof(Dialogues))]
-    public Dialogues[] Dialogues { get; set; }
+    [XmlArrayItem("Dialogues", typeof(DialogueNode))]
+    public DialogueNode[] levelDialogueNodes { get; set; }
 }
 
 //this is the base array element that encompasses each of the levels in an array
-[XmlRoot("LevelDialogueCollection")]
+[Serializable, XmlRoot("LevelCollection")]
 public class LevelCollection
 {
     [XmlArray("LevelCollection")]
     [XmlArrayItem("Levels", typeof(Level))]
-    public Level[] Level { get; set; }
+    public Level[] levelCollection { get; set; }
 }
