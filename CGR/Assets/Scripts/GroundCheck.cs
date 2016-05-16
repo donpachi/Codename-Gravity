@@ -3,13 +3,41 @@
 public class GroundCheck : MonoBehaviour
 {
     public float OnGroundRaySize = .5f;
-    public float RayOffsetWidth = .1f;
-    public bool InAir { get; private set; }
+    public bool InAir;
+    public bool inGravityArea;
+    private float RayOffsetMax = 0.25f;
+    private float RayOffsetMagnitude;
+    private float colliderLength;
+    private Vector2 colliderVector;
+    private GameObject[] collidedObjects;
+    private CircleCollider2D circleCollider;
+    private BoxCollider2D boxCollider;
+    private OrientationListener.Orientation gravityAreaDirection;
 
     public LayerMask wallMask;
 
     void Start()
     {
+        circleCollider = GetComponent<CircleCollider2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
+
+        if (boxCollider != null)
+        {
+            OnGroundRaySize = (boxCollider.size.y / 2) + 0.1f;
+            colliderLength = boxCollider.size.x;
+        }
+        else if (circleCollider != null)
+        {
+            OnGroundRaySize = circleCollider.radius + 0.1f;
+            colliderLength = circleCollider.radius * 2;
+        }
+
+        int numOfRays = Mathf.CeilToInt(colliderLength / RayOffsetMax);
+        RayOffsetMagnitude = colliderLength / numOfRays;
+        numOfRays++;
+        collidedObjects = new GameObject[numOfRays];
+
+        inGravityArea = false;
         wallMask = 1 << LayerMask.NameToLayer("Walls") | 1 << LayerMask.NameToLayer("ThroughWalls");
     }
 
@@ -20,39 +48,120 @@ public class GroundCheck : MonoBehaviour
     //Raycasts down to check for a floor
     void groundCheck()
     {
-        if(GetComponent<Player>() != null && GetComponent<Player>().IsSuctioned())
+        Vector2 origin = (Vector2)transform.position;
+        Vector2 rayOffset = new Vector2();
+        Vector2 direction = new Vector2();
+        Vector2 colliderOffset = new Vector2();
+        RaycastHit2D groundCheckRay;
+        int numOfMissedColliders = 0;
+
+        if (boxCollider != null)
         {
-            Vector3 rayOffset = transform.right * RayOffsetWidth;
-            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position + rayOffset, transform.up * -1, OnGroundRaySize, wallMask);
-            RaycastHit2D groundCheckRay1 = Physics2D.Raycast(transform.position - rayOffset, transform.up * -1, OnGroundRaySize, wallMask);
+            colliderOffset = boxCollider.offset;
+        }
+        else if (circleCollider != null)
+        {
+            colliderOffset = circleCollider.offset;
+        }
 
-            Debug.DrawRay(transform.position + rayOffset, transform.up * -OnGroundRaySize, Color.blue, 0.5f);
-            Debug.DrawRay(transform.position - rayOffset, transform.up * -OnGroundRaySize, Color.magenta, 0.5f);
+        getOffsetAndOrigin(ref rayOffset, ref origin, ref direction, colliderOffset);
 
-            if (groundCheckRay.collider != null || groundCheckRay1.collider != null)
+        for (int i = 0; i < collidedObjects.Length; i++)
+        {
+            collidedObjects[i] = null;
+            groundCheckRay = Physics2D.Raycast(origin, direction, OnGroundRaySize, wallMask);
+            Debug.DrawRay(origin, direction * OnGroundRaySize, Color.blue, 0.5f);
+            origin += rayOffset;
+            if (groundCheckRay.collider != null)
             {
+                collidedObjects[i] = groundCheckRay.collider.gameObject;
                 InAir = false;
             }
             else
+            {
+                numOfMissedColliders++;
+            }
+
+            if(numOfMissedColliders == collidedObjects.Length)
             {
                 InAir = true;
             }
         }
-        else
+    }
+
+    void getOffsetAndOrigin(ref Vector2 rayOffset, ref Vector2 origin, ref Vector2 direction, Vector2 colliderOffset)
+    {
+        OrientationListener.Orientation actualOrientation;
+        OrientationListener.Orientation currentScreenOrientation = WorldGravity.Instance.CurrentGravityDirection;
+
+        if (!InAir && name == "Player" && GetComponent<Player>().IsSuctioned()) actualOrientation = (OrientationListener.Orientation) GetComponent<Animator>().GetInteger("Orientation");
+        else if (inGravityArea) actualOrientation = gravityAreaDirection;
+        else actualOrientation = currentScreenOrientation;
+
+        if (actualOrientation == OrientationListener.Orientation.PORTRAIT)
         {
-            Vector3 rayOffset = transform.right * RayOffsetWidth;
-            RaycastHit2D groundCheckRay = Physics2D.Raycast(transform.position + rayOffset, transform.up * -1, OnGroundRaySize, wallMask);
-            RaycastHit2D groundCheckRay1 = Physics2D.Raycast(transform.position - rayOffset, transform.up * -1, OnGroundRaySize, wallMask);
+            rayOffset = Vector2.right * RayOffsetMagnitude;
+            origin.x = origin.x + colliderOffset.x;
+            origin.y = origin.y + colliderOffset.y; 
+            origin.x = origin.x - colliderLength / 2;
+            direction = Vector2.down;
+        }
 
-            Debug.DrawRay(transform.position + rayOffset, transform.up * -1 * OnGroundRaySize, Color.green, 1);
-            Debug.DrawRay(transform.position - rayOffset, transform.up * -1 * OnGroundRaySize, Color.red, 1);
+        else if (actualOrientation == OrientationListener.Orientation.LANDSCAPE_LEFT)
+        {
+            rayOffset = Vector2.down * RayOffsetMagnitude;
+            origin.x = origin.x + colliderOffset.y;
+            origin.y = origin.y + colliderOffset.x;
+            origin.y = origin.y + colliderLength / 2;
+            direction = Vector2.left;
+        }
 
-            if (groundCheckRay.collider != null || groundCheckRay1.collider != null)
-            {
-                InAir = false;
-            }
-            else
-                InAir = true;
+        else if (actualOrientation == OrientationListener.Orientation.INVERTED_PORTRAIT)
+        {
+            rayOffset = Vector2.left * RayOffsetMagnitude;
+            origin.x = origin.x - colliderOffset.x;
+            origin.y = origin.y - colliderOffset.y;
+            origin.x = origin.x + colliderLength / 2;
+            direction = Vector2.up;
+        }
+
+        else if (actualOrientation == OrientationListener.Orientation.LANDSCAPE_RIGHT)
+        {
+            rayOffset = Vector2.up * RayOffsetMagnitude;
+            origin.x = origin.x - colliderOffset.y;
+            origin.y = origin.y - colliderOffset.x;
+            origin.y = origin.y - colliderLength / 2;
+            direction = Vector2.right;
+        }
+
+    }
+
+    public GameObject[] getCollidedObjects()
+    {
+        return collidedObjects;
+    }
+
+    public OrientationListener.Orientation getGravityAreaOrientation()
+    {
+        return gravityAreaDirection;
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        GravityArea gravityArea = collision.gameObject.GetComponent<GravityArea>();
+        if (gravityArea != null)
+        {
+            inGravityArea = true;
+            gravityAreaDirection = gravityArea.getOrientation();
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        GravityArea gravityArea = collision.gameObject.GetComponent<GravityArea>();
+        if (gravityArea != null)
+        {
+            inGravityArea = false;
         }
     }
 }

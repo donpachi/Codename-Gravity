@@ -80,13 +80,13 @@ public class MovingPlatform : MonoBehaviour {
             moveDifference = new Vector2(originalPosition.x - vector.x, originalPosition.y - vector.y);
 
             // Raycast upwards to see if an object needs to be moved
-            List<GameObject> objectsOnTop = raycastUp();
+            //List<GameObject> objectsOnTop = raycastUp();
 
-            if (objectsOnTop != null)
-            {
-                foreach (GameObject collidingObject in objectsOnTop) 
-                    collidingObject.transform.position = new Vector2(collidingObject.transform.position.x - moveDifference.x, collidingObject.transform.position.y - moveDifference.y);
-            }
+            //if (objectsOnTop != null)
+            //{
+            //    foreach (GameObject collidingObject in objectsOnTop) 
+            //        collidingObject.transform.position = new Vector2(collidingObject.transform.position.x - moveDifference.x, collidingObject.transform.position.y - moveDifference.y);
+            //}
             
         }
 	}
@@ -155,6 +155,11 @@ public class MovingPlatform : MonoBehaviour {
         }
         
         return collidingObjects;
+    }
+
+    public Vector2 getMoveDifference()
+    {
+        return moveDifference;
     }
 
     void plateDepressed()

@@ -84,6 +84,11 @@ public class GravityArea : MonoBehaviour {
         }
     }
 
+    public OrientationListener.Orientation getOrientation()
+    {
+        return areaDirection;
+    }
+
     //Object has entered the area
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -95,8 +100,11 @@ public class GravityArea : MonoBehaviour {
         {
             if (obj.GetComponent<Player>() != null)
             {
-                if (obj.GetComponent<Player>().IsSuctioned())
+                if (obj.GetComponent<Player>().IsLaunched() || (obj.GetComponent<Player>().IsSuctioned() && !obj.GetComponent<GroundCheck>().InAir))
+                {
+                    obj.GetComponent<Player>().GravityZoneOff();
                     return;
+                }
                 obj.GetComponent<Animator>().SetInteger("Orientation", (int)areaDirection);
                 obj.GetComponent<Player>().GravityZoneOn();
             }
@@ -136,8 +144,11 @@ public class GravityArea : MonoBehaviour {
             {
                 if (obj.GetComponent<Player>() != null)
                 {
-                    if (obj.GetComponent<Player>().IsSuctioned())
+                    if (obj.GetComponent<Player>().IsLaunched() || (obj.GetComponent<Player>().IsSuctioned() && !obj.GetComponent<GroundCheck>().InAir))
+                    {
+                        obj.GetComponent<Player>().GravityZoneOff();
                         return;
+                    }
                     obj.GetComponent<Animator>().SetInteger("Orientation", (int)WorldGravity.Instance.CurrentGravityDirection);
                     obj.GetComponent<Player>().GravityZoneOff();
                 }
@@ -169,8 +180,11 @@ public class GravityArea : MonoBehaviour {
             {
                 if (obj.GetComponent<Player>() != null)
                 {
-                    if (obj.GetComponent<Player>().IsSuctioned())
+                    if (obj.GetComponent<Player>().IsLaunched() || (obj.GetComponent<Player>().IsSuctioned() && !obj.GetComponent<GroundCheck>().InAir))
+                    {
+                        obj.GetComponent<Player>().GravityZoneOff();
                         return;
+                    }
                     obj.GetComponent<Animator>().SetInteger("Orientation", (int)areaDirection);
                     obj.GetComponent<Player>().GravityZoneOn();
                 }
@@ -209,8 +223,11 @@ public class GravityArea : MonoBehaviour {
         {
             if (obj.GetComponent<Player>() != null)
             {
-                if (obj.GetComponent<Player>().IsSuctioned())
+                if (obj.GetComponent<Player>().IsLaunched() || (obj.GetComponent<Player>().IsSuctioned() && !obj.GetComponent<GroundCheck>().InAir))
+                {
+                    obj.GetComponent<Player>().GravityZoneOff();
                     return;
+                }
                 obj.GetComponent<Animator>().SetInteger("Orientation", (int)WorldGravity.Instance.CurrentGravityDirection);
                 obj.GetComponent<Player>().GravityZoneOff();
             }
