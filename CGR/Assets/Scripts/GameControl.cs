@@ -24,6 +24,7 @@ public class GameControl
         {
             Load();
         }
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Debug.Log(System.Environment.Version);
     }
     

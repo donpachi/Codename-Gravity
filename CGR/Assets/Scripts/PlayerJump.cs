@@ -46,7 +46,7 @@ public class PlayerJump : MonoBehaviour {
     void jumpCheck()
     {
         Debug.Log("Tap happened");
-        if (!gCheck.InAir)
+        if (!gCheck.InAir && !_jumping)
         {
             _jumpRequest = true;
         }

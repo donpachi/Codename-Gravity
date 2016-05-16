@@ -132,11 +132,10 @@ public class Minion : MonoBehaviour, ICharacter{
             case StateChange.PORTAL_IN:
                 ToggleRender(false);
                 circleCollider.enabled = false;
+                GetComponent<Walk>().enabled = false;
+                GetComponent<PlayerJump>().enabled = false;
                 rBody.gravityScale = 0;
                 rBody.Sleep();
-                break;
-            case StateChange.CANNON_COLLISION:
-
                 break;
         }
     }
@@ -148,10 +147,9 @@ public class Minion : MonoBehaviour, ICharacter{
             case StateChange.PORTAL_OUT:
                 ToggleRender(true);
                 circleCollider.enabled = true;
+                GetComponent<Walk>().enabled = true;
+                GetComponent<PlayerJump>().enabled = true;
                 rBody.gravityScale = 1;
-                break;
-            case StateChange.CANNON_COLLISION:
-
                 break;
         }
 
