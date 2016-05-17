@@ -20,7 +20,7 @@ public class Minion : MonoBehaviour, ICharacter{
     List<GameObject> minions = new List<GameObject>();
     GameObject _parent;
     Vector2 prevPlayerLocation;
-    CircleCollider2D circleCollider;
+    CircleCollider2D bodyCollider;
     private FollowPlayer _camera;
     private GroundCheck gCheck;
     private bool facingRight = true;
@@ -46,7 +46,7 @@ public class Minion : MonoBehaviour, ICharacter{
         _followDistance = MinionDistance;
         _followSpeed = MinionFollowSpeed;
         CurrentState = MinionState.FOLLOWING;
-        circleCollider = GetComponent<CircleCollider2D>();
+        bodyCollider = GetComponent<CircleCollider2D>();
     }
 
     // Update is called once per frame
@@ -121,8 +121,14 @@ public class Minion : MonoBehaviour, ICharacter{
 
     public void ToggleRender(bool state)
     {
+        renderParts = GetComponentsInChildren<Renderer>();
         foreach (Renderer i in renderParts)
             i.enabled = state;
+    }
+
+    public void ToggleRender()
+    {
+
     }
 
     public void DeactivateControl(StateChange state)
@@ -131,11 +137,18 @@ public class Minion : MonoBehaviour, ICharacter{
         {
             case StateChange.PORTAL_IN:
                 ToggleRender(false);
-                circleCollider.enabled = false;
+                bodyCollider.enabled = false;
                 GetComponent<Walk>().enabled = false;
                 GetComponent<PlayerJump>().enabled = false;
                 rBody.gravityScale = 0;
                 rBody.Sleep();
+                break;
+            case StateChange.CHECKPOINT:
+                anim.SetBool("Checkpoint", true);
+                IsFollowing = false;
+                GetComponent<Walk>().enabled = false;
+                GetComponent<PlayerJump>().enabled = false;
+                GetComponent<Rigidbody2D>().isKinematic = true;
                 break;
         }
     }
@@ -146,7 +159,7 @@ public class Minion : MonoBehaviour, ICharacter{
         {
             case StateChange.PORTAL_OUT:
                 ToggleRender(true);
-                circleCollider.enabled = true;
+                bodyCollider.enabled = true;
                 GetComponent<Walk>().enabled = true;
                 GetComponent<PlayerJump>().enabled = true;
                 rBody.gravityScale = 1;
@@ -306,9 +319,13 @@ public class Minion : MonoBehaviour, ICharacter{
         {
             case StateChange.PORTAL_IN:
                 ToggleRender(false);
+                rBody.gravityScale = 0;
+                bodyCollider.enabled = false;
                 break;
             case StateChange.PORTAL_OUT:
                 ToggleRender(true);
+                rBody.gravityScale = 1;
+                bodyCollider.enabled = true;
                 break;
             case StateChange.CANNON_COLLISION:
                 rBody.gravityScale = 1;
