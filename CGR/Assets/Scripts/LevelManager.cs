@@ -228,13 +228,15 @@ public class LevelManager : MonoBehaviour
 
         if (requestedObj.GetComponent<Minion>() != null)
         {
-            requestedObj.GetComponent<Animator>().SetBool("Checkpoint", true);
+            requestedObj.GetComponent<Minion>().DeactivateControl(StateChange.CHECKPOINT);
+            positionCheckpoint(groundCheckRay);
             return true;
         }
         else if(requestedObj.GetComponent<Player>() != null && _minionList.Count != 0)
         {
-            _minionList[_minionList.Count - 1].GetComponent<Animator>().SetBool("Checkpoint", true);
+            _minionList[_minionList.Count - 1].GetComponent<Minion>().DeactivateControl(StateChange.CHECKPOINT);
             RemoveMinion(_minionList[_minionList.Count - 1], false);
+            positionCheckpoint(groundCheckRay);
             return true;
         }
         return false;
@@ -245,28 +247,22 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     public void setNewCheckpoint()
     {
+        _currentCheckpoint.anim.SetBool("Spawn", true);
+        createLevelSave();
+        triggerSave();
+    }
+
+    private void positionCheckpoint(RaycastHit2D collisionPoint)
+    {
         if (_currentCheckpoint == null)
         {
             GameObject checkpoint = (GameObject)Instantiate(Resources.Load("Prefabs/Checkpoint"));
             _currentCheckpoint = checkpoint.GetComponent<Checkpoint>();
         }
-        else
-            _currentCheckpoint.anim.SetTrigger("Spawn");
-
-        RaycastHit2D groundCheckRay = Physics2D.Raycast(Player.transform.position, Player.transform.up * -1, 1, checkpointRayMask);
-        if (!groundCheckRay)
-        {
-            Debug.LogError("Checkpoint not made near ground");
-            _currentCheckpoint.transform.position = Player.transform.position;
-        }
-        else
-        {
-            Debug.Log(groundCheckRay.collider.name);
-            _currentCheckpoint.transform.position = groundCheckRay.point;
-        }
+        _currentCheckpoint.rend.enabled = false;
+        _currentCheckpoint.anim.SetBool("Spawn", false);
+        _currentCheckpoint.transform.position = collisionPoint.point;
         _currentCheckpoint.transform.rotation = Player.transform.rotation;
-        createLevelSave();
-        triggerSave();
     }
 
     private void createLevelSave()
