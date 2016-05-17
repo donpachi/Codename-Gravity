@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:CGR/Assets/TempArt/Background/ParallaxBackground.gal.meta
+guid: 0b3b8aaf8b45f5e42873e05ab2ff6d97
+timeCreated: 1463430668
+=======
 guid: 40404217a73e6334ba067b3f1c080268
 timeCreated: 1463428187
+>>>>>>> 92394cbebef5c45a35301b6238df5d127873aace:CGR/Assets/TempArt/Background/ParallaxBackground.gal.meta
 licenseType: Free
 DefaultImporter:
   userData: 
