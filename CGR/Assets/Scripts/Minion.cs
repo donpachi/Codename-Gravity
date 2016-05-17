@@ -126,7 +126,7 @@ public class Minion : MonoBehaviour, ICharacter{
             i.enabled = state;
     }
 
-    public void ToggleRender()
+    public void ToggleRenderPart(string part)
     {
 
     }
