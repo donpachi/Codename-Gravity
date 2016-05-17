@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:CGR/Assets/TempArt/Minion/Digging.meta~HEAD.meta
+guid: f31700c95aa503d40b6f25aa0e874b32
+timeCreated: 1463451594
+=======
 guid: 8b4d227eb9bd8fb4682861387f4e65c4
 timeCreated: 1463451970
+>>>>>>> 46d3f5a8e08ee44768ff721b1152a6cb58a3d20c:CGR/Assets/TempArt/Minion/Digging.meta~HEAD.meta
 licenseType: Free
 DefaultImporter:
   userData: 
