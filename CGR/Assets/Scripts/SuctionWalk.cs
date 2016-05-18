@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;       //FOR DEBUG REMOVE LATER
 
 public class SuctionWalk : MonoBehaviour
