@@ -40,7 +40,7 @@ public class PinchtoZoom : MonoBehaviour
 			
 			
 			// ... change the orthographic size based on the change in distance between the touches.
-			playerCam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;
+			playerCam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed / 11f;
 			
 			// Make sure the orthographic size never drops below default.
 			playerCam.orthographicSize = Mathf.Max(playerCam.orthographicSize, defaultOrthoSize);
@@ -50,8 +50,8 @@ public class PinchtoZoom : MonoBehaviour
 		}
 		
 		if (Input.touchCount == 0 && playerCam.orthographicSize > defaultOrthoSize) {
-			playerCam.orthographicSize -= noTouchZoomSpeed;
-			if (playerCam.orthographicSize < (defaultOrthoSize + noTouchZoomSpeed)){
+			playerCam.orthographicSize -= orthoZoomSpeed;
+			if (playerCam.orthographicSize < (defaultOrthoSize + orthoZoomSpeed)){
 				playerCam.orthographicSize -= (playerCam.orthographicSize - defaultOrthoSize);
 			}
 		}
