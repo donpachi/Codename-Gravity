@@ -6,7 +6,6 @@ public class Orientation : MonoBehaviour {
     Animator anim;
     bool autoUpdate = false;
     public bool syncWithPlayer { get; set; }
-    bool InRotation = false;
     Animator playerAnim;
 
 	void Start () {
@@ -53,7 +52,7 @@ public class Orientation : MonoBehaviour {
     /// </summary>
     void finishedRotation()
     {
-        InRotation = false;
+        
     }
 
     //Listeners for player

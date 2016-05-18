@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class WindTunnel : MonoBehaviour {
 
-	private Animator anim;
     private List<Vector3> windRayOrigins;
 
 	//Adjustable variables
@@ -16,8 +15,6 @@ public class WindTunnel : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		anim = gameObject.GetComponent<Animator> ();
-
         setupRaycast();
 	}
 	

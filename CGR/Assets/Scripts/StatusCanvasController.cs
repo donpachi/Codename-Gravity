@@ -4,12 +4,6 @@ using UnityEngine.UI;
 
 public class StatusCanvasController : MonoBehaviour {
 
-    //Positions looking at the phone from portrait
-    private Vector3 topLeft = new Vector3(220, 435, 0);
-    private Vector3 topRight = new Vector3(-220, 435, 0);
-    private Vector3 bottomLeft = new Vector3(-220, -435, 0);
-    private Vector3 bottomRight = new Vector3(220, -435, 0);
-
     private bool gravityCooldownFlag;
     private bool suctionCounterFlag;
 

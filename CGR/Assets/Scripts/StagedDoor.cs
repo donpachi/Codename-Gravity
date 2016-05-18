@@ -8,7 +8,6 @@ public class StagedDoor : MonoBehaviour
     private bool collapsing = false;
     private bool growing = false;
     private float timer = 0;
-    int currentDoor = 0;
     public bool isActive = false;
 
     // Use this for initialization
@@ -77,8 +76,6 @@ public class StagedDoor : MonoBehaviour
 
     void growDoor()
     {
-        Transform parent = this.transform.parent;
-
         if (this.GetComponent<SpriteRenderer>().enabled == false)
         {
             foreach (Transform child in transform)
@@ -92,7 +89,6 @@ public class StagedDoor : MonoBehaviour
                 }
             }
         }
-
 
         if (isActive == true)
         {
