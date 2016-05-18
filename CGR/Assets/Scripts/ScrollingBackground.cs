@@ -19,7 +19,8 @@ public class ScrollingBackground : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Time.timeScale != 0) {
+		if (Time.timeScale != 0 && player.velocity.magnitude > 1) {
+            Debug.Log(player.velocity.magnitude);
 			horizontal += (player.velocity.x * speed);
 			vertical += (player.velocity.y * speed);
 		}
