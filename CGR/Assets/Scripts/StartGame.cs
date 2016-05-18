@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class StartGame : MonoBehaviour {
 	
@@ -23,7 +23,7 @@ public class StartGame : MonoBehaviour {
 	{
         int latestLevel = GameControl.Instance.GetLatestLevel();
         Debug.Log(latestLevel);
-        Application.LoadLevel(latestLevel);
+        SceneManager.LoadScene(latestLevel);
 	}
 
     public void LevelSelect()
@@ -65,6 +65,6 @@ public class StartGame : MonoBehaviour {
 
     public void Back()
     {
-        Application.LoadLevel(0);
+        SceneManager.LoadScene(0);
     }
 }

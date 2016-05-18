@@ -163,6 +163,7 @@ public class TouchController : MonoBehaviour {
         catch(System.ArgumentException exception)
         {
             Debug.LogError("FingerID: " + touch.fingerId + "/n Data: " + touchDataDictionary.Keys.Count);
+            Debug.LogError(exception);
         }
     }
 

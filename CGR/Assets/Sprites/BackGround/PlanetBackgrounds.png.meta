@@ -1,15 +1,22 @@
 fileFormatVersion: 2
 guid: 30bf644287c1a154da832990aaff86c9
+<<<<<<< HEAD
 timeCreated: 1463605915
+=======
+timeCreated: 1463534290
+>>>>>>> 9367989ba0806a25d236abf0dcf6f11452371888
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: PlanetBackgrounds_0
     21300002: PlanetBackgrounds_1
+<<<<<<< HEAD
     21300004: PlanetBackgrounds_2
     21300006: PlanetBackgrounds_3
     21300008: PlanetBackgrounds_4
     21300010: PlanetBackgrounds_5
+=======
+>>>>>>> 9367989ba0806a25d236abf0dcf6f11452371888
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -59,14 +66,22 @@ TextureImporter:
     - name: PlanetBackgrounds_0
       rect:
         serializedVersion: 2
+<<<<<<< HEAD
         x: 464
         y: 1375
         width: 429
         height: 195
+=======
+        x: 461
+        y: 1376
+        width: 437
+        height: 200
+>>>>>>> 9367989ba0806a25d236abf0dcf6f11452371888
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline:
+<<<<<<< HEAD
       - - {x: 198.5, y: 18.5}
         - {x: 186.5, y: 21.5}
         - {x: 133.5, y: 31.5}
@@ -91,10 +106,39 @@ TextureImporter:
         y: 1453
         width: 185
         height: 223
+=======
+      - - {x: 215.5, y: -19}
+        - {x: 215.5, y: 5}
+        - {x: 186.5, y: 21}
+        - {x: 95.5, y: 33}
+        - {x: 69.5, y: 72}
+        - {x: 42.5, y: 96}
+        - {x: -54.5, y: 96}
+        - {x: -108.5, y: 34}
+        - {x: -200.5, y: 18}
+        - {x: -217.5, y: 10}
+        - {x: -217.5, y: -12}
+        - {x: -190.5, y: -35}
+        - {x: -107.5, y: -39}
+        - {x: -69.5, y: -94}
+        - {x: -39.5, y: -100}
+        - {x: 41.5, y: -100}
+        - {x: 77.5, y: -76}
+        - {x: 106.5, y: -43}
+        - {x: 214.5, y: -21}
+    - name: PlanetBackgrounds_1
+      rect:
+        serializedVersion: 2
+        x: 1627
+        y: 274
+        width: 130
+        height: 133
+>>>>>>> 9367989ba0806a25d236abf0dcf6f11452371888
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline:
+<<<<<<< HEAD
       - - {x: 16.5, y: 111.5}
         - {x: -27.5, y: 93.5}
         - {x: -92.5, y: -48.5}
@@ -181,6 +225,17 @@ TextureImporter:
         - {x: 62.5, y: -55.5}
         - {x: 62.5, y: 38.5}
         - {x: 36.5, y: 62.5}
+=======
+      - - {x: -47, y: 65.5}
+        - {x: -64, y: 39.5}
+        - {x: -64, y: -22.5}
+        - {x: -58, y: -48.5}
+        - {x: -36, y: -63.5}
+        - {x: 38, y: -63.5}
+        - {x: 65, y: -52.5}
+        - {x: 65, y: 62.5}
+        - {x: 44, y: 65.5}
+>>>>>>> 9367989ba0806a25d236abf0dcf6f11452371888
     outline: []
   spritePackingTag: 
   userData: 

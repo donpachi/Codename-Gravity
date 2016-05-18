@@ -11,7 +11,6 @@ public class Player : MonoBehaviour, ICharacter {
     private Walk walk;
     private SuctionWalk sWalk;
     private ConstantForce2D sForce;
-    private LayerMask wallMask;
     private CircleCollider2D playerCollider;
     private float drag = 0.5f;
     private float angularDrag = 0.05f;
@@ -46,7 +45,6 @@ public class Player : MonoBehaviour, ICharacter {
         playerCollider = GetComponent<CircleCollider2D>();
         drag = playerRigidBody.drag;
         angularDrag = playerRigidBody.angularDrag;
-        wallMask = 1 << LayerMask.NameToLayer("Walls");
         gCheck = GetComponent<GroundCheck>();
         potatoParts = GetComponentsInChildren<Renderer>();
 
@@ -144,6 +142,7 @@ public class Player : MonoBehaviour, ICharacter {
             LevelManager.Instance.RemoveMinion(gameObject, true);
         }
     }
+
     void swipeCheck(TouchController.SwipeDirection direction)
     {
         if (direction == TouchController.SwipeDirection.UP)
@@ -181,7 +180,8 @@ public class Player : MonoBehaviour, ICharacter {
         catch(NullReferenceException e)
         {
             Debug.LogError("Camera Obj: " + Camera.main.gameObject + " FollowP script: " + Camera.main.gameObject.GetComponent<FollowPlayer>() + " Player GameObject: " + gameObject);
-        }        
+            Debug.LogError(e);
+        }
             playerRigidBody.isKinematic = false;
             playerRigidBody.gravityScale = 1.0f;
             walk.enabled = true;

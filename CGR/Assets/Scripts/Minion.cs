@@ -17,7 +17,6 @@ public class Minion : MonoBehaviour, ICharacter{
     //GameObject player;
     Player player; 
     Rigidbody2D rBody;
-    List<GameObject> minions = new List<GameObject>();
     GameObject _parent;
     Vector2 prevPlayerLocation;
     CircleCollider2D bodyCollider;
@@ -25,7 +24,6 @@ public class Minion : MonoBehaviour, ICharacter{
     private GroundCheck gCheck;
     private bool facingRight = true;
     private float teleportDistance = 4f;
-    private float suctionTimer = 0;
     private Renderer[] renderParts;
     private float _followDistance;
     private float _followSpeed;
@@ -222,7 +220,6 @@ public class Minion : MonoBehaviour, ICharacter{
         {
             if (Vector2.Distance(transform.position, player.getPlayerFeetPosition()) > _followDistance)
             {
-                Vector2 newPosition = Vector2.Lerp(transform.position, player.getPlayerFeetPosition(), _followSpeed);
                 transform.position = Vector2.Lerp(transform.position, player.getPlayerFeetPosition(), _followSpeed);
                 anim.SetBool("Moving", true);
             }

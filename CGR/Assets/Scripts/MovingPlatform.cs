@@ -15,10 +15,8 @@ public class MovingPlatform : MonoBehaviour {
     public bool isActive;
     private float RAYCASTDISTANCE = 0.3f;
     private float SPEEDMULTIPLIER = 10f;
-    private bool playerOnTop = false;
     Vector2 moveDifference;
     int numberOfIncrements = 0;
-    
 
 	// Use this for initialization
 	void Start () {

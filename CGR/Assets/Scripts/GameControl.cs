@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.SceneManagement;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
@@ -90,22 +90,22 @@ public class GameControl
 
     public void NewGame()
     {
-        levelUnlocked = new Boolean[Application.levelCount-1];
+        levelUnlocked = new Boolean[SceneManager.sceneCount - 1];
         levelUnlocked[0] = true; // Unlock First Level
-        levelHighScore = new Int32[Application.levelCount-1];
+        levelHighScore = new Int32[SceneManager.sceneCount - 1];
         latestLevel = 1;
         Save();
     }
 
     public void SetLevelComplete(int score)
     {
-        if (score > levelHighScore[Application.loadedLevel])
-            levelHighScore[Application.loadedLevel] = score;
+        if (score > levelHighScore[SceneManager.GetActiveScene().buildIndex])
+            levelHighScore[SceneManager.GetActiveScene().buildIndex] = score;
 
-        if (latestLevel <= Application.loadedLevel)
-            latestLevel = Application.loadedLevel+1;
+        if (latestLevel <= SceneManager.GetActiveScene().buildIndex && latestLevel < SceneManager.sceneCount)
+            latestLevel = SceneManager.GetActiveScene().buildIndex + 1;
 
-        levelUnlocked[Application.loadedLevel] = true;
+        levelUnlocked[SceneManager.GetActiveScene().buildIndex] = true;
         Save();
     }
 

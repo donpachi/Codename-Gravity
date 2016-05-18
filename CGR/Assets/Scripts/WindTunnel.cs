@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class WindTunnel : MonoBehaviour {
 
-	private Animator anim;
     private List<Vector3> windRayOrigins;
 
 	//Adjustable variables
@@ -13,11 +12,13 @@ public class WindTunnel : MonoBehaviour {
     public bool TurbineOn;
     public int RayAmount; //the number of rays cast
     public Dictionary<GameObject, float> objList;
+    public LayerMask MoveableObjects;
+
+    private Player player;
 
 	// Use this for initialization
 	void Start () {
-		anim = gameObject.GetComponent<Animator> ();
-
+        player = FindObjectOfType<Player>();
         setupRaycast();
 	}
 	
@@ -69,26 +70,32 @@ public class WindTunnel : MonoBehaviour {
     Dictionary<GameObject, float> castRays()
     {
         Dictionary<GameObject, float> pushableObjects = new Dictionary<GameObject, float>();
-        
+
+        RaycastHit2D[] windRayHits;
+
         foreach (Vector3 ray in windRayOrigins)
         {
-            RaycastHit2D windRay = Physics2D.Raycast(ray, transform.up, MaxWindDistance);               //update this if we want rays to pass through certain objects
 
-            Debug.DrawRay(ray, transform.up * MaxWindDistance, Color.green, 1);
+            windRayHits = Physics2D.RaycastAll(ray, transform.up, MaxWindDistance, MoveableObjects);
 
-            if (windRay.collider != null)
+            foreach (var rayHit in windRayHits)
             {
-                if (windRay.collider.gameObject.CompareTag("Pushable") && !pushableObjects.ContainsKey(windRay.collider.gameObject))
+                if (rayHit.collider != null)
                 {
-                    float distance = Vector2.Distance(ray, windRay.collider.gameObject.transform.position);
-                    float windForce = ((MaxWindDistance - distance) / MaxWindDistance) * MaxWindForce;
-                    if (windForce < 0)
+                    if (!pushableObjects.ContainsKey(rayHit.collider.gameObject))
                     {
-                        windForce = 0;
+                        float distance = Vector2.Distance(ray, rayHit.collider.gameObject.transform.position);
+                        float windForce = ((MaxWindDistance - distance) / MaxWindDistance) * MaxWindForce;
+                        if (windForce < 0)
+                        {
+                            windForce = 0;
+                        }
+                        pushableObjects.Add(rayHit.collider.gameObject, windForce);
                     }
-                    pushableObjects.Add(windRay.collider.gameObject, windForce);
                 }
             }
+            Debug.DrawRay(ray, transform.up * MaxWindDistance, Color.green, 1);
+
         }
 
         return pushableObjects;

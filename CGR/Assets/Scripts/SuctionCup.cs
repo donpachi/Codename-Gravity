@@ -8,7 +8,6 @@ public class SuctionCup : MonoBehaviour {
     public int SuctionForce;
 
     private float timer;
-    private bool triggered;
     private Player player;
 
     //Event thrown when picked up
@@ -46,7 +45,7 @@ public class SuctionCup : MonoBehaviour {
     /// </summary>
     /// <param name="collisionInfo"></param>
 	void OnTriggerEnter2D(Collider2D collisionInfo) {
-		if (collisionInfo.gameObject.name == "Player" && !triggered) {
+		if (collisionInfo.gameObject.name == "Player") {
             player.SuctionStatusOn(SuctionForce);
 
             GetComponent<Collider2D>().enabled = false;
