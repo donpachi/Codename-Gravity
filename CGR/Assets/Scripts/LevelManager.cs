@@ -27,7 +27,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private List<Checkpoint> _checkpoints;
     private int _currentCheckpointIndex;
     private Checkpoint _startPosition;
     private Checkpoint _currentCheckpoint;
@@ -54,8 +53,6 @@ public class LevelManager : MonoBehaviour
     public void Start()
     {
         _startPosition = FindObjectOfType<Checkpoint>();
-        _checkpoints = FindObjectsOfType<Checkpoint>().ToList();
-        _currentCheckpointIndex = _checkpoints.Count > 0 ? 0 : -1;
 
         Player = FindObjectOfType<Player>();
         Camera = FindObjectOfType<FollowPlayer>();
@@ -69,19 +66,11 @@ public class LevelManager : MonoBehaviour
         {
             DebugSpawn.SpawnPlayer(Player);
         }
-        else if(_currentCheckpointIndex != -1)
-        {
-            _checkpoints[_currentCheckpointIndex].SpawnPlayer(Player);
-        }
-#else
-        if (_currentCheckpointIndex != -1)
-            _checkpoints[_currentCheckpointIndex].SpawnPlayer(Player);
 #endif
     }
 
     public void Update()
     {
-        var isAtLastCheckPoint = _currentCheckpointIndex + 1 >= _checkpoints.Count;
 
     }
 

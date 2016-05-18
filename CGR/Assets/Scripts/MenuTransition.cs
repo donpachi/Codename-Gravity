@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.IO;
-using System;
+using UnityEngine.SceneManagement;
 
 public class MenuTransition : MonoBehaviour
 {
@@ -84,15 +82,13 @@ public class MenuTransition : MonoBehaviour
 
     public void LoadLevel(int level)
     {
-        Application.LoadLevel(level);
+        SceneManager.LoadScene(level);
     }
 
     private void GenerateLevelList()
     {
         bool[] levelUnlocked = GameControl.Instance.GetLevelUnlock();
-        int[] levelHighScore = GameControl.Instance.GetLevelHighScore();
 
-        ColorBlock color;
         Selectable[] levelButtons;
 
         for (int i = 0; i < levelSelectScreens.Length; i++)

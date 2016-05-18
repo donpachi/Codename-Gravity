@@ -82,18 +82,18 @@ public class SuctionWalk : MonoBehaviour
         {
             player.updatePlayerOrientation(gCheck.getGravityAreaOrientation(), 0);
             playerBody.gravityScale = 0.0f;
-            playerBody.GetComponent<ConstantForce2D>().enabled = false;
+            _cForce.enabled = false;
         }
         else if(gCheck.InAir)
         {
             player.updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0);
             playerBody.gravityScale = 1.0f;
-            playerBody.GetComponent<ConstantForce2D>().enabled = false;
+            _cForce.enabled = false;
         }
         else
         {
             playerBody.gravityScale = 0.0f;
-            playerBody.GetComponent<ConstantForce2D>().enabled = true;
+            _cForce.enabled = true;
         }
     }
 

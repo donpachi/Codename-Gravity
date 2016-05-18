@@ -6,6 +6,9 @@ public class WindtunnelPush : MonoBehaviour {
     private WindTunnel[] windtunnels;
     private List<GameObject> pushed;
     private Dictionary<GameObject, float> pushItems;
+    private const float turbineStartupTime = 1.5f;
+    private float turbineRuntime;
+    private float windForceRatio;
 
     public bool TurbineOn;
 
@@ -29,6 +32,14 @@ public class WindtunnelPush : MonoBehaviour {
         if (!turbineState)
             return;
 
+        if (turbineRuntime < turbineStartupTime)
+        {
+            turbineRuntime += Time.deltaTime;
+            windForceRatio = turbineRuntime / turbineStartupTime;
+        }
+        else
+            windForceRatio = 1;
+
         foreach (var turbine in windtunnels)
         {
             if(turbine.objList != null)
@@ -48,7 +59,7 @@ public class WindtunnelPush : MonoBehaviour {
 
     void addWindForce(GameObject obj, float force)
     {
-        obj.GetComponent<Rigidbody2D>().AddForce(transform.up * force);
+        obj.GetComponent<Rigidbody2D>().AddForce(transform.up * force * windForceRatio);
         //Debug.Log("Added Force to: " + obj.name + " With Force: " + force);
     }
 
@@ -73,6 +84,7 @@ public class WindtunnelPush : MonoBehaviour {
         {
             turbine.TurbineOn = state;
         }
+        turbineRuntime = 0;
     }
 
     void toggleOnOff()

@@ -4,8 +4,6 @@ using System;
 
 
 public class ShrinkingDoor : MonoBehaviour {
-
-    GameObject parent;
     public float resizespeed = 0.08f;
     bool shrinking = false;
     bool growing = false;
@@ -15,7 +13,6 @@ public class ShrinkingDoor : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         originalScale = transform.localScale;
-        parent = this.GetComponentInParent<Transform>().gameObject;
         if (gameObject.transform.localScale.x > gameObject.transform.localScale.y)
         {
             originalOrientation = "widthwise";
