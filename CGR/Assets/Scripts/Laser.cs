@@ -9,6 +9,8 @@ public class Laser : MonoBehaviour {
     public float FireFrequency;
     [Tooltip("Fire's for y amount of time")]
     public float FireTime;
+    [Tooltip("Time delayed before first fire on level start")]
+    public float StartUpDelay;
     public bool On;
     public bool Fire;
     public bool CornerLaser;
@@ -36,6 +38,12 @@ public class Laser : MonoBehaviour {
             return;
         }
         
+        if(StartUpDelay > 0)
+        {
+            StartUpDelay -= Time.deltaTime;
+            return;
+        }
+
         anim.SetBool("On", On);
 
         if(frequencyCountDown < FireFrequency)
