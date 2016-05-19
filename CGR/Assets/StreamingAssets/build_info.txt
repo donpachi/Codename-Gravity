@@ -1,17 +1,1 @@
-<<<<<<< HEAD
-Build from YOSK-NOTEBOOK at 5/19/2016 2:22:42 PM
-=======
-<<<<<<< HEAD
-Build from MINIDOMO at 5/18/2016 7:16:09 PM
-=======
-<<<<<<< HEAD
-Build from YOSK-NOTEBOOK at 5/18/2016 7:33:42 PM
-=======
-<<<<<<< HEAD
-Build from MINIDOMO at 5/18/2016 6:36:05 PM
-=======
-Build from COMPUTER at 5/18/2016 6:06:28 PM
->>>>>>> c8e9b3bc0eb5e202443503408caafe60240df31e
->>>>>>> 0e64e212d785b766b188014e3b49774738f82327
->>>>>>> 5709fdffbe3a81043328eaa2a9e543c3f42b948b
->>>>>>> 117c01a4600df654d4693bdfe8bc5b2d4c0b6445
+Build from YOSK-NOTEBOOK at 5/19/2016 2:34:28 PM
