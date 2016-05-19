@@ -24,6 +24,8 @@ public class GameControl
         {
             Load();
         }
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Debug.Log(System.Environment.Version);
     }
@@ -90,9 +92,9 @@ public class GameControl
 
     public void NewGame()
     {
-        levelUnlocked = new Boolean[SceneManager.sceneCount - 1];
+        levelUnlocked = new Boolean[SceneManager.sceneCountInBuildSettings - 1];
         levelUnlocked[0] = true; // Unlock First Level
-        levelHighScore = new Int32[SceneManager.sceneCount - 1];
+        levelHighScore = new Int32[SceneManager.sceneCountInBuildSettings - 1];
         latestLevel = 1;
         Save();
     }
@@ -102,7 +104,7 @@ public class GameControl
         if (score > levelHighScore[SceneManager.GetActiveScene().buildIndex])
             levelHighScore[SceneManager.GetActiveScene().buildIndex] = score;
 
-        if (latestLevel <= SceneManager.GetActiveScene().buildIndex && latestLevel < SceneManager.sceneCount)
+        if (latestLevel <= SceneManager.GetActiveScene().buildIndex && latestLevel < SceneManager.sceneCountInBuildSettings)
             latestLevel = SceneManager.GetActiveScene().buildIndex + 1;
 
         levelUnlocked[SceneManager.GetActiveScene().buildIndex] = true;
