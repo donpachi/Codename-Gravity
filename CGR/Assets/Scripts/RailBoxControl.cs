@@ -10,12 +10,14 @@ public class RailBoxControl : MonoBehaviour {
     public float THRUST;
     public float MAXSPEED;
     public float playerOffset;
+    public LayerMask WallMask;
     bool PlayerControlled;
 
     Rigidbody2D objectRb;
     private Animator anim;
     Player player;
     GameObject mainCamera;
+    GameObject childObj;
 
 
     // Use this for initialization
@@ -24,6 +26,7 @@ public class RailBoxControl : MonoBehaviour {
         anim = gameObject.GetComponent<Animator>();
         player = FindObjectOfType<Player>();
         mainCamera = GameObject.Find("Main Camera");
+        childObj = transform.GetChild(0).gameObject;
     }
 
     // Update is called once per frame
@@ -89,7 +92,7 @@ public class RailBoxControl : MonoBehaviour {
         player.transform.position = transform.position + (Vector3)OrientationListener.instanceOf.getRelativeUpVector();
         player.updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0.0f);
         player.GetComponent<Rigidbody2D>().AddForce(OrientationListener.instanceOf.getRelativeUpVector() * 200);
-        player.ReactivateControl(StateChange.BOX_IN);
+        player.ReactivateControl(StateChange.BOX_OUT);
         mainCamera.GetComponent<FollowPlayer>().setFollowObject(player.gameObject);
         PlayerControlled = false;
         anim.SetBool("HasExited", false);
@@ -100,9 +103,26 @@ public class RailBoxControl : MonoBehaviour {
     {
         if (PlayerControlled && direction == TouchController.SwipeDirection.UP)
         {
-            anim.SetInteger("Moving", 0);
-            anim.SetBool("HasExited", true);
+            if (checkClearance())
+            {
+                anim.SetInteger("Moving", 0);
+                anim.SetBool("HasExited", true);
+            }
         }
+    }
+
+    bool checkClearance()
+    {
+        float exitRaySize = 1;
+        RaycastHit2D[] exitRays = Physics2D.RaycastAll(transform.position, transform.GetChild(0).transform.up, exitRaySize, WallMask);
+        Debug.DrawRay(transform.position, transform.GetChild(0).transform.up * exitRaySize, Color.red, 0.5f);
+        foreach (var ray in exitRays)
+        {
+            if (ray.collider.gameObject != childObj)
+                return false;
+        }
+
+        return true;
     }
 
     void checkpointReset()

@@ -66,6 +66,13 @@ public class LevelManager : MonoBehaviour
         {
             DebugSpawn.SpawnPlayer(Player);
         }
+        else
+        {
+            _startPosition.SpawnPlayer(Player);
+        }
+#else
+        _startPosition.SpawnPlayer(Player);
+
 #endif
     }
 
