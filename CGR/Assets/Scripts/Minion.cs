@@ -347,6 +347,16 @@ public class Minion : MonoBehaviour, ICharacter{
                 _followDistance = MinionDistance;
                 _followSpeed = MinionFollowSpeed;
                 break;
+            case StateChange.BOX_IN:
+                rBody.gravityScale = 0;
+                _followDistance = 0.001f;
+                _followSpeed = 0.5f;
+                break;
+            case StateChange.BOX_OUT:
+                rBody.gravityScale = 1;
+                _followDistance = MinionDistance;
+                _followSpeed = MinionFollowSpeed;
+                break;
         }
     }
 
