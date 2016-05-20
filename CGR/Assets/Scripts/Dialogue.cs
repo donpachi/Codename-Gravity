@@ -24,7 +24,7 @@ public class Dialogue
 [Serializable]
 public class DialogueNode
 {
-    [XmlAttribute("DialogueNode")]
+    [XmlAttribute("index")]
     public int nodeIndex { get; set; }
 
     [XmlArray("Dialogues")]
@@ -36,7 +36,7 @@ public class DialogueNode
 [Serializable]
 public class Level
 {
-    [XmlElement("LevelName")]
+    [XmlAttribute("levelName")]
     public string levelname
     {
         get;
