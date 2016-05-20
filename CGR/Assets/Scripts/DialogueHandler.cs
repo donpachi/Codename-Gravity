@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 /* keep in mind that a single xml file will hold the dialogue data for all levels
 */
@@ -21,7 +22,8 @@ public class DialogueHandler : MonoBehaviour
     private GameObject pCObj, llCObj, lrCObj, ipCObj;
     private Text speakerText, speakerName;
     private int MAXCHAR, MAXNEWLINE, MAXCHARLINE, currentCharCount, currentLineCount, currentCharsPerLine;
-    private float waitTimeInterval = 0.3f;
+    private float waitTimeInterval = 0.3f; 
+    private bool doneText;
 
     public int PORTRAIT_MAXCHAR { get; set; }
     public int PORTRAIT_MAXNEWLINE { get; set; }
@@ -50,7 +52,6 @@ public class DialogueHandler : MonoBehaviour
     void Start()
     {
         initBounds();
-        eventEnable();
         resume = true;
         typeSpeed = 0.01f;
         inTextSequence = false;
@@ -121,7 +122,7 @@ public class DialogueHandler : MonoBehaviour
         }
     }
 
-    private void clearAllCanvasText()
+    public void clearAllCanvasText()
     {
         foreach (var canvas in this.GetComponentsInChildren<Canvas>())
         {
@@ -152,6 +153,7 @@ public class DialogueHandler : MonoBehaviour
     {
         pauseGame();
         DrawTextCanvas();
+        eventEnable();
         DialogueNode dNode = level.levelDialogueNodes[dNodeIndex];
         foreach (var dialogue in dNode.dialogueArray)
         {
@@ -159,6 +161,7 @@ public class DialogueHandler : MonoBehaviour
             StartCoroutine(animateText(dialogue.speech));
         }
         resumeGame();
+        eventDisable();
     }
 
     private void setActiveText(GameObject canvasObj)
@@ -215,10 +218,13 @@ public class DialogueHandler : MonoBehaviour
         DrawTextCanvas();
         speakerName.text = speaker;
         StartCoroutine(animateText(msg));
-        resumeGame();
+        if (doneText)
+        {
+            resumeGame();
+        }
     }
 
-    private void pauseGame()    //need a way to figure out how to pause (freeze) the game without affecting time.
+    private void pauseGame()   
     {
         savedTimeScale = Time.timeScale;
         Time.timeScale = 0;
@@ -252,8 +258,10 @@ public class DialogueHandler : MonoBehaviour
     {
         //if we want to do handling for letter overflow, we need to split the string into words and then check the next word to see if enough space on line
         //ABOVE NOT IMPLEMENTED
+        doneText = false;
         for (int i = 0; i > fullstring.Length; i++)
         {
+
             if (currentCharCount >= MAXCHAR || currentLineCount >= MAXNEWLINE)
             {
                 //need to puase execution of this here and wait for a tap
@@ -262,17 +270,18 @@ public class DialogueHandler : MonoBehaviour
                 {
                     yield return new WaitForSeconds(waitTimeInterval);
                 }
-                speakerText.text = "";
                 currentCharCount = 0;
                 currentLineCount = 0;
                 currentCharsPerLine = 0;
+                speakerText.text = "\n";
             }
             else if (fullstring[i] == '\n')
             {
+                speakerText.text += "\n";
                 currentLineCount++;
                 currentCharsPerLine = 0;
             }
-            else if (currentCharsPerLine == MAXCHARLINE-1)
+            else if (currentCharsPerLine == MAXCHARLINE-1 && fullstring[i] != '\n')
             {
                 speakerText.text += "-\n";
                 currentLineCount++;
@@ -281,9 +290,11 @@ public class DialogueHandler : MonoBehaviour
             {
                 speakerText.text += fullstring[i];
                 currentCharCount++;
-                yield return new WaitForSeconds(typeSpeed);
             }
+            yield return new WaitForSeconds(typeSpeed);
         }
+        doneText = true;
+
     }
 
     void screenTapped(TouchInstanceData data)
