@@ -161,12 +161,10 @@ public class Player : MonoBehaviour, ICharacter {
     void switchControlToMinion()
     {
         GameObject controllingMinion = LevelManager.Instance.GetMinion();
-        controllingMinion.GetComponent<Minion>().SetRenderLayer("FrontOfPlayer");
+        controllingMinion.GetComponent<Minion>().GainControl();
         walk.enabled = false;
         playerRigidBody.isKinematic = true;
         anim.SetBool("Moving", false);
-        controllingMinion.GetComponent<Animator>().SetBool("SwitchingToMinion", true);
-        controllingMinion.GetComponent<Orientation>().syncWithPlayer = false;
         WorldGravity.Instance.enabled = false;
         isMinion = true;
     }
