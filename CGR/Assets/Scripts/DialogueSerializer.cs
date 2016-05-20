@@ -6,8 +6,7 @@ using System.Collections;
 
 
 public static class DialogueSerializer
-{
-
+{ 
     public static void SerializeLevelDialogue()
     {
         XmlSerializer serializer = new XmlSerializer(typeof(LevelCollection));
@@ -20,27 +19,34 @@ public static class DialogueSerializer
 
     public static LevelCollection DeserializeLevelDialogue()
     {
-        FileStream filestream;
-        XmlReader reader;
-        LevelCollection existingLevelsData = new LevelCollection();
-        XmlSerializer serializer = new XmlSerializer(typeof(LevelCollection));
+        LevelCollection existingLevelsData = null;
 
-        if (!System.IO.File.Exists(Application.dataPath + "/dialoguedata.xml"))
+        if (!File.Exists(Application.dataPath + "/dialoguedata.xml"))
         {
-            filestream = System.IO.File.Create(Application.dataPath + "/dialoguedata.xml");
+            FileStream filestream = File.Create(Application.dataPath + "/dialoguedata.xml");
             filestream.Close();
             filestream.Dispose();
             SerializeLevelDialogue();
         }
         else
         {
-            filestream = new System.IO.FileStream(Application.dataPath + "/dialoguedata.xml", System.IO.FileMode.Open);
-            reader = new XmlTextReader(filestream);
-            if (serializer.CanDeserialize(reader))
-                existingLevelsData = (LevelCollection) serializer.Deserialize(reader);
-            reader.Close();
-            filestream.Close();
-            filestream.Dispose();
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(Application.dataPath + "/dialoguedata.xml", FileMode.Open);
+                using (XmlReader reader = new XmlTextReader(fs))
+                    {
+                        XmlSerializer serializer = new XmlSerializer(typeof(LevelCollection));
+                        return (LevelCollection)serializer.Deserialize(reader);
+                    }
+            }
+            finally
+            {
+                if (fs != null)
+                    fs.Dispose();
+            }
+
+
         }
         return existingLevelsData;
     }
