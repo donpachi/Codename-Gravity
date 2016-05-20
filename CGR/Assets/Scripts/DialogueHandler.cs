@@ -45,10 +45,6 @@ public class DialogueHandler : MonoBehaviour
     }
     
     
-    //hitting a collider box for a dialogue trigger will call this function and pass it certain index node
-    //should bring up a graphical text box to display the name of the speaker and the text.
-    //text will scroll until it hits a period or until the buffer space inside the text window
-    //runs out.
     void Start()
     {
         initBounds();
