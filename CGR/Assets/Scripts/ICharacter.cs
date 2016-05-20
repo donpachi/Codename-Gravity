@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum StateChange { CANNON, CANNON_FIRE, CANNON_COLLISION, PORTAL_IN, PORTAL_OUT, MINION, SWALK_ON, SWALK_OFF, BOX_IN, BOX_OUT, CHECKPOINT }
+public enum StateChange { CANNON, CANNON_FIRE, CANNON_COLLISION, PORTAL_IN, PORTAL_OUT, MINION, SWALK_ON, SWALK_OFF, BOX_IN, BOX_OUT, CHECKPOINT, DEATH }
 
 public interface ICharacter{
 
