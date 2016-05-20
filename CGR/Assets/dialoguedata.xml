@@ -1,81 +1,16 @@
 <LevelCollection>
-	<Level>
-		<levelname></Levelname>
-		<Dialogues> <!-- this acts like one node in a map that contains dialogue sequence -->
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-		</Dialogues>
-		<Dialogues>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-		</Dialogues>
-	</Level>
-	
-	<Level>
-		<levelname></Levelname>
-		<Dialogues> <!-- this acts like one node in a map that contains dialogue sequence -->
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-		</Dialogues>
-		<Dialogues>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-			<Dialogue>
-				<Speaker></Speaker>
-				<Speech></Speech>
-			</Dialogue>
-		</Dialogues>
-	</Level>
-</LevelCollection> 
+  <Levels>
+    <Level levelName = "Level1">
+      <DialogueNode index = "0">
+        <Dialogue>
+          <Speaker>Test</Speaker>
+          <Speech>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ac nunc consequat leo condimentum volutpat pulvinar ac nibh. Phasellus finibus eu lectus in tempor. Sed accumsan vitae tortor et semper. Nulla vulputate ex eros, ut pulvinar sem ultricies sed. Donec pharetra id nisl et tempor. Morbi id sem at erat vehicula dictum. Vestibulum hendrerit, nibh sed aliquam dictum, justo enim tristique justo, et maximus enim leo eget justo. Vestibulum eget erat non metus placerat ultrices et id leo. Donec tincidunt quam vitae massa convallis, vel suscipit quam laoreet. Cras egestas ipsum eget risus fringilla, sit amet pulvinar eros varius. Donec ac euismod nibh. Sed ultricies aliquet venenatis. Cras vitae dolor felis. Donec pulvinar sagittis est, nec sodales dui.</Speech>
+        </Dialogue>
+        <Dialogue>
+          <Speaker>TestResponse</Speaker>
+          <Speech>Alright.</Speech>
+        </Dialogue>
+      </DialogueNode>
+    </Level>
+  </Levels>
+</LevelCollection>
