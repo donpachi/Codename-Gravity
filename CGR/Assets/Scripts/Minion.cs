@@ -13,10 +13,11 @@ public class Minion : MonoBehaviour, ICharacter{
     public Animator anim { get; private set; }
     public MinionState CurrentState { get; set; }
 
-
-    //GameObject player;
     Player player; 
     Rigidbody2D rBody;
+    Walk walkControl;
+    PlayerJump jumpControl;
+    Orientation orientControl;
     GameObject _parent;
     Vector2 prevPlayerLocation;
     CircleCollider2D bodyCollider;
@@ -33,10 +34,13 @@ public class Minion : MonoBehaviour, ICharacter{
     // Use this for initialization
     void Start() {
         anim = gameObject.GetComponent<Animator>();
-        player = GameObject.Find("Player").GetComponent<Player>(); ;
+        player = GameObject.Find("Player").GetComponent<Player>();
+        orientControl = GetComponent<Orientation>();
         gCheck = GetComponent<GroundCheck>();
-        this.GetComponent<PlayerJump>().enabled = false;
-        this.GetComponent<Walk>().enabled = false;
+        walkControl = GetComponent<Walk>();
+        jumpControl = GetComponent<PlayerJump>();
+        walkControl.enabled = false;
+        jumpControl.enabled = false;
         _camera = FindObjectOfType<FollowPlayer>();
         rBody = GetComponent<Rigidbody2D>();
         GravityZoneOff();
@@ -136,17 +140,21 @@ public class Minion : MonoBehaviour, ICharacter{
             case StateChange.PORTAL_IN:
                 ToggleRender(false);
                 bodyCollider.enabled = false;
-                GetComponent<Walk>().enabled = false;
-                GetComponent<PlayerJump>().enabled = false;
+                walkControl.enabled = false;
+                jumpControl.enabled = false;
                 rBody.gravityScale = 0;
                 rBody.Sleep();
                 break;
             case StateChange.CHECKPOINT:
                 anim.SetBool("Checkpoint", true);
                 IsFollowing = false;
-                GetComponent<Walk>().enabled = false;
-                GetComponent<PlayerJump>().enabled = false;
-                GetComponent<Rigidbody2D>().isKinematic = true;
+                walkControl.enabled = false;
+                jumpControl.enabled = false;
+                rBody.isKinematic = true;
+                break;
+            case StateChange.DEATH:
+                anim.SetBool("Dying", true);
+                
                 break;
         }
     }
@@ -158,13 +166,19 @@ public class Minion : MonoBehaviour, ICharacter{
             case StateChange.PORTAL_OUT:
                 ToggleRender(true);
                 bodyCollider.enabled = true;
-                GetComponent<Walk>().enabled = true;
-                GetComponent<PlayerJump>().enabled = true;
+                walkControl.enabled = true;
+                jumpControl.enabled = true;
                 rBody.gravityScale = 1;
                 break;
+            case StateChange.MINION:
+                rBody.gravityScale = 1;
+                jumpControl.enabled = true;
+                walkControl.enabled = true;
+                _camera.setFollowObject(gameObject);
+                IsFollowing = false;
+                anim.SetBool("SwitchingToMinion", false);
+                break;
         }
-
-
     }
 
     void checkGravityScale()
@@ -250,9 +264,9 @@ public class Minion : MonoBehaviour, ICharacter{
         {
             if (LevelManager.Instance.NewCheckpointRequest(gameObject))
             {
-                GetComponent<Rigidbody2D>().isKinematic = true;
-                GetComponent<Walk>().enabled = false;
-                GetComponent<PlayerJump>().enabled = false;
+                rBody.isKinematic = true;
+                walkControl.enabled = false;
+                jumpControl.enabled = false;
             }
         }
     }
@@ -265,12 +279,9 @@ public class Minion : MonoBehaviour, ICharacter{
 
     public void GainControl()
     {
-        this.GetComponent<Rigidbody2D>().gravityScale = 1;
-        this.GetComponent<PlayerJump>().enabled = true;
-        this.GetComponent<Walk>().enabled = true;
-        _camera.setFollowObject(gameObject);
-        IsFollowing = false;
-        anim.SetBool("SwitchingToMinion", false);
+        SetRenderLayer("FrontOfPlayer");
+        anim.SetBool("SwitchingToMinion", true);
+        orientControl.syncWithPlayer = false;
     }
 
     private void minionDeath()
@@ -381,7 +392,7 @@ public class Minion : MonoBehaviour, ICharacter{
         {
             if (collisionEvent.gameObject.tag == "Hazard" || collisionEvent.relativeVelocity.magnitude > DeathSpeed)
             {
-                anim.SetBool("Dying", true);
+                DeactivateControl(StateChange.DEATH);
             }
         }
     }
