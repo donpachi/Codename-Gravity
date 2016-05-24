@@ -56,6 +56,11 @@ public class Player : MonoBehaviour, ICharacter {
         GravityZoneOff();
     }
 
+    void Update()
+    {
+        anim.SetBool("InAir", gCheck.InAir);
+    }
+
     public void CheckpointRespawn(Transform spawnPoint)
     {
         transform.position = spawnPoint.position;
