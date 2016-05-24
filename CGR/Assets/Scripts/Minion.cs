@@ -230,6 +230,8 @@ public class Minion : MonoBehaviour, ICharacter{
 
     void lerpToParent()
     {
+        if (_parent == null)
+            return;
         if (_parent.name == "Player")
         {
             if (Vector2.Distance(transform.position, player.getPlayerFeetPosition()) > _followDistance)

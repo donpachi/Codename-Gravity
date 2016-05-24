@@ -14,13 +14,13 @@ public class Player : MonoBehaviour, ICharacter {
     private CircleCollider2D playerCollider;
     private float drag = 0.5f;
     private float angularDrag = 0.05f;
-    private bool facingRight;
     private bool launched;
     private Animator anim;
     private GroundCheck gCheck;
     private Renderer[] potatoParts;
 
-	public event PlayerDied OnPlayerDeath;
+    public bool facingRight { get; private set; }
+    public event PlayerDied OnPlayerDeath;
     public float deathSpeed = 10f;
     public bool inMinionArea;
     public float OnGroundRaySize;
@@ -54,6 +54,11 @@ public class Player : MonoBehaviour, ICharacter {
         facingRight = true;
         InRotation = false;
         GravityZoneOff();
+    }
+
+    void Update()
+    {
+        anim.SetBool("InAir", gCheck.InAir);
     }
 
     public void CheckpointRespawn(Transform spawnPoint)
