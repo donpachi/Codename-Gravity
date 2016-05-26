@@ -8,7 +8,7 @@ public class MovingPlatform : MonoBehaviour {
     //public bool MoveDown;
     //public float XDistance = -1;
     //public float YDistance = -1;
-    [Tooltip("The number of time the platform moves along the path until it stops")]
+    [Tooltip("The number of time the platform moves along the path until it stops. 0 = continuous")]
     public int NumberOfTraversals = 0;
     //private float XDistRemain;
     //private float YDistRemain;
@@ -55,7 +55,7 @@ public class MovingPlatform : MonoBehaviour {
         if (_currentPoint == null || _currentPoint.Current == null)
             return;
 
-        if(IsActive == true && !movementDone)
+        if (IsActive == true && !movementDone)
         {
             float distanceToTravel = platformSpeed * Time.deltaTime;
             float distanceToPointSquared = (transform.position - _currentPoint.Current.position).sqrMagnitude;
@@ -73,18 +73,19 @@ public class MovingPlatform : MonoBehaviour {
                 _currentPoint.MoveNext();
 
             MovementVector = transform.position - lastPosition;
-            if(currentDirection != path.direction)
+            if (currentDirection != path.direction)
             {
                 currentDirection = path.direction;
-                if(NumberOfTraversals > 0)
+                if (NumberOfTraversals > 0)
                 {
                     finishedPath++;
                     if (finishedPath >= NumberOfTraversals)
                         movementDone = true;
                 }
             }
-
         }
+        else
+            MovementVector = Vector2.zero;
     }
 	
     //determine move distance, see if we over shoot, if we do, move next
@@ -228,7 +229,7 @@ public class MovingPlatform : MonoBehaviour {
     void plateDepressed()
     {
         if(NumberOfTraversals == 0)
-            IsActive = true;
+            IsActive = !IsActive;
         else
         {
             movementDone = false;
@@ -238,7 +239,7 @@ public class MovingPlatform : MonoBehaviour {
 
     void plateReleased()
     {
-        IsActive = false;
+
     }
 
 	//public void OnDrawGizmos()
