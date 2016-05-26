@@ -6,13 +6,13 @@ public class PressurePlate : MonoBehaviour
 {
     public bool CanBeUntriggered = false;
     public float ReleaseDelay = 0;
-    public Animator anim;
-    public GameObject[] list;
+    public GameObject[] List;
 
     float timer = 0;
     bool timerCountingDown = false;
     bool pressing = false;
     ButtonState checkpointState;
+    private Animator anim;
 
     // Use this for initialization
     void Start()
@@ -33,7 +33,7 @@ public class PressurePlate : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collider)
     {
 		if (collider.tag == "Boulder" || collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().IsFollowing == false))
-            anim.SetBool("Pressed", true);
+            anim.SetInteger("State", 1);
         pressing = true;
     }
 
@@ -50,28 +50,28 @@ public class PressurePlate : MonoBehaviour
     void checkIfRelease()
     {
         if (timer <= 0)
-            anim.SetBool("Pressed", false);
+            anim.SetInteger("State", 0);
     }
 
     void broadcastDepress()
     {
         timerCountingDown = false;
         timer = ReleaseDelay;
-        foreach (GameObject item in list)
+        foreach (GameObject item in List)
             item.SendMessage("plateDepressed");
     }
 
     void broadcastRelease()
     {
         timerCountingDown = false;
-        foreach (GameObject item in list)
+        foreach (GameObject item in List)
             item.SendMessage("plateReleased");
     }
 
     void checkpointSave()
     {
         checkpointState = new ButtonState();
-        checkpointState.pressed = anim.GetBool("Pressed");
+        checkpointState.state = anim.GetInteger("State");
 
         if (CanBeUntriggered)
         {
@@ -89,7 +89,7 @@ public class PressurePlate : MonoBehaviour
         }
         else
         {
-            anim.SetBool("Pressed", checkpointState.pressed);
+            anim.SetInteger("State", checkpointState.state);
         }
     }
 
@@ -107,7 +107,7 @@ public class PressurePlate : MonoBehaviour
 
 class ButtonState
 {
-    public bool pressed;
+    public int state;
     public float timer;
     public bool timerCountingDown;
 }
