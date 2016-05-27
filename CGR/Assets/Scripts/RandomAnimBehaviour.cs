@@ -31,6 +31,7 @@ public class RandomAnimBehaviour : StateMachineBehaviour {
     // OnStateMachineEnter is called when entering a statemachine via its Entry Node
     override public void OnStateMachineEnter(Animator animator, int stateMachinePathHash)
     {
+        
         if (Random.Range(0,50) < 20)
             animator.SetInteger("FaceAnim" , Random.Range(0, 4));
         else
