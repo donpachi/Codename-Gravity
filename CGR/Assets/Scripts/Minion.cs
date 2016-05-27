@@ -276,7 +276,6 @@ public class Minion : MonoBehaviour, ICharacter{
     void setCheckpoint()
     {
         LevelManager.Instance.setNewCheckpoint();
-        minionDeath();
     }
 
     public void GainControl()
@@ -284,6 +283,12 @@ public class Minion : MonoBehaviour, ICharacter{
         SetRenderLayer("FrontOfPlayer");
         anim.SetBool("SwitchingToMinion", true);
         orientControl.syncWithPlayer = false;
+    }
+
+    private void triggerCheckpointAnim()
+    {
+        minionDeath();
+        LevelManager.Instance.TriggerCheckpointAnim();
     }
 
     private void minionDeath()
