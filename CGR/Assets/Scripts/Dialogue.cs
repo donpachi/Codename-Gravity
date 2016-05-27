@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 [Serializable]
 public class Dialogue
 {
+
     [XmlElement("Speaker")]
     public string speaker
     {
@@ -26,10 +27,16 @@ public class DialogueNode
 {
     [XmlAttribute("index")]
     public int nodeIndex { get; set; }
+    
+    [XmlElement("Dialogue")]
+    public List<Dialogue> dialogues {get;set;}
 
-    [XmlArray("Dialogues")]
-    [XmlArrayItem("Dialogue", typeof(Dialogue))]
-    public Dialogue[] dialogueArray { get; set; }
+    //[XmlAttribute("index")]
+    //public int nodeIndex { get; set; }
+
+    //[XmlArray("Dialogues")]
+    //[XmlArrayItem("Dialogue", typeof(Dialogue))]
+    //public Dialogue[] dialogueArray { get; set; }
 }
 
 //this is a container that holds all the blocks of dialogue for a given level
@@ -37,21 +44,36 @@ public class DialogueNode
 public class Level
 {
     [XmlAttribute("levelName")]
-    public string levelname
-    {
-        get;
-        set;
-    }
-    [XmlArray("Level")]
-    [XmlArrayItem("Dialogues", typeof(DialogueNode))]
-    public DialogueNode[] levelDialogueNodes { get; set; }
+    public string levelname;
+    [XmlElement("DialogueNode")]
+    public List<DialogueNode> levelDialogueNodes { get; set; }
+
+    //[XmlAttribute("levelName")]
+    //public string levelname
+    //{
+    //    get;
+    //    set;
+    //}
+
+    //public Level()
+    //{
+    //    get;
+    //    set;
+    //}
+    //[XmlArray("Level")]
+    //[XmlArrayItem("Dialogues", typeof(DialogueNode))]
+    //public DialogueNode[] levelDialogueNodes{get;set;}
+    
 }
 
 //this is the base array element that encompasses each of the levels in an array
 [Serializable, XmlRoot("LevelCollection")]
 public class LevelCollection
 {
-    [XmlArray("LevelCollection")]
-    [XmlArrayItem("Levels", typeof(Level))]
-    public Level[] levelCollection { get; set; }
+    [XmlElement("Level")]
+    public List<Level> levels { get; set; }
+
+    //[XmlArray("LevelCollection")] <--Should be [XmlArray("Levels")]
+    //[XmlArrayItem("Levels", typeof(Level))]
+    //public Level[] levelCollection { get; set; }
 }
