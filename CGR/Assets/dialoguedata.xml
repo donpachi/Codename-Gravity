@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LevelCollection>
-  <Levels>
+  <!-- <Levels> -->
     <Level levelName = "Level1">
       <DialogueNode index = "0">
         <Dialogue>
-          <Speaker>Test</Speaker>
-          <Speech>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ac nunc consequat leo condimentum volutpat pulvinar ac nibh. Phasellus finibus eu lectus in tempor. Sed accumsan vitae tortor et semper. Nulla vulputate ex eros, ut pulvinar sem ultricies sed. Donec pharetra id nisl et tempor. Morbi id sem at erat vehicula dictum. Vestibulum hendrerit, nibh sed aliquam dictum, justo enim tristique justo, et maximus enim leo eget justo. Vestibulum eget erat non metus placerat ultrices et id leo. Donec tincidunt quam vitae massa convallis, vel suscipit quam laoreet. Cras egestas ipsum eget risus fringilla, sit amet pulvinar eros varius. Donec ac euismod nibh. Sed ultricies aliquet venenatis. Cras vitae dolor felis. Donec pulvinar sagittis est, nec sodales dui.</Speech>
+          <Speaker>Speaker1</Speaker>
+          <Speech>Welcome to Gravity industries' testing facility, where you will be part of groundbreaking research for our new gravity altering device! We hope the trials will go well, and you can complete each one in a timely manner.</Speech>
         </Dialogue>
         <Dialogue>
-          <Speaker>TestResponse</Speaker>
+          <Speaker>Speaker2</Speaker>
           <Speech>Alright.</Speech>
         </Dialogue>
       </DialogueNode>
+      <DialogueNode index = "1">
+        <Dialogue>
+          <Speaker>Test2</Speaker>
+          <Speech>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Speech>
+        </Dialogue>
+        <Dialogue>
+          <Speaker>TestResponse2</Speaker>
+          <Speech>Latin.</Speech>
+        </Dialogue>
+      </DialogueNode>
     </Level>
-  </Levels>
+  <!-- /<Levels> -->
 </LevelCollection>

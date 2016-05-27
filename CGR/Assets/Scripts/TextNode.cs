@@ -11,7 +11,7 @@ public class TextNode : MonoBehaviour {
         visited = false;
     }
 
-    void OnCollisionEnter2D(Collision2D info)
+    void OnTriggerEnter2D(Collider2D info)
     {
         if (info.gameObject.name == "Player" && (!visited || repeatable))
         {
