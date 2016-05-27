@@ -128,9 +128,13 @@ public class Minion : MonoBehaviour, ICharacter{
             i.enabled = state;
     }
 
-    public void ToggleRenderPart(string part)
+    public void ToggleRenderPart(string targetPart)
     {
-
+        foreach (var part in renderParts)
+        {
+            if (part.name == targetPart)
+                part.enabled = !part.enabled;
+        }
     }
 
     public void DeactivateControl(StateChange state)
