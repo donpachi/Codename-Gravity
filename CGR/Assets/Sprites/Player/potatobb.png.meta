@@ -25,7 +25,7 @@ TextureImporter:
   bumpmap:
     convertToNormalMap: 0
     externalNormalMap: 0
-    heightScale: .25
+    heightScale: 0.25
     normalMapFilter: 0
   isReadable: 0
   grayScaleToAlpha: 0
@@ -50,7 +50,7 @@ TextureImporter:
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
-  spritePivot: {x: .5, y: .5}
+  spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 50
   alphaIsTransparency: 1
@@ -66,8 +66,9 @@ TextureImporter:
         width: 25
         height: 35
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
     - name: potatoRightFoot
       rect:
         serializedVersion: 2
@@ -76,8 +77,9 @@ TextureImporter:
         width: 12
         height: 11
       alignment: 9
-      pivot: {x: .360048383, y: .94105947}
+      pivot: {x: 0.36004838, y: 0.94105947}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
     - name: potatoRightArm
       rect:
         serializedVersion: 2
@@ -86,8 +88,9 @@ TextureImporter:
         width: 8
         height: 17
       alignment: 9
-      pivot: {x: .773572922, y: .973494828}
+      pivot: {x: 0.7735729, y: 0.9734948}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
     - name: potatoLeftArm
       rect:
         serializedVersion: 2
@@ -96,8 +99,9 @@ TextureImporter:
         width: 10
         height: 16
       alignment: 9
-      pivot: {x: .108135983, y: .919854999}
+      pivot: {x: 0.10813598, y: 0.919855}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
     - name: potatoLeftEye
       rect:
         serializedVersion: 2
@@ -106,8 +110,9 @@ TextureImporter:
         width: 8
         height: 8
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
     - name: potatoRightEye
       rect:
         serializedVersion: 2
@@ -116,8 +121,9 @@ TextureImporter:
         width: 8
         height: 8
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
     - name: potatoMouth
       rect:
         serializedVersion: 2
@@ -126,8 +132,9 @@ TextureImporter:
         width: 13
         height: 6
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
     - name: potatoLeftFoot
       rect:
         serializedVersion: 2
@@ -136,8 +143,10 @@ TextureImporter:
         width: 12
         height: 11
       alignment: 9
-      pivot: {x: .406698853, y: .958023429}
+      pivot: {x: 0.40669885, y: 0.9580234}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    outline: []
   spritePackingTag: 
   userData: 
   assetBundleName: 
