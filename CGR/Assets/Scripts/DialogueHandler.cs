@@ -14,9 +14,12 @@ public class DialogueHandler : MonoBehaviour
     private Level level;
     private DialogueNode dialogueNode;
     private float savedTimeScale;
+    private int whichDialogue;
+    private int numberOfDialogues;
+    private bool enteredArea = false;
     public float typeSpeed;
     private bool resume, drawText;
-    private bool waitingfortap;
+    private bool doneBlock;
     private int dialogueIndexer;
     private bool inTextSequence;
     private GameObject pCObj, llCObj, lrCObj, ipCObj;
@@ -64,8 +67,6 @@ public class DialogueHandler : MonoBehaviour
         //Debug.Log("Number of levels: " + levelCollection.levels.Count);
         foreach (Level lvl in levelCollection.levels)
         {
-            //Debug.Log("currentLevel: " + currentlevel);
-            //Debug.Log("xmllevel: " + lvl.levelname);
             if (currentlevel == lvl.levelname)
             {
                 level = lvl;
@@ -143,12 +144,8 @@ public class DialogueHandler : MonoBehaviour
         {
             currentlevel = SceneManager.GetActiveScene().name;
             for (int i = 0; i < levelCollection.levels.Count; i++)
-            {
                 if (currentlevel == levelCollection.levels[i].levelname)
-                {
                     level = levelCollection.levels[i];
-                }
-            }
         }
     }
 
@@ -157,18 +154,14 @@ public class DialogueHandler : MonoBehaviour
         OnEnable();
         //pauseGame();
         DrawTextCanvas();       
-        //Debug.Log("List of dialogueNodes: " + level.levelDialogueNodes.Count);
-        DialogueNode dNode = level.levelDialogueNodes[dNodeIndex];
-        //Debug.Log("Number of dialogues: " + dNode.dialogues.Count);
-        foreach (var dialogue in dNode.dialogues)
-        {
-            //Debug.Log("Speaker name: " + dialogue.speaker);
-            //Debug.Log("Speaker dialogue: " + dialogue.speech);
-            speakerName.text = dialogue.speaker;
+        dialogueNode = level.levelDialogueNodes[dNodeIndex];
+        numberOfDialogues = dialogueNode.dialogues.Count;
+        //foreach (var dialogue in dNode.dialogues)
+        //{
+            //speakerName.text = dialogue.speaker;
             //StartCoroutine(animateText(dialogue.speech));
-            Debug.Log("Displaying Text");
-            displayText(dialogue.speaker, dialogue.speech);
-        }
+            displayText(dialogueNode);
+        //}
         //resumeGame();
         OnDisable();
     }
@@ -223,16 +216,17 @@ public class DialogueHandler : MonoBehaviour
     /// </summary>
     /// <param name="speaker"> Speaker's name to display</param>
     /// <param name="msg">Speaker's text to display</param>
-    public void displayText(string speaker, string msg)
+    public void displayText(DialogueNode dNode)
     {
         
         // THIS STOPS WAITFORSECONDS AS WELL
         pauseGame();
         
         DrawTextCanvas();
-        speakerName.text = speaker;
-        StartCoroutine(animateText(msg));
-        
+        typeSpeed = 0.01f;
+        StartCoroutine(animateText(dNode));
+        //animateText(msg);
+        //oSignalEvent.WaitOne();
             //if (doneText) <--This only runs once! Therefore doneText will always be false. Instead, create a property for doneText so that you can define what happens when it changes
             //{
             //    resumeGame();
@@ -242,7 +236,8 @@ public class DialogueHandler : MonoBehaviour
     private void pauseGame()   
     {
         Debug.Log("Pausing game");
-        savedTimeScale = Time.timeScale;
+        if (Time.timeScale != 0)
+            savedTimeScale = Time.timeScale;
         Time.timeScale = 0;
     }
 
@@ -268,8 +263,11 @@ public class DialogueHandler : MonoBehaviour
     /// </summary>
     /// <param name="fullstring">full length string that will be displayed on the screen.</param>
     /// <returns>Iterable object that the coroutine will handle</returns>
-    IEnumerator animateText(string fullstring)
+    IEnumerator animateText(DialogueNode dNode)
     {
+        string speaker = dNode.dialogues[whichDialogue].speaker;
+        string fullstring = dNode.dialogues[whichDialogue].speech;
+        speakerName.text = speaker;
         //if we want to do handling for letter overflow, we need to split the string into words and then check the next word to see if enough space on line
         //ABOVE NOT IMPLEMENTED
         doneTextFlag = false;
@@ -277,14 +275,12 @@ public class DialogueHandler : MonoBehaviour
         {
             if (currentCharCount >= MAXCHAR || currentLineCount >= MAXNEWLINE)
             {
-                Debug.Log("Overflow");
                 //need to puase execution of this here and wait for a tap
                 //waitingfortap = true;
                 //while (waitingfortap)
                 //{
                 //    yield return new WaitForSeconds(waitTimeInterval);
                 //}
-                oSignalEvent.WaitOne();
                 currentCharCount = 0;
                 currentLineCount = 0;
                 currentCharsPerLine = 0;
@@ -310,25 +306,44 @@ public class DialogueHandler : MonoBehaviour
             while (Time.realtimeSinceStartup < start + typeSpeed)       
                 yield return null;
         }
-        doneTextFlag = true;
-
+        
+        doneBlock = true;
     }
 
     void screenTapped(TouchInstanceData data)
     {
-        oSignalEvent.Set();
-        //Debug.Log("TAPPED");
-        waitingfortap = false;
+        if (doneBlock == true && enteredArea == true)
+        {
+            // If screen is tapped and all dialogues are finished, empty the text
+            whichDialogue++;
+            if (whichDialogue >= numberOfDialogues)
+            {
+                doneTextFlag = true;
+                speakerText.text = "";
+                speakerName.text = "";
+                doneBlock = false;
+                whichDialogue = 0;
+                return;
+            }
+            displayText(dialogueNode);
+            doneBlock = false;
+        }
+        else if (enteredArea == true)
+        {
+            typeSpeed = 0;
+        }
+        if (enteredArea == false)
+            enteredArea = true;
     }
 
     void OnEnable()
     {
-        TouchController.ScreenTouched += screenTapped;
+        TouchController.ScreenReleased += screenTapped;
     }
 
     void OnDisable()
     {
-        TouchController.ScreenTouched -= screenTapped;
+        TouchController.ScreenReleased -= screenTapped;
     }
 
     public bool doneTextFlag
