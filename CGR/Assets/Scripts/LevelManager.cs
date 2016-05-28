@@ -239,13 +239,20 @@ public class LevelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the new checkpoint location, triggers the animation for the checkpoint too
+    /// Sets the new checkpoint location and creates a save state
     /// </summary>
     public void setNewCheckpoint()
-    {
-        _currentCheckpoint.anim.SetBool("Spawn", true);
+    {     
         createLevelSave();
         triggerSave();
+    }
+
+    /// <summary>
+    ///  triggers the animation for the checkpoint
+    /// </summary>
+    public void TriggerCheckpointAnim()
+    {
+        _currentCheckpoint.anim.SetBool("Spawn", true);
     }
 
     private void positionCheckpoint(RaycastHit2D collisionPoint)

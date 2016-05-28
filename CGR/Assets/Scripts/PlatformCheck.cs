@@ -12,13 +12,14 @@ public class PlatformCheck : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update ()
+    void LateUpdate ()
     {
         CheckForPlatform();
-	    if (currentMovingPlatform != null)
+	    if (currentMovingPlatform != null && currentMovingPlatform.GetComponent<MovingPlatform>())
         {
-            Vector2 moveDistance = currentMovingPlatform.GetComponent<MovingPlatform>().getMoveDifference();
-            transform.position = new Vector2(transform.position.x - moveDistance.x, transform.position.y - moveDistance.y);
+            Vector2 moveDistance = currentMovingPlatform.GetComponent<MovingPlatform>().MovementVector;
+            transform.position += (Vector3)moveDistance;
+            //transform.position = new Vector2(transform.position.x - moveDistance.x, transform.position.y - moveDistance.y);
             currentMovingPlatform = null;
         }
 	}
@@ -33,7 +34,7 @@ public class PlatformCheck : MonoBehaviour {
 
         foreach (var obj in collidedObjects)
         {
-            if (obj != null && obj.tag == "Dynamic")
+            if (obj != null && obj.tag == "MovingPlatform")
             {
                 int numOfCollisions = 1;
 

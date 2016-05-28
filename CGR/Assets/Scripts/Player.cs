@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
-using System.Collections;
 using System;
 
 public delegate void PlayerDied();
@@ -24,7 +22,6 @@ public class Player : MonoBehaviour, ICharacter {
     public float deathSpeed = 10f;
     public bool inMinionArea;
     public float OnGroundRaySize;
-    public float ForwardRaySize;
     public bool isMinion = false;
     public bool InRotation;
     public bool InTransition { get; private set; }
@@ -47,7 +44,7 @@ public class Player : MonoBehaviour, ICharacter {
         angularDrag = playerRigidBody.angularDrag;
         gCheck = GetComponent<GroundCheck>();
         potatoParts = GetComponentsInChildren<Renderer>();
-
+        
         inMinionArea = false;
         suctionStatus = false;
         InTransition = false;

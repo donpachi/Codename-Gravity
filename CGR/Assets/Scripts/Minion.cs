@@ -128,9 +128,13 @@ public class Minion : MonoBehaviour, ICharacter{
             i.enabled = state;
     }
 
-    public void ToggleRenderPart(string part)
+    public void ToggleRenderPart(string targetPart)
     {
-
+        foreach (var part in renderParts)
+        {
+            if (part.name == targetPart)
+                part.enabled = !part.enabled;
+        }
     }
 
     public void DeactivateControl(StateChange state)
@@ -276,7 +280,6 @@ public class Minion : MonoBehaviour, ICharacter{
     void setCheckpoint()
     {
         LevelManager.Instance.setNewCheckpoint();
-        minionDeath();
     }
 
     public void GainControl()
@@ -284,6 +287,12 @@ public class Minion : MonoBehaviour, ICharacter{
         SetRenderLayer("FrontOfPlayer");
         anim.SetBool("SwitchingToMinion", true);
         orientControl.syncWithPlayer = false;
+    }
+
+    private void triggerCheckpointAnim()
+    {
+        minionDeath();
+        LevelManager.Instance.TriggerCheckpointAnim();
     }
 
     private void minionDeath()

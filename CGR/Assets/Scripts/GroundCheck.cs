@@ -45,6 +45,7 @@ public class GroundCheck : MonoBehaviour
     {
         groundCheck();
     }
+
     //Raycasts down to check for a floor
     void groundCheck()
     {
@@ -53,7 +54,6 @@ public class GroundCheck : MonoBehaviour
         Vector2 direction = new Vector2();
         Vector2 colliderOffset = new Vector2();
         RaycastHit2D groundCheckRay;
-        int numOfMissedColliders = 0;
 
         if (boxCollider != null)
         {
@@ -66,6 +66,7 @@ public class GroundCheck : MonoBehaviour
 
         getOffsetAndOrigin(ref rayOffset, ref origin, ref direction, colliderOffset);
 
+        InAir = true;
         for (int i = 0; i < collidedObjects.Length; i++)
         {
             collidedObjects[i] = null;
@@ -76,15 +77,6 @@ public class GroundCheck : MonoBehaviour
             {
                 collidedObjects[i] = groundCheckRay.collider.gameObject;
                 InAir = false;
-            }
-            else
-            {
-                numOfMissedColliders++;
-            }
-
-            if(numOfMissedColliders == collidedObjects.Length)
-            {
-                InAir = true;
             }
         }
     }

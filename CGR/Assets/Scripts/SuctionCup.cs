@@ -9,6 +9,7 @@ public class SuctionCup : MonoBehaviour {
 
     private float timer;
     private Player player;
+    private Animator anim;
 
     //Event thrown when picked up
     public delegate void SuctionCupActivated(float time);   //give it a length for the timer
@@ -24,6 +25,7 @@ public class SuctionCup : MonoBehaviour {
 	void Start () {
         player = FindObjectOfType<Player>();
         timer = 0;
+        anim = GetComponent<Animator>();
     }
 	
 	// Update is called once per frame
@@ -49,7 +51,7 @@ public class SuctionCup : MonoBehaviour {
             player.SuctionStatusOn(SuctionForce);
 
             GetComponent<Collider2D>().enabled = false;
-            GetComponent<SpriteRenderer>().enabled = false;
+            anim.SetBool("Enabled", false);
 
             timer = suctionTimer;
             player.GetComponent<SuctionWalk>().SetTimer(suctionTimer);
@@ -62,6 +64,6 @@ public class SuctionCup : MonoBehaviour {
         timer = 0;
 
         this.GetComponent<Collider2D>().enabled = true;
-        this.GetComponent<SpriteRenderer>().enabled = true;
+        anim.SetBool("Enabled", true);
     }
 }

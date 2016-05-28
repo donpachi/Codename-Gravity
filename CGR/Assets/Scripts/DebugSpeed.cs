@@ -10,7 +10,7 @@ public class DebugSpeed : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        GameObject.Find("SpeedText").GetComponent<Text>().text = "X: " + GameObject.Find("Player").GetComponent<Rigidbody2D>().velocity.x + "Y: " + GameObject.Find("Player").GetComponent<Rigidbody2D>().velocity.y;
+	void FixedUpdate () {
+        GameObject.Find("GravityCooldown").GetComponent<Text>().text = "X: " + GameObject.Find("Player").GetComponent<Rigidbody2D>().velocity.x + "Y: " + GameObject.Find("Player").GetComponent<Rigidbody2D>().velocity.y;
 	}
 }
