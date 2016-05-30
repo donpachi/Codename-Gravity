@@ -106,6 +106,7 @@ public class MovingPlatform : MonoBehaviour {
             IsActive = !IsActive;
         else
         {
+            IsActive = true;
             movementDone = false;
             finishedPath = 0;
         }

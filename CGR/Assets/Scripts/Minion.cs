@@ -378,6 +378,7 @@ public class Minion : MonoBehaviour, ICharacter{
                 rBody.gravityScale = 1;
                 _followDistance = MinionDistance;
                 _followSpeed = MinionFollowSpeed;
+                transform.position = player.transform.position;
                 break;
         }
     }

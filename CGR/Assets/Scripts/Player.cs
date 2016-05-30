@@ -16,6 +16,7 @@ public class Player : MonoBehaviour, ICharacter {
     private Animator anim;
     private GroundCheck gCheck;
     private Renderer[] potatoParts;
+    private StateChange currentState;
 
     public bool facingRight { get; private set; }
     public event PlayerDied OnPlayerDeath;
@@ -44,6 +45,7 @@ public class Player : MonoBehaviour, ICharacter {
         angularDrag = playerRigidBody.angularDrag;
         gCheck = GetComponent<GroundCheck>();
         potatoParts = GetComponentsInChildren<Renderer>();
+        currentState = StateChange.NORMAL;
         
         inMinionArea = false;
         suctionStatus = false;
@@ -55,7 +57,8 @@ public class Player : MonoBehaviour, ICharacter {
 
     void Update()
     {
-        anim.SetBool("InAir", gCheck.InAir);
+        if(currentState != StateChange.BOX_IN)
+            anim.SetBool("InAir", gCheck.InAir);
     }
 
     public void CheckpointRespawn(Transform spawnPoint)
@@ -149,7 +152,7 @@ public class Player : MonoBehaviour, ICharacter {
     {
         if (direction == TouchController.SwipeDirection.UP)
         {
-            if (inMinionArea == true && LevelManager.Instance.GetMinionCount() != 0 && !isMinion)
+            if (inMinionArea == true && LevelManager.Instance.GetMinionCount() != 0 && !isMinion && currentState == StateChange.NORMAL)
             {
                 switchControlToMinion();
             }
@@ -216,7 +219,7 @@ public class Player : MonoBehaviour, ICharacter {
         }
         else if(state == StateChange.BOX_OUT)
         {
-
+            currentState = StateChange.NORMAL;
         }
         else if(state == StateChange.CHECKPOINT)
         {
@@ -271,7 +274,7 @@ public class Player : MonoBehaviour, ICharacter {
         }
         if(state == StateChange.BOX_IN)
         {
-
+            currentState = StateChange.BOX_IN;
         }
         throwPlayerEvent(state);
     }
@@ -283,12 +286,14 @@ public class Player : MonoBehaviour, ICharacter {
         if(suctionStatus)
             data.suctionTimer = sWalk.GetTimer();
         data.orientation = anim.GetInteger("Orientation");
+        data.currentState = currentState;
 
         return data;
     }
 
     public void LoadPlayerState(PlayerState state)
     {
+        currentState = state.currentState;
         suctionStatus = state.suctionStatus;
         if (suctionStatus)
             sWalk.SetTimer(state.suctionTimer);
@@ -415,4 +420,5 @@ public class PlayerState
     public bool suctionStatus;
     public bool gravityZone;
     public int orientation;
+    public StateChange currentState;
 }

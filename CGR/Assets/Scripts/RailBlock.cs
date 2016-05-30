@@ -118,8 +118,8 @@ public class RailBlock : MonoBehaviour {
 
     void plateReleased()
     {
-        IsActive = false;
-        anim.SetBool("BoxActive", IsActive);
+        //IsActive = false;
+        //anim.SetBool("BoxActive", IsActive);
     }
 
     /// <summary>

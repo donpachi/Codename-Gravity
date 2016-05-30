@@ -9,7 +9,7 @@ public class RailBoxControl : MonoBehaviour {
     //defined in unity
     public float THRUST;
     public float MAXSPEED;
-    public float playerOffset;
+    public float PlayerOffset = 0.17f;
     public LayerMask WallMask;
     bool PlayerControlled;
 
@@ -19,7 +19,7 @@ public class RailBoxControl : MonoBehaviour {
     GameObject mainCamera;
     GameObject childObj;
 
-
+    public Vector2 tempOffset;
     // Use this for initialization
     void Start () {
         objectRb = gameObject.GetComponent<Rigidbody2D>();
@@ -34,7 +34,7 @@ public class RailBoxControl : MonoBehaviour {
     {
         if (PlayerControlled)
         {
-            player.transform.position = transform.GetChild(0).position;
+            player.transform.position = childObj.transform.position + childObj.transform.up * PlayerOffset;
         }
     }
 
@@ -64,8 +64,6 @@ public class RailBoxControl : MonoBehaviour {
         }
     }
 
-
-
     void OnTriggerEnter2D(Collider2D colliderEvent)
     {
         if (anim.GetBool("BoxActive") == true && colliderEvent.gameObject.name == "Player")
@@ -89,7 +87,7 @@ public class RailBoxControl : MonoBehaviour {
 
     void deactivateControl()
     {
-        player.transform.position = transform.position + (Vector3)OrientationListener.instanceOf.getRelativeUpVector();
+        player.transform.position = transform.position + childObj.transform.up * 1.2f;
         player.updatePlayerOrientation(WorldGravity.Instance.CurrentGravityDirection, 0.0f);
         player.GetComponent<Rigidbody2D>().AddForce(OrientationListener.instanceOf.getRelativeUpVector() * 200);
         player.ReactivateControl(StateChange.BOX_OUT);
