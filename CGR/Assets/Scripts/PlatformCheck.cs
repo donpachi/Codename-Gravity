@@ -15,7 +15,7 @@ public class PlatformCheck : MonoBehaviour {
     void LateUpdate ()
     {
         CheckForPlatform();
-	    if (currentMovingPlatform != null)
+	    if (currentMovingPlatform != null && currentMovingPlatform.GetComponent<MovingPlatform>())
         {
             Vector2 moveDistance = currentMovingPlatform.GetComponent<MovingPlatform>().MovementVector;
             transform.position += (Vector3)moveDistance;

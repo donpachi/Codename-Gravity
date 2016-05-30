@@ -39,7 +39,8 @@ public class RandomAnimBehaviour : StateMachineBehaviour {
     }
 
     // OnStateMachineExit is called when exiting a statemachine via its Exit Node
-    //override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
-    //
-    //}
+    override public void OnStateMachineExit(Animator animator, int stateMachinePathHash)
+    {
+        animator.SetInteger("FaceAnim", Random.Range(0, 4));
+    }
 }
