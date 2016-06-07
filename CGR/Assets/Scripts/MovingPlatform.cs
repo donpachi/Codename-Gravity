@@ -33,7 +33,7 @@ public class MovingPlatform : MonoBehaviour {
 
         if (_currentPoint.Current == null)
             return;
-        currentDirection = path.direction;
+        currentDirection = path.Direction;
         transform.position = _currentPoint.Current.position;
         platformSpeed = path.GetTotalDistance() / TotalTravelTime;
         _currentPoint.MoveNext();
@@ -53,19 +53,17 @@ public class MovingPlatform : MonoBehaviour {
             Vector3 lastPosition = transform.position;
             transform.position = Vector3.MoveTowards(transform.position, _currentPoint.Current.position, distanceToTravel);
 
-            if (distanceToPointSquared < distanceToTravel * distanceToTravel)
+            if (distanceToPointSquared <= distanceToTravel * distanceToTravel)
             {
                 float remainingDistance = distanceToTravel - Mathf.Sqrt(distanceToPointSquared);
                 _currentPoint.MoveNext();
                 transform.position = Vector3.MoveTowards(transform.position, _currentPoint.Current.position, remainingDistance);
             }
-            else if (distanceToPointSquared == distanceToTravel)
-                _currentPoint.MoveNext();
 
             MovementVector = transform.position - lastPosition;
-            if (currentDirection != path.direction)
+            if (currentDirection != path.Direction)
             {
-                currentDirection = path.direction;
+                currentDirection = path.Direction;
                 if (NumberOfTraversals > 0)
                 {
                     finishedPath++;
