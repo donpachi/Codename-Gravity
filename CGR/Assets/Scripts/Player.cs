@@ -209,10 +209,13 @@ public class Player : MonoBehaviour, ICharacter {
         else if (state == StateChange.CANNON_FIRE)
         {
             ToggleRender(true);
+            anim.SetBool("Smoke", true);
+            anim.SetBool("CannonBall", true);
             playerCollider.enabled = true;
         }
         else if(state == StateChange.CANNON_COLLISION)
         {
+            anim.SetBool("CannonBall", false);
             playerRigidBody.drag = drag;
             playerRigidBody.angularDrag = angularDrag;
             launched = false;
@@ -225,7 +228,7 @@ public class Player : MonoBehaviour, ICharacter {
         }
         else if(state == StateChange.BOX_OUT)
         {
-            anim.SetBool("Box", false);
+            anim.SetBool("Smoke", true);
         }
         else if(state == StateChange.CHECKPOINT)
         {
@@ -270,6 +273,7 @@ public class Player : MonoBehaviour, ICharacter {
             playerRigidBody.drag = 0;
             playerRigidBody.angularDrag = 0;
             ToggleRender(false);
+            anim.SetBool("Smoke", false);
             playerCollider.enabled = false;
         }
         if(state == StateChange.PORTAL_IN)
@@ -280,7 +284,7 @@ public class Player : MonoBehaviour, ICharacter {
         }
         if(state == StateChange.BOX_IN)
         {
-            anim.SetBool("Box", true);
+            anim.SetBool("Smoke", false);
             anim.SetBool("Moving", false);
         }
         if(state == StateChange.DEATH)
