@@ -6,7 +6,6 @@ public class WorldGravity : MonoBehaviour {
     public float GRAVITYCOOLDOWN = 5f;
     public Vector2 gVector = Vector2.down;
     public OrientationListener.Orientation CurrentGravityDirection { get; private set; }
-    public bool GravityChange;
     public static WorldGravity Instance;
 
     private bool gravityOnCooldown, gShiftDisabled;
@@ -15,6 +14,9 @@ public class WorldGravity : MonoBehaviour {
     //Event for gravity change
     public delegate void GravityEvent(OrientationListener.Orientation orientation, float timer);
     public static event GravityEvent GravityChanged;
+
+    public delegate void GShitReady();
+    public static event GShitReady GravityReady;
 
     void Awake()
     {
@@ -35,11 +37,12 @@ public class WorldGravity : MonoBehaviour {
 
 	// FixedUpdate is called once per synchronized frame
 	void FixedUpdate () {
-        if (!GravityChange)
+        if (gShiftDisabled)
             return;
         elapsedTime += Time.deltaTime;
         if (elapsedTime > GRAVITYCOOLDOWN) {
             gravityOnCooldown = false;
+            triggerGravityReady();
         }
         if (!gravityOnCooldown && validUpdateState()){
                 updateGravity();
@@ -75,6 +78,12 @@ public class WorldGravity : MonoBehaviour {
             GravityChanged(orientation, timer);
     }
 
+    void triggerGravityReady()
+    {
+        if (GravityReady != null)
+            GravityReady();
+    }
+
     public void updateGravity()
     {
         if (!gShiftDisabled)
@@ -108,7 +117,7 @@ public class WorldGravity : MonoBehaviour {
     /// Worker method that Enables/Disables gravity shift depending on the input parameter
     /// </summary>
     /// <param name="toggle">True disables gravity shift \nFalse enables gravity shift</param>
-    public void disableGravityShit(bool toggle)
+    public void disableGravityShift(bool toggle)
     {
         if (toggle)
             gShiftDisabled = true;

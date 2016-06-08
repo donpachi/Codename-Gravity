@@ -96,6 +96,7 @@ public class Player : MonoBehaviour, ICharacter {
     //might have to update constant force while suction cups are on
     public void updatePlayerOrientation(OrientationListener.Orientation orientation, float timer)
     {
+        anim.SetBool("BatteryCharging", true);
         if (gravityZone == true || isMinion == true || launched)
             return;
         if (suctionStatus == false || gCheck.InAir == true)
@@ -116,6 +117,11 @@ public class Player : MonoBehaviour, ICharacter {
                     break;
             }
         }
+    }
+
+    void updateBattery()
+    {
+        anim.SetBool("BatteryCharging", false);
     }
 
     //Flip character while moving left and right
@@ -203,10 +209,13 @@ public class Player : MonoBehaviour, ICharacter {
         else if (state == StateChange.CANNON_FIRE)
         {
             ToggleRender(true);
+            anim.SetBool("Smoke", true);
+            anim.SetBool("CannonBall", true);
             playerCollider.enabled = true;
         }
         else if(state == StateChange.CANNON_COLLISION)
         {
+            anim.SetBool("CannonBall", false);
             playerRigidBody.drag = drag;
             playerRigidBody.angularDrag = angularDrag;
             launched = false;
@@ -219,7 +228,7 @@ public class Player : MonoBehaviour, ICharacter {
         }
         else if(state == StateChange.BOX_OUT)
         {
-            currentState = StateChange.NORMAL;
+            anim.SetBool("Smoke", true);
         }
         else if(state == StateChange.CHECKPOINT)
         {
@@ -264,6 +273,7 @@ public class Player : MonoBehaviour, ICharacter {
             playerRigidBody.drag = 0;
             playerRigidBody.angularDrag = 0;
             ToggleRender(false);
+            anim.SetBool("Smoke", false);
             playerCollider.enabled = false;
         }
         if(state == StateChange.PORTAL_IN)
@@ -274,7 +284,12 @@ public class Player : MonoBehaviour, ICharacter {
         }
         if(state == StateChange.BOX_IN)
         {
-            currentState = StateChange.BOX_IN;
+            anim.SetBool("Smoke", false);
+            anim.SetBool("Moving", false);
+        }
+        if(state == StateChange.DEATH)
+        {
+            WorldGravity.Instance.disableGravityShift(true);
         }
         throwPlayerEvent(state);
     }
@@ -300,6 +315,7 @@ public class Player : MonoBehaviour, ICharacter {
         gravityZone = state.gravityZone;
         anim.SetInteger("Orientation", state.orientation);  //currently doesnt do much
         ReactivateControl(StateChange.CHECKPOINT);
+        WorldGravity.Instance.disableGravityShift(false);
     }
 
     void screenTouched(TouchInstanceData data)
@@ -317,6 +333,7 @@ public class Player : MonoBehaviour, ICharacter {
     void OnEnable()
     {
         WorldGravity.GravityChanged += updatePlayerOrientation;
+        WorldGravity.GravityReady += updateBattery;
         TouchController.OnSwipe += swipeCheck;
         TouchController.ScreenTouched += screenTouched;
     }
@@ -324,6 +341,7 @@ public class Player : MonoBehaviour, ICharacter {
     void OnDisable()
     {
         WorldGravity.GravityChanged -= updatePlayerOrientation;
+        WorldGravity.GravityReady -= updateBattery;
         TouchController.OnSwipe -= swipeCheck;
         TouchController.ScreenTouched -= screenTouched;
     }
@@ -409,6 +427,7 @@ public class Player : MonoBehaviour, ICharacter {
 
     void throwPlayerEvent(StateChange state)
     {
+        currentState = state;
         if (PlayerStateChange != null)
             PlayerStateChange(state);
     }

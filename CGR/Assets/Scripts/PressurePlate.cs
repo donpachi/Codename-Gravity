@@ -5,12 +5,14 @@ using System;
 public class PressurePlate : MonoBehaviour
 {
     public bool CanBeUntriggered = false;
+    public bool Lever;
     public float ReleaseDelay = 0;
     public GameObject[] List;
 
     float timer = 0;
     bool timerCountingDown = false;
     bool pressing = false;
+    bool inArea;
     ButtonState checkpointState;
     private Animator anim;
 
@@ -32,19 +34,34 @@ public class PressurePlate : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
+        inArea = true;
+        if (Lever)
+            return;
 		if (collider.tag == "Boulder" || collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().IsFollowing == false))
+        {
             anim.SetInteger("State", 1);
-        pressing = true;
+            pressing = true;
+        }
     }
 
     void OnTriggerExit2D(Collider2D collider)
     {
+        inArea = false;
 		if (collider.tag == "Boulder" || collider.tag == "Pushable" || (collider.tag == "Minion" && collider.GetComponent<Minion>().IsFollowing == false))
         {
-            if (CanBeUntriggered == true)
+            if (CanBeUntriggered == true && pressing == true)
                 timerCountingDown = true;
+            pressing = false;
         }
-        pressing = false;
+    }
+
+    void checkSwipe(TouchController.SwipeDirection direction)
+    {
+        if(direction == TouchController.SwipeDirection.UP && inArea)
+        {
+            anim.SetInteger("State", 1);
+            pressing = true;
+        }
     }
 
     void checkIfRelease()
@@ -97,11 +114,13 @@ public class PressurePlate : MonoBehaviour
     {
         LevelManager.OnCheckpointLoad += checkpointLoad;
         LevelManager.OnCheckpointSave += checkpointSave;
+        TouchController.OnSwipe += checkSwipe;
     }
     void OnDisable()
     {
         LevelManager.OnCheckpointLoad -= checkpointLoad;
         LevelManager.OnCheckpointSave -= checkpointSave;
+        TouchController.OnSwipe -= checkSwipe;
     }
 }
 

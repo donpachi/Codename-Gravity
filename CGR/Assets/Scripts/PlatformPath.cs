@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 public class PlatformPath : MonoBehaviour {
     public Transform[] Path;
-    public int direction = 1;
+    public int Direction = 1;
+    public bool Loop;
 
     private int index = 0;
     private PathSaveState saveState;
@@ -19,12 +20,19 @@ public class PlatformPath : MonoBehaviour {
             if (Path.Length == 1)
                 continue;
 
-            if (index <= 0)
-                direction = 1;
+            if(Loop)
+            {
+                if (index <= 0 && Direction == -1)
+                    index = Path.Length;
+                else if (index >= Path.Length - 1 && Direction == 1)
+                    index = -1;
+            }
+            else if (index <= 0)
+                Direction = 1;
             else if (index >= Path.Length - 1)
-                direction = -1;
+                Direction = -1;
 
-            index = index + direction;
+            index = index + Direction;
         }
     }
 
@@ -61,6 +69,11 @@ public class PlatformPath : MonoBehaviour {
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(Path[i - 1].position, Path[i].position);
         }
+        if(Loop)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(Path[0].position, Path[Path.Length - 1].position);
+        }
     }
     
     public Transform GetCheckpointStartPosition()
@@ -84,7 +97,7 @@ public class PlatformPath : MonoBehaviour {
             return;
         }
         index = saveState.index;
-        direction = saveState.direction;
+        Direction = saveState.direction;
     }
 
     void checkpointSave()
@@ -95,7 +108,7 @@ public class PlatformPath : MonoBehaviour {
         if (Path.Length == 1)
             return;
 
-        saveState.index = index - direction;
+        saveState.index = index - Direction;
         if (saveState.index == 0)
         {
             saveState.direction = -1;
@@ -105,7 +118,7 @@ public class PlatformPath : MonoBehaviour {
             saveState.direction = 1;
         }
         else
-            saveState.direction = direction;
+            saveState.direction = Direction;
         saveState.startPosition = Path[saveState.index];
     }
 
