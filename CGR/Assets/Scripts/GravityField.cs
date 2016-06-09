@@ -18,7 +18,7 @@ public class GravityField : MonoBehaviour {
     bool changing = false;
 
     // Use this for initialization
-    void Start () {
+    void Awake () {
         transform.localScale = transform.parent.GetComponent<BoxCollider2D>().size;
         rend = GetComponent<SpriteRenderer>();
         alphaStep = (UpperTrans - LowerTrans) / PulseTime;
