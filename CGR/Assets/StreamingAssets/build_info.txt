@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-Build from MINIDOMO at 6/8/2016 6:40:30 PM
-=======
-Build from YOSK-NOTEBOOK at 6/8/2016 6:41:48 PM
->>>>>>> e385168fe878fd8bd33483912f1b1a5f8f92a8c5
+Build from MINIDOMO at 6/8/2016 8:44:44 PM
