@@ -7,6 +7,7 @@ public class ObjectOnRails : MonoBehaviour {
     public bool isActive;
 
     private SliderJoint2D joint;
+    private Rigidbody2D rBody;
 
     // Find 2 Nodes to start from, mby define in unity
     // Set where the box originates, set the definition of rail it rides on
@@ -19,6 +20,9 @@ public class ObjectOnRails : MonoBehaviour {
         joint = gameObject.GetComponent<SliderJoint2D>();
         transform.position = Origin.transform.position;
         setJointParam();
+        rBody = GetComponent<Rigidbody2D>();
+        if (!isActive)
+            rBody.isKinematic = true;
     }
 
     // Update is called once per frame
@@ -76,6 +80,7 @@ public class ObjectOnRails : MonoBehaviour {
     void plateDepressed()
     {
         isActive = true;
+        rBody.isKinematic = false;
     }
 
     void plateReleased()

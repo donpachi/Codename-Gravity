@@ -18,6 +18,7 @@ public class RailBoxControl : MonoBehaviour {
     Player player;
     GameObject mainCamera;
     GameObject childObj;
+    EdgeCollider2D floor;
 
     public Vector2 tempOffset;
     // Use this for initialization
@@ -27,6 +28,7 @@ public class RailBoxControl : MonoBehaviour {
         player = FindObjectOfType<Player>();
         mainCamera = GameObject.Find("Main Camera");
         childObj = transform.GetChild(0).gameObject;
+        floor = GetComponentInChildren<EdgeCollider2D>();
     }
 
     // Update is called once per frame
@@ -77,6 +79,7 @@ public class RailBoxControl : MonoBehaviour {
     {
         PlayerControlled = true;
         mainCamera.GetComponent<FollowPlayer>().setFollowObject(gameObject);
+        floor.enabled = true;
     }
 
     void controlReleased(TouchInstanceData data)
@@ -94,6 +97,7 @@ public class RailBoxControl : MonoBehaviour {
         mainCamera.GetComponent<FollowPlayer>().setFollowObject(player.gameObject);
         PlayerControlled = false;
         anim.SetBool("HasExited", false);
+        floor.enabled = false;
     }
 
     //Event handling
@@ -111,7 +115,7 @@ public class RailBoxControl : MonoBehaviour {
 
     bool checkClearance()
     {
-        float exitRaySize = 1;
+        float exitRaySize = 1.5f;
         RaycastHit2D[] exitRays = Physics2D.RaycastAll(transform.position, transform.GetChild(0).transform.up, exitRaySize, WallMask);
         Debug.DrawRay(transform.position, transform.GetChild(0).transform.up * exitRaySize, Color.red, 0.5f);
         foreach (var ray in exitRays)

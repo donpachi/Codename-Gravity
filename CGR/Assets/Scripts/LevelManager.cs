@@ -219,7 +219,7 @@ public class LevelManager : MonoBehaviour
     public bool NewCheckpointRequest(GameObject requestedObj)
     {
         RaycastHit2D groundCheckRay = Physics2D.Raycast(Player.transform.position, Player.transform.up * -1, 1, checkpointRayMask);
-        if (!groundCheckRay || groundCheckRay.collider.tag == "Dynamic")
+        if (!groundCheckRay || groundCheckRay.collider.tag == "Dynamic" || groundCheckRay.collider.tag == "Pushable" || groundCheckRay.collider.tag == "MovingPlatform")
             return false;
 
         if (requestedObj.GetComponent<Minion>() != null)
