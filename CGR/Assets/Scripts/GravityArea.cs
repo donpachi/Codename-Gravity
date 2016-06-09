@@ -11,11 +11,15 @@ public class GravityArea : MonoBehaviour {
 
     private OrientationListener.Orientation areaDirection;
     private Vector2 direvtionVector;
+    private GravityField gField;
+    private GravityArrow[] gArrows;
 
 	// Use this for initialization
 	void Start () {
         if (Mode < 0 || Mode > 2)
             Mode = 0;
+        gField = GetComponentInChildren<GravityField>();
+        gArrows = GetComponentsInChildren<GravityArrow>();
         ChangeOrientation();
     }
 	
@@ -81,6 +85,11 @@ public class GravityArea : MonoBehaviour {
             Debug.LogError("Please keep direction between 0 - 3");
             areaDirection = OrientationListener.Orientation.PORTRAIT;
             direvtionVector = Vector2.down;
+        }
+        gField.SetDirection(Direction);
+        foreach (var arrow in gArrows)
+        {
+            arrow.SetDirection(Direction);
         }
     }
 
