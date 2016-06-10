@@ -37,7 +37,7 @@ public class GravityCannon : MonoBehaviour {
 
     void enterCannon(TouchController.SwipeDirection direction)
     {
-        if (enterAble && direction == TouchController.SwipeDirection.UP)
+        if (enterAble && direction == TouchController.SwipeDirection.UP && anim.GetBool("activated") != true)
         {
             playerBody.GetComponent<Transform>().position = launchPosition.position;
             //player.SetActive(false);
@@ -79,10 +79,12 @@ public class GravityCannon : MonoBehaviour {
 
     void screenTouched()
     {
+        Debug.Log("Screen touched");
         if (cannonReady)
         {
             cannonReady = false;
             FirePlayer();
+            
         }
     }
 
