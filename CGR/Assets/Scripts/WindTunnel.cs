@@ -82,6 +82,10 @@ public class WindTunnel : MonoBehaviour {
             {
                 if (rayHit.collider != null)
                 {
+                    if(rayHit.collider.gameObject.layer == LayerMask.NameToLayer("Walls"))
+                    {
+                        break;
+                    }
                     if (!pushableObjects.ContainsKey(rayHit.collider.gameObject))
                     {
                         float distance = Vector2.Distance(ray, rayHit.collider.gameObject.transform.position);
