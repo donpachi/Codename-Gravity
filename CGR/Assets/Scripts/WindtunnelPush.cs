@@ -99,11 +99,11 @@ public class WindtunnelPush : MonoBehaviour {
 
     void plateDepressed()
     {
-        toggleOnOff();
+        TurbineOn = !TurbineOn;
     }
 
     void plateReleased()
     {
-        toggleOnOff();
+        TurbineOn = !TurbineOn;
     }
 }
