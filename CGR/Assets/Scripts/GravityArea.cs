@@ -50,7 +50,14 @@ public class GravityArea : MonoBehaviour {
 
     void plateReleased()
     {
-
+        if (Mode == 0)
+            EffectOn = !EffectOn;
+        if (Mode == 1)
+        {
+            if (Direction < 2) Direction += 2;
+            else Direction -= 2;
+            ChangeOrientation();
+        }
     }
 
     void addForce(GameObject obj)
