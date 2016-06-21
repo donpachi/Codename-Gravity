@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-Build from MINIDOMO at 6/17/2016 7:45:09 PM
-=======
-Build from COMPUTER at 6/17/2016 5:07:19 PM
->>>>>>> e8213d32229229e4e7fabdb4e5c39f7911ec5c87
+Build from RUHTRAEEL-PC at 6/21/2016 1:13:59 AM
