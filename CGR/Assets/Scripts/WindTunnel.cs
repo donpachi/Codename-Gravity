@@ -15,18 +15,21 @@ public class WindTunnel : MonoBehaviour {
     public LayerMask MoveableObjects;
 
     private Player player;
+    private RaycastHit2D[] windRayHits;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         player = FindObjectOfType<Player>();
         setupRaycast();
-	}
+        windRayHits = new RaycastHit2D[5];
+        objList = new Dictionary<GameObject, float>();
+    }
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void Update () {
         if (TurbineOn)
         {
-            objList = castRays();
+            castRays();
         }
         else if (objList != null)
             objList.Clear();
@@ -43,7 +46,6 @@ public class WindTunnel : MonoBehaviour {
             entry.Key.GetComponent<Rigidbody2D>().AddForce(transform.up * entry.Value);
             //Debug.Log("Added Force to: " + entry.Key.name + " With Force: " + entry.Value);
         }
-        //Debug.Log("------");
     }
 
     /// <summary>
@@ -67,34 +69,35 @@ public class WindTunnel : MonoBehaviour {
     /// Cast the wind rays to check for objects
     /// </summary>
     /// 
-    Dictionary<GameObject, float> castRays()
+    void castRays()
     {
-        Dictionary<GameObject, float> pushableObjects = new Dictionary<GameObject, float>();
-
-        RaycastHit2D[] windRayHits;
-
+        //Dictionary<GameObject, float> pushableObjects = new Dictionary<GameObject, float>();
+        objList.Clear();
         foreach (Vector3 ray in windRayOrigins)
         {
+            //windRayHits = Physics2D.RaycastAll(ray, transform.up, MaxWindDistance, MoveableObjects);
+            int hits = Physics2D.RaycastNonAlloc(ray, transform.up, windRayHits, MaxWindDistance, MoveableObjects);
 
-            windRayHits = Physics2D.RaycastAll(ray, transform.up, MaxWindDistance, MoveableObjects);
-
-            foreach (var rayHit in windRayHits)
+            for (int i = 0; i < hits; i++)
             {
-                if (rayHit.collider != null)
+                if (windRayHits[i].collider != null)
                 {
-                    if(rayHit.collider.gameObject.layer == LayerMask.NameToLayer("Walls"))
+                    if(windRayHits[i].collider.gameObject.layer == LayerMask.NameToLayer("Walls"))
                     {
                         break;
                     }
-                    if (!pushableObjects.ContainsKey(rayHit.collider.gameObject))
+                    if (!objList.ContainsKey(windRayHits[i].collider.gameObject))
                     {
-                        float distance = Vector2.Distance(ray, rayHit.collider.gameObject.transform.position);
-                        float windForce = ((MaxWindDistance - distance) / MaxWindDistance) * MaxWindForce;
-                        if (windForce < 0)
+                        if(windRayHits[i].collider.gameObject == !player || !player.suctionStatus || player.InAirState())
                         {
-                            windForce = 0;
+                            float distance = Vector2.Distance(ray, windRayHits[i].collider.gameObject.transform.position);
+                            float windForce = ((MaxWindDistance - distance) / MaxWindDistance) * MaxWindForce;
+                            if (windForce < 0)
+                            {
+                                windForce = 0;
+                            }
+                            objList.Add(windRayHits[i].collider.gameObject, windForce);
                         }
-                        pushableObjects.Add(rayHit.collider.gameObject, windForce);
                     }
                 }
             }
@@ -102,7 +105,7 @@ public class WindTunnel : MonoBehaviour {
 
         }
 
-        return pushableObjects;
+        //return pushableObjects;
     }
 }
 

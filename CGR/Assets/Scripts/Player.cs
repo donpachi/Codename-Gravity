@@ -380,6 +380,11 @@ public class Player : MonoBehaviour, ICharacter {
         suctionStatus = false;
     }
 
+    public bool InAirState()
+    {
+        return gCheck.InAir;
+    }
+
     public void GravityZoneOn()
     {
         gravityZone = true;
