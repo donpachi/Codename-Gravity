@@ -4,12 +4,13 @@ using System.Collections;
 public class WorldGravity : MonoBehaviour {
     public float GRAVITYVALUE = 25f ;
     public float GRAVITYCOOLDOWN = 5f;
-    public Vector2 gVector = Vector2.down;
+    public OrientationListener.Orientation StartOrientation;
     public OrientationListener.Orientation CurrentGravityDirection { get; private set; }
     public static WorldGravity Instance;
 
     private bool gravityOnCooldown, gShiftDisabled;
     private float elapsedTime;
+    private Vector2 gVector = Vector2.down;
 
     //Event for gravity change
     public delegate void GravityEvent(OrientationListener.Orientation orientation, float timer);
@@ -53,12 +54,37 @@ public class WorldGravity : MonoBehaviour {
 
     void initialize()
     {
-        //gVector = OrientationListener.instanceOf.DEFAULT_ACCELEROMETER_VECTOR;
+        initializeGVector();
         OrientationListener.instanceOf.saveGravityVector(gVector);
         Physics2D.gravity = gVector * GRAVITYVALUE; // modify so that this is modifiable when the level starts.
         elapsedTime = 0;
         gravityOnCooldown = true; gShiftDisabled = false;
-        CurrentGravityDirection = OrientationListener.Orientation.PORTRAIT;
+        CurrentGravityDirection = StartOrientation;
+        triggerGravityChange(CurrentGravityDirection, GRAVITYCOOLDOWN);
+        triggerGravityReady();
+    }
+
+    void initializeGVector()
+    {
+        switch (StartOrientation)
+        {
+            case OrientationListener.Orientation.PORTRAIT:
+                gVector.x = 0;
+                gVector.y = -1;
+                break;
+            case OrientationListener.Orientation.LANDSCAPE_LEFT:
+                gVector.x = -1;
+                gVector.y = 0;
+                break;
+            case OrientationListener.Orientation.INVERTED_PORTRAIT:
+                gVector.x = 0;
+                gVector.y = 1;
+                break;
+            case OrientationListener.Orientation.LANDSCAPE_RIGHT:
+                gVector.x = 1;
+                gVector.y = 0;
+                break;
+        }
     }
 
     bool validUpdateState()
