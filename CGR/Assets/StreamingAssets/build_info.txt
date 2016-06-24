@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-Build from YOSK-NOTEBOOK at 6/24/2016 4:29:04 PM
-=======
-Build from COMPUTER at 6/24/2016 2:23:22 PM
->>>>>>> 0c597791c64381b6bfcc1da3165ab71d45df7f79
+Build from YOSK-NOTEBOOK at 6/24/2016 5:00:09 PM

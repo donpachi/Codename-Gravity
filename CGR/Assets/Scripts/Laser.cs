@@ -94,6 +94,12 @@ public class Laser : MonoBehaviour {
                 {
                     if (hit.collider.gameObject.GetComponent<Player>())
                         hit.collider.gameObject.GetComponent<Player>().TriggerDeath("Laser");
+                    else if (hit.collider.gameObject.GetComponent<Minion>())
+                    {
+                        Minion minion = hit.collider.gameObject.GetComponent<Minion>();
+                        if (!minion.IsFollowing)
+                            minion.DeactivateControl(StateChange.DEATH);
+                    }
                 }
             }
             else

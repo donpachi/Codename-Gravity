@@ -19,7 +19,6 @@ public class PinchtoZoom : MonoBehaviour
 		playerCam = GetComponent<Camera> ();
 		defaultOrthoSize = playerCam.orthographicSize;
         zoomDeadZone = Screen.height / 22;
-        Debug.Log("Screen Height: " + Screen.height);
 	}
 	
 	void Update()
@@ -46,7 +45,7 @@ public class PinchtoZoom : MonoBehaviour
 
             if (deltaMagOverFrames > zoomDeadZone)
             {
-                Debug.Log("Reached threshold: " + deltaMagOverFrames);
+                //Debug.Log("Reached threshold: " + deltaMagOverFrames);
 
                 // ... change the orthographic size based on the change in distance between the touches.
                 playerCam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed / 2;
