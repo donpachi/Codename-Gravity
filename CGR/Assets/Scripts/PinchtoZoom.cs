@@ -11,11 +11,13 @@ public class PinchtoZoom : MonoBehaviour
     public bool Zooming;
 	private Camera playerCam;
 	private float defaultOrthoSize;
-	private float noTouchZoomSpeed = 0.3f;
+	private float noTouchZoomSpeed = 0.6f;
+    private float zoomDeadZone;
 	
 	void Start(){
 		playerCam = GetComponent<Camera> ();
 		defaultOrthoSize = playerCam.orthographicSize;
+        zoomDeadZone = Screen.height / 25;
 	}
 	
 	void Update()
@@ -38,9 +40,9 @@ public class PinchtoZoom : MonoBehaviour
 			// Find the difference in the distances between each frame.
 			float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 			
-			
 			// ... change the orthographic size based on the change in distance between the touches.
-			playerCam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed / 2;
+            if(deltaMagnitudeDiff > zoomDeadZone)
+			    playerCam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed / 2;
 			
 			// Make sure the orthographic size never drops below default.
 			playerCam.orthographicSize = Mathf.Max(playerCam.orthographicSize, defaultOrthoSize);
@@ -50,11 +52,12 @@ public class PinchtoZoom : MonoBehaviour
 		}
 		
 		if (Input.touchCount == 0 && playerCam.orthographicSize > defaultOrthoSize) {
-			playerCam.orthographicSize -= orthoZoomSpeed;
-			if (playerCam.orthographicSize < (defaultOrthoSize + orthoZoomSpeed)){
-				playerCam.orthographicSize -= (playerCam.orthographicSize - defaultOrthoSize);
-			}
-		}
+			playerCam.orthographicSize -= noTouchZoomSpeed;
+            if (playerCam.orthographicSize < (defaultOrthoSize + noTouchZoomSpeed))
+            {
+                playerCam.orthographicSize -= (playerCam.orthographicSize - defaultOrthoSize);
+            }
+        }
 
         if (playerCam.orthographicSize == defaultOrthoSize)
             Zooming = false;
