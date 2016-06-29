@@ -6,7 +6,7 @@ public class PlayerJump : MonoBehaviour {
 
     private Rigidbody2D playerBody;
     private bool _jumpRequest;
-    private bool _jumping;
+    public bool _jumping { get; private set; }
     private GroundCheck gCheck;
 
     public float jumpForce = 10;

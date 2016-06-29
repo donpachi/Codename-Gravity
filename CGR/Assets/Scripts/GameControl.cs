@@ -24,8 +24,8 @@ public class GameControl
         {
             Load();
         }
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 60;
+        //QualitySettings.vSyncCount = 0;
+        //Application.targetFrameRate = 60;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Debug.Log(System.Environment.Version);
     }

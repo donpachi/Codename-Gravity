@@ -16,8 +16,8 @@ public class Player : MonoBehaviour, ICharacter {
     private Animator anim;
     private GroundCheck gCheck;
     private Renderer[] potatoParts;
-    private StateChange currentState;
 
+    public StateChange currentState { get; private set; }
     public bool facingRight { get; private set; }
     public event PlayerDied OnPlayerDeath;
     public float deathSpeed = 10f;
@@ -378,6 +378,11 @@ public class Player : MonoBehaviour, ICharacter {
     public void SuctionStatusEnd()
     {
         suctionStatus = false;
+    }
+
+    public bool InAirState()
+    {
+        return gCheck.InAir;
     }
 
     public void GravityZoneOn()

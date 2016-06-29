@@ -57,9 +57,14 @@ public class PressurePlate : MonoBehaviour
 
     void checkSwipe(TouchController.SwipeDirection direction)
     {
+        if (!Lever)
+            return;
         if(direction == TouchController.SwipeDirection.UP && inArea)
         {
-            anim.SetInteger("State", 1);
+            if (anim.GetInteger("State") == 0)
+                anim.SetInteger("State", 1);
+            else
+                anim.SetInteger("State", 0);
             pressing = true;
         }
     }

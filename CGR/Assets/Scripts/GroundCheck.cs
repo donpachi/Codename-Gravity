@@ -16,7 +16,7 @@ public class GroundCheck : MonoBehaviour
 
     public LayerMask wallMask;
 
-    void Start()
+    void Awake()
     {
         circleCollider = GetComponent<CircleCollider2D>();
         boxCollider = GetComponent<BoxCollider2D>();

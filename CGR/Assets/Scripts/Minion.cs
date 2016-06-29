@@ -24,7 +24,7 @@ public class Minion : MonoBehaviour, ICharacter{
     private FollowPlayer _camera;
     private GroundCheck gCheck;
     private bool facingRight = true;
-    private float teleportDistance = 4f;
+    private float teleportDistance = 3.5f;
     private Renderer[] renderParts;
     private float _followDistance;
     private float _followSpeed;
@@ -301,11 +301,6 @@ public class Minion : MonoBehaviour, ICharacter{
         returnToPlayer();
     }
 
-    private void destroySpirit()
-    {
-        Destroy(gameObject);
-    }
-
     private void returnToPlayer()
     {
         _camera.setFollowObject(player.gameObject);
@@ -409,5 +404,12 @@ public class Minion : MonoBehaviour, ICharacter{
         }
     }
 
+    void OnTriggerEnter2D(Collider2D colliderEvent)
+    {
+        if (colliderEvent.gameObject.tag == "SpikeTop")
+        {
+            DeactivateControl(StateChange.DEATH);
+        }
+    }
 
 }
